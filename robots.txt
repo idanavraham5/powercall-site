@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://powercall.co.il/sitemap.xml
