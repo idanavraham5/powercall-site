@@ -549,7 +549,7 @@
         <input id="pc-lead-name" type="text" placeholder="שם מלא" aria-label="שם מלא" style="flex:1 1 170px;min-width:170px;background:#fff;border:none;border-radius:14px;padding:16px 20px;font-family:'Heebo',sans-serif;font-size:15.5px;color:#111B33;outline:none;box-shadow:0 10px 26px rgba(0,0,0,.12)">
         <input id="pc-lead-phone" type="tel" placeholder="טלפון נייד" aria-label="טלפון נייד" style="flex:1 1 150px;min-width:150px;background:#fff;border:none;border-radius:14px;padding:16px 20px;font-family:'Heebo',sans-serif;font-size:15.5px;color:#111B33;outline:none;box-shadow:0 10px 26px rgba(0,0,0,.12)">
         <input id="pc-lead-email" type="email" placeholder="מייל" aria-label="כתובת מייל" style="flex:1 1 190px;min-width:190px;background:#fff;border:none;border-radius:14px;padding:16px 20px;font-family:'Heebo',sans-serif;font-size:15.5px;color:#111B33;outline:none;box-shadow:0 10px 26px rgba(0,0,0,.12)">
-        <span onClick="{{ submitLead }}" role="button" tabindex="0" style="background:linear-gradient(135deg,#FFB22E,#F59E0B);color:#fff;font-weight:700;font-size:16.5px;padding:16px 38px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);cursor:pointer;transition:transform .25s ease,box-shadow .25s ease;white-space:nowrap" style-hover="transform:translateY(-2px);box-shadow:0 16px 38px rgba(0,0,0,.25)">בקשו הדגמה חינם</span>
+        <span onClick="{{ submitLead }}" role="button" tabindex="0" style="background:linear-gradient(135deg,#FFB22E,#F59E0B);color:#fff;font-weight:700;font-size:16.5px;padding:16px 38px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);cursor:pointer;transition:transform .25s ease,box-shadow .25s ease;white-space:nowrap" style-hover="transform:translateY(-2px);box-shadow:0 16px 38px rgba(0,0,0,.25)">{{ leadBtnLabel }}</span>
       </div>
       <div style="display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;font-family:'Heebo',sans-serif;font-size:13.5px;color:#fff;flex-wrap:wrap;background:rgba(13,26,64,.45);border-radius:12px;padding:9px 18px">
         <span onClick="{{ toggleLeadConsent }}" role="checkbox" tabindex="0" aria-checked="{{ leadConsent }}" aria-label="קראתי ואני מאשר/ת את מדיניות הפרטיות" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
@@ -818,7 +818,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;showBlog&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;סקשנים&quot;}, &quot;showWhatsappFloat&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;סקשנים&quot;}, &quot;whatsappNumber&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;972533464288&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;יצירת קשר&quot;}}">
 class Component extends DCLogic {
-  state = { openArticle: null, faqOpen: 0, a11yOpen: false, a11yStatement: false, a11y: { fs: 100, contrast: false, gray: false, links: false, motion: false, dark: false, lh: 0, ls: 0 }, leadSent: false, leadError: '', privacyOpen: false, termsOpen: false, leadConsent: false, cookieOk: (() => { try { return localStorage.getItem('pc-cookie-ok') === '1'; } catch (e) { return false; } })() };
+  state = { openArticle: null, faqOpen: 0, a11yOpen: false, a11yStatement: false, a11y: { fs: 100, contrast: false, gray: false, links: false, motion: false, dark: false, lh: 0, ls: 0 }, leadSent: false, leadError: '', leadSending: false, privacyOpen: false, termsOpen: false, leadConsent: false, cookieOk: (() => { try { return localStorage.getItem('pc-cookie-ok') === '1'; } catch (e) { return false; } })() };
   _applyA11y(a) {
     const fs = a.fs || 100;
     document.body.style.zoom = fs !== 100 ? String(fs / 100) : '';
@@ -1202,6 +1202,7 @@ class Component extends DCLogic {
       leadSent: this.state.leadSent,
       leadNotSent: !this.state.leadSent,
       leadError: this.state.leadError,
+      leadBtnLabel: this.state.leadSending ? 'שולח...' : 'בקשו הדגמה חינם',
       cookieBar: !this.state.cookieOk,
       acceptCookies: () => { try { localStorage.setItem('pc-cookie-ok', '1'); } catch (e) {} this.setState({ cookieOk: true }); },
       privacyOpen: this.state.privacyOpen,
@@ -1213,6 +1214,7 @@ class Component extends DCLogic {
       leadConsent: this.state.leadConsent,
       toggleLeadConsent: () => this.setState((s) => ({ leadConsent: !s.leadConsent })),
       submitLead: () => {
+        if (this.state.leadSending) return;
         const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
         const name = g('pc-lead-name');
         const phone = g('pc-lead-phone').replace(/[^0-9]/g, '');
@@ -1222,7 +1224,28 @@ class Component extends DCLogic {
         if (!/^\S+@\S+\.\S+$/.test(email)) { this.setState({ leadError: 'כתובת המייל לא נראית תקינה.' }); return; }
         if (!this.state.leadConsent) { this.setState({ leadError: 'כדי לשלוח את הפרטים יש לאשר את מדיניות הפרטיות.' }); return; }
         try { const l = JSON.parse(localStorage.getItem('pc-leads') || '[]'); l.push({ name, phone, email, at: new Date().toISOString() }); localStorage.setItem('pc-leads', JSON.stringify(l)); } catch (e) {}
-        this.setState({ leadSent: true, leadError: '' });
+        this.setState({ leadSending: true, leadError: '' });
+        fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service_id: 'service_o1p2j15',
+            template_id: 'template_8yqqbnf',
+            user_id: 'mkswgOxTp_R2yOxO7',
+            template_params: {
+              title: 'ליד חדש מהאתר PowerCall',
+              name: name,
+              email: email,
+              time: new Date().toLocaleString('he-IL', { hour12: false }),
+              message: 'שם: ' + name + '\nטלפון: ' + phone + '\nמייל: ' + email
+            }
+          })
+        }).then((r) => {
+          if (r.ok) { this.setState({ leadSent: true, leadSending: false, leadError: '' }); }
+          else { throw new Error('send failed'); }
+        }).catch(() => {
+          this.setState({ leadSending: false, leadError: 'משהו השתבש בשליחה. נסו שוב עוד רגע, או חייגו 053-3464288.' });
+        });
       },
       showBlog: this.props.showBlog ?? true,
       showWhatsappFloat: this.props.showWhatsappFloat ?? true,
