@@ -551,6 +551,13 @@
         <input id="pc-lead-email" type="email" placeholder="מייל" style="flex:1 1 190px;min-width:190px;background:#fff;border:none;border-radius:14px;padding:16px 20px;font-family:'Heebo',sans-serif;font-size:15.5px;color:#111B33;outline:none;box-shadow:0 10px 26px rgba(0,0,0,.12)">
         <span onClick="{{ submitLead }}" style="background:linear-gradient(135deg,#FFB22E,#F59E0B);color:#fff;font-weight:700;font-size:16.5px;padding:16px 38px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);cursor:pointer;transition:transform .25s ease,box-shadow .25s ease;white-space:nowrap" style-hover="transform:translateY(-2px);box-shadow:0 16px 38px rgba(0,0,0,.25)">בקשו הדגמה חינם</span>
       </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;font-family:'Heebo',sans-serif;font-size:13.5px;color:#DCE9FF;flex-wrap:wrap">
+        <span onClick="{{ toggleLeadConsent }}" role="checkbox" aria-label="אישור מדיניות הפרטיות" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+          <span style="width:19px;height:19px;flex:none;border-radius:6px;border:2px solid rgba(255,255,255,.75);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center"><sc-if value="{{ leadConsent }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></sc-if></span>
+          <span>קראתי ואני מאשר/ת את</span>
+        </span>
+        <span onClick="{{ openPrivacy }}" style="color:#fff;font-weight:700;text-decoration:underline;cursor:pointer">מדיניות הפרטיות</span>
+      </div>
       <sc-if value="{{ leadError }}" hint-placeholder-val="{{ false }}">
         <div style="font-family:'Heebo',sans-serif;font-size:14.5px;color:#FFD98A;font-weight:700;margin-top:14px">{{ leadError }}</div>
       </sc-if>
@@ -595,7 +602,7 @@
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding-top:26px;font-family:'Heebo',sans-serif;font-size:13px">
       <span>© 2026 PowerCall. כל הזכויות שמורות.</span>
-      <div style="display:flex;gap:24px"><span>תנאי שימוש</span><span>מדיניות פרטיות</span><span onClick="{{ openA11yStatement }}" style="cursor:pointer;color:#2563EB;font-weight:600">הצהרת נגישות</span></div>
+      <div style="display:flex;gap:24px"><span onClick="{{ openTerms }}" style="cursor:pointer;transition:color .2s ease" style-hover="color:#2563EB">תנאי שימוש</span><span onClick="{{ openPrivacy }}" style="cursor:pointer;transition:color .2s ease" style-hover="color:#2563EB">מדיניות פרטיות</span><span onClick="{{ openA11yStatement }}" style="cursor:pointer;color:#2563EB;font-weight:600">הצהרת נגישות</span></div>
     </div>
   </div>
 </div>
@@ -700,7 +707,7 @@
     </div>
     <div style="font-family:'Heebo',sans-serif;font-size:15px;line-height:1.85;color:#41506B">
       <p style="margin:0 0 14px">PowerCall רואה חשיבות עליונה בהנגשת האתר והשירות לאנשים עם מוגבלות, מתוך אמונה בזכותו של כל אדם לחיות בשוויון, בכבוד, בנוחות ובעצמאות.</p>
-      <p style="margin:0 0 14px">האתר נבנה בהתאם להנחיות תקן <b>WCAG 2.1 ברמה AA</b> ולתקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג-2013.</p>
+      <p style="margin:0 0 14px">האתר נבנה בהתאם לתקן הישראלי <b>ת"י 5568</b> ("קווים מנחים לנגישות תכנים באינטרנט") ברמה <b>AA</b>, המבוסס על הנחיות <b>WCAG 2.1</b>, ובהתאם לתקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג-2013.</p>
       <div style="font-weight:700;color:#111B33;margin-bottom:8px">התאמות הנגישות באתר:</div>
       <ul style="margin:0 0 14px;padding:0 22px 0 0">
         <li style="margin-bottom:6px">כפתור נגישות: הגדלת תצוגה, ניגודיות גבוהה, גווני אפור, הדגשת קישורים ועצירת אנימציות</li>
@@ -715,11 +722,76 @@
 </div>
 </sc-if>
 
+<!-- ================= COOKIE BANNER ================= -->
+<sc-if value="{{ cookieBar }}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="הודעה על שימוש בעוגיות" style="position:fixed;bottom:0;left:0;right:0;z-index:85;background:#111B33;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-family:'Heebo',sans-serif;font-size:13.5px;box-shadow:0 -10px 30px rgba(17,27,51,.3)">
+  <span style="line-height:1.6;max-width:640px">אנחנו משתמשים בקבצי Cookie ובאחסון מקומי לצורך תפעול תקין של האתר ושמירת העדפות. פרטים נוספים ב<span onClick="{{ openPrivacy }}" style="color:#8AB8FF;font-weight:700;text-decoration:underline;cursor:pointer">מדיניות הפרטיות</span>.</span>
+  <span onClick="{{ acceptCookies }}" role="button" aria-label="אישור שימוש בעוגיות" style="background:#2563EB;color:#fff;font-weight:700;font-size:14px;padding:10px 28px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:background .2s ease" style-hover="background:#1D4ED8">הבנתי, מאשר/ת</span>
+</div>
+</sc-if>
+
+<!-- ================= PRIVACY POLICY MODAL ================= -->
+<sc-if value="{{ privacyOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:95;background:rgba(17,27,51,.55);display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="max-width:660px;width:100%;max-height:82vh;overflow-y:auto;background:#fff;border-radius:22px;padding:36px;box-shadow:0 40px 100px rgba(17,27,51,.35)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <h2 style="font-size:26px;font-weight:800;margin:0;letter-spacing:-.5px">מדיניות פרטיות</h2>
+      <span onClick="{{ closePrivacy }}" role="button" aria-label="סגירה" style="cursor:pointer;color:#8B96AB;font-size:20px;padding:4px 10px;border-radius:10px" style-hover="color:#111B33;background:#F4F8FF">✕</span>
+    </div>
+    <div style="font-family:'Heebo',sans-serif;font-size:14.5px;line-height:1.85;color:#41506B">
+      <p style="margin:0 0 12px">מדיניות זו מסבירה איך PowerCall ("אנחנו") אוספת ומשתמשת במידע באתר זה, בהתאם לחוק הגנת הפרטיות, התשמ"א-1981, על תיקוניו (לרבות תיקון 13).</p>
+      <div style="font-weight:700;color:#111B33;margin-bottom:6px">איזה מידע אנחנו אוספים?</div>
+      <ul style="margin:0 0 12px;padding:0 22px 0 0">
+        <li style="margin-bottom:5px"><b>פרטים שאתם מוסרים מרצונכם</b> בטופס יצירת הקשר: שם, טלפון וכתובת מייל.</li>
+        <li style="margin-bottom:5px"><b>מידע טכני</b>: קבצי Cookie ואחסון מקומי (localStorage) המשמשים לתפעול האתר ולשמירת העדפות — למשל העדפות נגישות ואישור הודעת העוגיות. איננו מפעילים באתר כלי מעקב פרסומיים.</li>
+      </ul>
+      <div style="font-weight:700;color:#111B33;margin-bottom:6px">למה אנחנו משתמשים במידע?</div>
+      <p style="margin:0 0 12px">הפרטים שנמסרים בטופס משמשים אך ורק לחזרה אליכם ולתיאום הדגמה של המערכת. מסירת הפרטים תלויה ברצונכם ובהסכמתכם — אין חובה חוקית למסור אותם, אך בלעדיהם לא נוכל לחזור אליכם.</p>
+      <div style="font-weight:700;color:#111B33;margin-bottom:6px">העברת מידע לצדדים שלישיים</div>
+      <p style="margin:0 0 12px">איננו מוכרים או משכירים את המידע שלכם. המידע עשוי לעבור לספקי שירות תפעוליים בלבד (כגון שירות אחסון האתר ושירות שליחת הודעות מייל), הפועלים כמחזיקים מטעמנו ולצורך מתן השירות בלבד.</p>
+      <div style="font-weight:700;color:#111B33;margin-bottom:6px">הזכויות שלכם</div>
+      <p style="margin:0 0 12px">בהתאם לחוק, אתם זכאים לעיין במידע שנאסף עליכם, לבקש לתקנו או למחוק אותו. לבקשות כאלה — או לכל שאלה בנושא פרטיות — פנו אלינו: <a href="mailto:info@powercall.co.il" style="color:#2563EB;font-weight:700;text-decoration:none">info@powercall.co.il</a> או בטלפון <a href="tel:0533464288" style="color:#2563EB;font-weight:700;text-decoration:none">053-3464288</a>.</p>
+      <div style="font-weight:700;color:#111B33;margin-bottom:6px">אבטחת מידע ושמירתו</div>
+      <p style="margin:0 0 12px">אנו נוקטים אמצעים סבירים ומקובלים לאבטחת המידע, ושומרים אותו רק כל עוד הוא נדרש למטרה שלשמה נמסר.</p>
+      <div style="font-weight:700;color:#111B33;margin-bottom:6px">ניהול קבצי Cookie</div>
+      <p style="margin:0 0 12px">ניתן לחסום או למחוק קבצי Cookie דרך הגדרות הדפדפן בכל עת. חסימה מלאה עשויה לפגוע בחלק מתפקודי האתר (למשל שמירת העדפות נגישות).</p>
+      <p style="margin:0 0 12px">ייתכן שנעדכן מדיניות זו מעת לעת — הגרסה המחייבת היא זו המפורסמת באתר.</p>
+      <p style="margin:0;font-size:13px;color:#8B96AB">עדכון אחרון: יולי 2026</p>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= TERMS MODAL ================= -->
+<sc-if value="{{ termsOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:95;background:rgba(17,27,51,.55);display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="max-width:660px;width:100%;max-height:82vh;overflow-y:auto;background:#fff;border-radius:22px;padding:36px;box-shadow:0 40px 100px rgba(17,27,51,.35)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <h2 style="font-size:26px;font-weight:800;margin:0;letter-spacing:-.5px">תנאי שימוש</h2>
+      <span onClick="{{ closeTerms }}" role="button" aria-label="סגירה" style="cursor:pointer;color:#8B96AB;font-size:20px;padding:4px 10px;border-radius:10px" style-hover="color:#111B33;background:#F4F8FF">✕</span>
+    </div>
+    <div style="font-family:'Heebo',sans-serif;font-size:14.5px;line-height:1.85;color:#41506B">
+      <p style="margin:0 0 12px">ברוכים הבאים לאתר PowerCall. הגלישה והשימוש באתר מהווים הסכמה לתנאים אלה.</p>
+      <ul style="margin:0 0 12px;padding:0 22px 0 0">
+        <li style="margin-bottom:6px"><b>מטרת האתר</b> — הצגת מידע על מערכת PowerCall ויצירת קשר לתיאום הדגמה. התוכן באתר הוא מידע כללי ואינו מהווה ייעוץ מקצועי או התחייבות חוזית.</li>
+        <li style="margin-bottom:6px"><b>קניין רוחני</b> — כל התכנים באתר (טקסטים, עיצוב, לוגו, גרפיקה) שייכים ל-PowerCall. אין להעתיק, להפיץ או לעשות בהם שימוש מסחרי ללא אישור מראש ובכתב.</li>
+        <li style="margin-bottom:6px"><b>הגבלת אחריות</b> — האתר והמידע בו ניתנים כמות שהם (As-Is). איננו אחראים לנזק עקיף שייגרם משימוש באתר או מהסתמכות על תוכנו, וייתכנו באתר אי-דיוקים או טעויות בתום לב.</li>
+        <li style="margin-bottom:6px"><b>נתונים ומספרים</b> — נתוני ביצועים המוצגים באתר (אחוזי מענה, שיעורי סגירה וכד') מבוססים על ניסיון לקוחות ואינם הבטחה לתוצאה דומה אצל כל לקוח.</li>
+        <li style="margin-bottom:6px"><b>פרטיות</b> — השימוש במידע אישי מוסדר ב<span onClick="{{ openPrivacy }}" style="color:#2563EB;font-weight:700;cursor:pointer;text-decoration:underline">מדיניות הפרטיות</span>.</li>
+        <li style="margin-bottom:6px"><b>דין וסמכות שיפוט</b> — על תנאים אלה יחול הדין הישראלי, וסמכות השיפוט הבלעדית נתונה לבתי המשפט המוסמכים בישראל.</li>
+      </ul>
+      <p style="margin:0 0 12px">שאלות? פנו אלינו: <a href="mailto:info@powercall.co.il" style="color:#2563EB;font-weight:700;text-decoration:none">info@powercall.co.il</a></p>
+      <p style="margin:0;font-size:13px;color:#8B96AB">עדכון אחרון: יולי 2026</p>
+    </div>
+  </div>
+</div>
+</sc-if>
+
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;showBlog&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;סקשנים&quot;}, &quot;showWhatsappFloat&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;סקשנים&quot;}, &quot;whatsappNumber&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;972533464288&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;יצירת קשר&quot;}}">
 class Component extends DCLogic {
-  state = { openArticle: null, faqOpen: 0, a11yOpen: false, a11yStatement: false, a11y: { zoom: 0, contrast: false, gray: false, links: false, motion: false }, leadSent: false, leadError: '' };
+  state = { openArticle: null, faqOpen: 0, a11yOpen: false, a11yStatement: false, a11y: { zoom: 0, contrast: false, gray: false, links: false, motion: false }, leadSent: false, leadError: '', privacyOpen: false, termsOpen: false, leadConsent: false, cookieOk: (() => { try { return localStorage.getItem('pc-cookie-ok') === '1'; } catch (e) { return false; } })() };
   _applyA11y(a) {
     document.body.style.zoom = a.zoom === 1 ? '1.12' : a.zoom === 2 ? '1.25' : '';
     const f = [];
@@ -1032,6 +1104,16 @@ class Component extends DCLogic {
       leadSent: this.state.leadSent,
       leadNotSent: !this.state.leadSent,
       leadError: this.state.leadError,
+      cookieBar: !this.state.cookieOk,
+      acceptCookies: () => { try { localStorage.setItem('pc-cookie-ok', '1'); } catch (e) {} this.setState({ cookieOk: true }); },
+      privacyOpen: this.state.privacyOpen,
+      openPrivacy: () => this.setState({ privacyOpen: true }),
+      closePrivacy: () => this.setState({ privacyOpen: false }),
+      termsOpen: this.state.termsOpen,
+      openTerms: () => this.setState({ termsOpen: true }),
+      closeTerms: () => this.setState({ termsOpen: false }),
+      leadConsent: this.state.leadConsent,
+      toggleLeadConsent: () => this.setState((s) => ({ leadConsent: !s.leadConsent })),
       submitLead: () => {
         const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
         const name = g('pc-lead-name');
@@ -1040,6 +1122,7 @@ class Component extends DCLogic {
         if (name.length < 2) { this.setState({ leadError: 'איך קוראים לכם? חסר שם.' }); return; }
         if (phone.length < 9 || phone.length > 10) { this.setState({ leadError: 'מספר הטלפון לא נראה תקין.' }); return; }
         if (!/^\S+@\S+\.\S+$/.test(email)) { this.setState({ leadError: 'כתובת המייל לא נראית תקינה.' }); return; }
+        if (!this.state.leadConsent) { this.setState({ leadError: 'כדי לשלוח את הפרטים יש לאשר את מדיניות הפרטיות.' }); return; }
         try { const l = JSON.parse(localStorage.getItem('pc-leads') || '[]'); l.push({ name, phone, email, at: new Date().toISOString() }); localStorage.setItem('pc-leads', JSON.stringify(l)); } catch (e) {}
         this.setState({ leadSent: true, leadError: '' });
       },
