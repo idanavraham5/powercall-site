@@ -11,8 +11,18 @@
 <meta property="og:url" content="https://www.powercall.co.il/">
 <meta property="og:title" content="PowerCall — חייגן חכם למוקדי מכירות: חייגן מקבילי, CRM וניתוח שיחות AI">
 <meta property="og:description" content="חייגן מקבילי, CRM לניהול לידים וניתוח שיחות AI למוקדי מכירות — הכל בדפדפן. בקשו הדגמה חינם.">
+<meta property="og:image" content="https://www.powercall.co.il/og-default.png">
+<meta property="og:site_name" content="PowerCall">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.powercall.co.il/og-default.png">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232563EB'/%3E%3Ctext x='50' y='72' font-size='64' font-weight='800' font-family='Arial' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Organization", "name": "PowerCall", "url": "https://www.powercall.co.il", "logo": "https://www.powercall.co.il/og-default.png", "description": "חייגן חכם, CRM ומאמן מכירות AI למוקדי מכירות בישראל.", "areaServed": "IL", "contactPoint": {"@type": "ContactPoint", "telephone": "+972-53-3464288", "contactType": "sales", "availableLanguage": ["Hebrew"]}}
+</script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "אני מקים מוקד מכירות — כמה זמן לוקח לעלות לאוויר?", "acceptedAnswer": {"@type": "Answer", "text": "יום עבודה אחד. המערכת פועלת בדפדפן — כל מה שצריך זה אוזניות וחיבור אינטרנט, בלי מרכזייה ובלי התקנות. אנחנו מגדירים איתכם יחד קמפיינים, מספרים ותסריטים, והמוקד מתחיל לחייג."}}, {"@type": "Question", "name": "מה ההבדל בין חייגן מקבילי לתותח שיחות?", "acceptedAnswer": {"@type": "Answer", "text": "זה אותו רעיון — \"תותח שיחות\" הוא השם העממי. החייגן המקבילי של PowerCall הוא הדור המתקדם שלו: מחייג לכמה לידים בו-זמנית, מעביר לנציג רק שיחות שנענו, ומוסיף גם CRM וניתוח שיחות AI באותה מערכת."}}, {"@type": "Question", "name": "האם המערכת מתמללת שיחות בעברית?", "acceptedAnswer": {"@type": "Answer", "text": "כן. התמלול והניתוח בנויים לעברית מדוברת של שיחות מכירה בישראל — כולל סלנג, קטיעות ודיבור מהיר. הניקוד ניתן לפי שיטת מכירות מובנית, לא לפי מילות מפתח."}}, {"@type": "Question", "name": "כמה עולה חייגן אוטומטי למוקד?", "acceptedAnswer": {"@type": "Answer", "text": "מחיר חודשי קבוע למוקד — בלי תשלום פר-נציג ובלי התחייבות. בהדגמה תקבלו הצעה מדויקת לפי גודל המוקד והצרכים שלכם."}}, {"@type": "Question", "name": "האם מותר להקליט שיחות מכירה לפי החוק?", "acceptedAnswer": {"@type": "Answer", "text": "כן — בישראל, צד לשיחה רשאי להקליט אותה. ההקלטות נשמרות מוצפנות, זמינות למורשים בלבד, ומשמשות לניתוח ולאימון בלבד."}}, {"@type": "Question", "name": "האם צריך להחליף את ה-CRM הקיים?", "acceptedAnswer": {"@type": "Answer", "text": "לא חייבים. PowerCall כוללת CRM מלא לניהול לידים, סטטוסים וקמפיינים — אבל אפשר גם לייבא ולייצא לידים מהמערכות הקיימות שלכם."}}]}
+</script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -535,7 +545,7 @@
     </div>
     <div data-m2="" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px">
       <sc-for list="{{ articles }}" as="art" hint-placeholder-count="6">
-        <div onClick="{{ art.open }}" role="button" tabindex="0" aria-label="פתיחת המאמר {{ art.title }}" style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 28px rgba(17,27,51,.06);transition:box-shadow .3s ease,transform .3s ease;cursor:pointer" style-hover="transform:translateY(-5px);box-shadow:0 20px 48px {{ art.glow }}">
+        <a href="{{ art.href }}" aria-label="קריאת המאמר {{ art.title }}" style="display:block;text-decoration:none;color:inherit;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 28px rgba(17,27,51,.06);transition:box-shadow .3s ease,transform .3s ease;cursor:pointer" style-hover="transform:translateY(-5px);box-shadow:0 20px 48px {{ art.glow }}">
           <div style="height:160px;background:linear-gradient(140deg,{{ art.c1 }},{{ art.c2 }});display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
             <div style="position:absolute;top:-40px;left:-40px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.12)"></div>
             <div style="position:absolute;bottom:-55px;right:-25px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
@@ -546,7 +556,7 @@
             <div data-mtt="" style="font-size:19px;font-weight:700;line-height:1.45;margin-bottom:10px">{{ art.title }}</div>
             <div data-mtb="" style="font-family:'Heebo',sans-serif;font-size:14.5px;color:#5A6880;line-height:1.65">{{ art.excerpt }}</div>
           </div>
-        </div>
+        </a>
       </sc-for>
     </div>
   </div>
@@ -1294,7 +1304,7 @@ class Component extends DCLogic {
       },
       showBlog: this.props.showBlog ?? true,
       showWhatsappFloat: this.props.showWhatsappFloat ?? true,
-      articles: arts.map((a, i) => Object.assign({}, a, { open: () => this._setArticle(i) })),
+      articles: arts.map((a, i) => Object.assign({}, a, { open: () => this._setArticle(i), href: '/articles/' + (i + 1) + '.html' })),
       articleOpen: open !== null,
       current: (() => { const a = arts[open === null ? 0 : open]; return Object.assign({}, a, { body: { __html: a.body } }); })(),
       nextTitle: arts[((open === null ? 0 : open) + 1) % arts.length].title,
