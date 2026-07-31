@@ -60,7 +60,7 @@
      Two blooms, not three: ChatFlow's palette is more restrained than
      powercall's and a third hue would be noise. The hues are the app's own —
      emerald and warm coral, lifted from the real chat canvas in index.css. */
-  .bg { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+  .bg { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
   .sky { position: absolute; inset: 0;
          background: linear-gradient(180deg, #FDFCF9 0%, #FBFAF6 55%, #F7F5EF 100%); }
   .sky .bloom { position: absolute; border-radius: 50%; filter: blur(90px) saturate(1.2); will-change: transform; }
@@ -769,6 +769,89 @@
   .wa:hover { transform: scale(1.06); }
   .wa svg { width: 1.9rem; height: 1.9rem; fill: #fff; }
 
+  /* ============================================================
+     The narrow layout. The JS for all of this was already here —
+     it moves the proof panels into their steps, builds the mobile
+     glow layer and measures the wire fan against a stacked stage —
+     but the CSS half was missing, so on a phone the panels stayed
+     absolutely positioned at opacity 0 (a screen-tall blank hole)
+     and the six cards kept their desktop fan, cut off at both
+     edges with the core card sitting on top of them.
+     Ported from the powercall page. Desktop is untouched:
+     everything here lives inside the query. */
+  @media (max-width: 1024px) {
+    /* ---- feature sequence ----
+       A sticky stage cannot survive a single column, so each proof panel is
+       moved next to the claim it proves (the DOM move is done in JS) and the
+       stage column is left empty and hidden. */
+    .seqGrid { grid-template-columns: 1fr; }
+    .stageCol { display: none; }
+    .step { min-height: auto; padding-block: 2.5rem; }
+    .seqPanel { position: relative; inset: auto; opacity: 1; margin-top: 1.7rem; }
+    /* No sticky column to reserve room down here — fitScalers skips its height
+       clamp on narrow, so the strip HEIGHT_ROOM_CAPTIONED reserves never opens
+       and the panel can grow past it (its own row animation makes it taller
+       after it is measured). The narrator stops being an absolute overlay at
+       top:100% and simply takes its own line. justify-self:stretch is
+       load-bearing: .seqPanel is place-items:center, which would otherwise size
+       this line to its max-content width and push the page sideways. */
+    .ibCap { position: static; justify-self: stretch; margin-top: 0.9rem; }
+    .ctaGrid { grid-template-columns: 1fr; }
+
+    /* ---- six squares → one system ----
+       No room to fan six cards AROUND a core on a phone, so the layout turns
+       90°: a 2×3 grid with the core in its own band beneath it, and the wires
+       fanning up out of the core into the grid. The stage becomes a flex
+       column and .oneCore stops being an absolute overlay to become the last
+       child. Both layouts are measured through the same JS, because on desktop
+       .oneCore spans the stage and its centre IS the stage centre. */
+    .one { min-height: auto; padding: 4rem clamp(1.25rem, 4vw, 3rem) 4.5rem; }
+    .oneStage { height: auto; max-width: 560px; display: flex; flex-direction: column; }
+    .modGrid { position: relative; inset: auto; grid-template-columns: repeat(2, 1fr);
+               grid-template-rows: auto; gap: 0.7rem; align-content: start; }
+    .oneCore { position: relative; inset: auto; margin-top: 2.7rem; }
+    /* The cards have to survive being half as wide. backdrop-filter goes: these
+       six get scaled and flown across the stage, and a live backdrop blur is
+       re-computed on every frame of that. The backdrop here is a pale wash, so
+       an opaque white is the same card at rest — without the per-frame cost.
+       position: relative is load-bearing: without it the glow layer would
+       anchor to .oneStage and be flung to the corner of the section. */
+    .mod { padding: 1.05rem 1rem; border-radius: 15px; position: relative;
+           background: rgba(255,255,255,0.9); backdrop-filter: none; }
+    /* The glow layer the JS builds on mobile: the light lives here so it can be
+       faded instead of re-painted. inset: -1px, not 0 — an absolute child
+       resolves against the PADDING box, so at 0 the glow would start a pixel
+       inside the card's border. Without this rule the JS's <i> renders as a
+       stray inline box inside every card. */
+    .modGlow { position: absolute; inset: -1px; border-radius: inherit; opacity: 0;
+               pointer-events: none; }
+    .modIc { width: 2.3rem; height: 2.3rem; border-radius: 11px; margin-bottom: 0.75rem; }
+    .modIc svg { width: 1.15rem; height: 1.15rem; }
+    .modT { font-size: 1rem; }
+    .modD { font-size: 0.8rem; margin-top: 0.3rem; line-height: 1.5; }
+    .coreCard { padding: 1.7rem 1.9rem; border-width: 3px; border-radius: 22px; }
+    .coreS { max-width: 26ch; margin-inline: auto; }
+
+    /* ---- the proof panels, rebuilt for a narrow screen ----
+       Every panel is laid out in cqw against the 1920px .canvas, and fitScalers
+       shrinks that canvas to fit its column: k = columnWidth / panelWidth. At
+       the desktop design widths (66-72cqw) that was a ~3x reduction on a phone
+       and the smallest labels landed around 4px — crisp, and unreadable.
+       Narrowing the DESIGN width raises k, because fitScalers divides by it.
+       cqw is measured against the CANVAS, not the panel, so the type does NOT
+       shrink with the panel — which is why the columns that cannot survive the
+       new width are dropped rather than squeezed. Nothing leaves the DOM: the
+       desktop panels are byte-for-byte untouched. */
+    .p-inbox { width: 46cqw; height: auto; }
+    /* three columns do not fit in half the width. The list and the thread ARE
+       the claim ("every conversation belongs to the business, and you can see
+       who is handling it"); the contact card beside them is garnish. */
+    .ibCard { display: none; }
+    .ibList { width: 20cqw; }
+    .p-sensitive { width: 46cqw; height: auto; }
+    .p-live { width: 46cqw; height: auto; }
+  }
+
   /* ---- phone ---- */
   @media (max-width: 700px) {
     /* Two pills plus a wordmark plus a CTA is three too many things for a phone
@@ -1259,8 +1342,12 @@ gsap.registerPlugin(ScrollTrigger);
 /* ---------------- entrance ----------------
    No intro to wait through: the page is simply here, and the hero settles in.
    Timings match site.html so the two pages feel like one product family. */
-gsap.to(".sky .bloom", { xPercent: -7, yPercent: 6, scale: 1.1, duration: 19, ease: "sine.inOut", repeat: -1, yoyo: true, stagger: 1.6 });
-gsap.to("#grain", { x: "8%", y: "5%", duration: 7, ease: "sine.inOut", repeat: -1, yoyo: true });
+var __reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// Translate-only drift: scaling a blurred layer forces a per-frame Gaussian re-raster; a pure transform is a cheap compositor move.
+// #grain no longer drifts either — a moving mix-blend-mode:overlay layer re-composites the whole viewport every frame, for motion no one can see.
+if (!__reduceMotion) {
+  gsap.to(".sky .bloom", { xPercent: -7, yPercent: 6, duration: 19, ease: "sine.inOut", repeat: -1, yoyo: true, stagger: 1.6 });
+}
 
 gsap.timeline()
   .to("#nav", { opacity: 1, duration: 0.6 }, 0.05)
@@ -1950,6 +2037,20 @@ function fitScalers() {
   });
 
   window.addEventListener("resize", function () { measure(); });
+
+  /* Pause the off-screen work. The conic ring is an animated @property angle,
+     so it repaints the whole gradient border every frame — and once .lit is
+     added nothing ever stops it, including while the reader is two sections
+     further down. The six wire tweens are repeat:-1 and are started by
+     measure() at page load, before this section has ever been on screen. */
+  ScrollTrigger.create({
+    trigger: "#one",
+    onToggle: function (s) {
+      if (coreCard) coreCard.style.animationPlayState = s.isActive ? "running" : "paused";
+      flowTweens.forEach(function (t) { if (s.isActive) t.play(); else t.pause(); });
+    }
+  });
+
   window.__unify = tl;
 })();
 
@@ -2054,6 +2155,40 @@ function fitScalers() {
 window.addEventListener("resize", fitScalers);
 window.addEventListener("load", function () { fitScalers(); window.__ready = true; });
 fitScalers();
+
+/* The scalers and every ScrollTrigger are measured before the web font has
+   swapped in. A late reflow leaves a panel taller than the box reserved for it
+   (its caption then sits on top of the panel) and can leave a .rv stuck at
+   opacity 0 forever. Re-measure once things settle, and never leave content
+   hidden that the reader has already scrolled past. */
+function __revealSafety() {
+  fitScalers();
+  ScrollTrigger.refresh();
+  var vh = window.innerHeight;
+  gsap.utils.toArray(".rv").forEach(function (el) {
+    if (parseFloat(getComputedStyle(el).opacity) > 0.01) return;
+    if (el.getBoundingClientRect().top < vh * 0.95) gsap.set(el, { opacity: 1, y: 0 });
+  });
+}
+/* A panel can change its own height AFTER it has been measured — a row
+   animates into the list, a font swaps, a line wraps. The box reserved for the
+   scaled panel would keep the old height, the panel would overflow it, and the
+   narrator line that sits under the box would end up underneath the panel
+   itself. A ResizeObserver on the panels re-fits for any cause, once per frame.
+   (fitScalers only writes the scaler's height and the canvas transform —
+   neither is part of a panel's own layout box, so this cannot feed itself.) */
+if (window.ResizeObserver) {
+  var __fitQueued = false;
+  var __ro = new ResizeObserver(function () {
+    if (__fitQueued) return;
+    __fitQueued = true;
+    requestAnimationFrame(function () { __fitQueued = false; fitScalers(); });
+  });
+  document.querySelectorAll(".scaler .panel").forEach(function (el) { __ro.observe(el); });
+}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(__revealSafety);
+window.addEventListener("load", function () { setTimeout(__revealSafety, 60); });
+window.addEventListener("pageshow", function (e) { if (e.persisted) __revealSafety(); });
 </script>
 </body>
 </html>
