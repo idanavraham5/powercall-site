@@ -103,7 +103,7 @@
   /* ---------------- nav ---------------- */
   .nav {
     position: fixed; inset-block-start: 0; inset-inline: 0; z-index: 60;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
     padding: 1.5rem clamp(1.25rem, 4vw, 3.5rem);
     opacity: 0; transition: background .3s ease, box-shadow .3s ease, padding .3s ease;
   }
@@ -113,6 +113,20 @@
     box-shadow: 0 1px 0 rgba(15, 27, 46, 0.06);
     padding-block: 0.8rem;
   }
+  /* the product switcher — three pills, the active one wearing its product's
+     colour. Shared shape with chatflow.html and podium.html; only .on differs. */
+  .swap { display: flex; align-items: center; gap: 0.2rem; padding: 0.25rem;
+          background: rgba(15, 27, 46, 0.05); border-radius: 999px; }
+  .swap a {
+    font-family: inherit; font-size: 0.9rem; font-weight: 700; text-decoration: none;
+    padding: 0.45rem 1.15rem; border-radius: 999px; color: var(--muted);
+    transition: color .18s ease, background .18s ease;
+  }
+  .swap a:hover { color: var(--ink); }
+  .swap a.on { font-weight: 800; color: var(--blue); background: rgba(37, 99, 235, 0.10); }
+  .nav.stuck .swap { background: rgba(15, 27, 46, 0.07); }
+  /* the phone form of the switcher — see the 700px block */
+  .swapMini { display: none; }
   .brand { display: flex; align-items: center; gap: 1rem; }
   /* condenses once the nav goes solid, so it reads big on arrival without
      eating the viewport for the rest of the page */
@@ -729,10 +743,21 @@
     /* the buttons stop being a pair of pills floating in the middle */
     .acts { width: 100%; flex-direction: column; align-items: stretch; gap: 0.7rem; }
     .acts .btn { width: 100%; }
-    .nav { padding-inline: 1.1rem; }
-    .brand img { height: 34px; }
-    .nav.stuck .brand img { height: 29px; }
-    .btn-dark { padding: 0.6rem 1.1rem; font-size: 0.88rem; }
+    /* Logo + two ways out + the CTA is four things on a 390px bar: at the
+       desktop sizes they need 397px, so every one of them wrapped onto a
+       second line. Everything here buys back those pixels — nothing may wrap. */
+    .nav { padding-inline: 0.9rem; gap: 0.35rem; }
+    .brand img { height: 26px; }
+    .nav.stuck .brand img { height: 24px; }
+    .btn-dark { padding: 0.52rem 0.85rem; font-size: 0.82rem; white-space: nowrap; }
+    /* Three pills plus a logo plus a CTA is too many things for a phone nav.
+       The logo already says which product you are on, so only the way OUT stays. */
+    .swap { display: none; }
+    .swapMini {
+      display: inline-flex; align-items: center; font-family: inherit;
+      font-size: 0.72rem; font-weight: 700; color: var(--muted); text-decoration: none;
+      padding: 0.3rem 0.08rem; white-space: nowrap;
+    }
 
     .question { min-height: auto; padding: 5.5rem 1.5rem; }
     .feedTitle { font-size: 0.9rem; }
@@ -792,6 +817,13 @@
   .faqItem.open .fqIc { transform: rotate(45deg); background: var(--blue); color: #fff; }
   .faqA { max-height: 0; overflow: hidden; transition: max-height .32s ease; }
   .faqAInner { padding: 0 1.5rem 1.4rem; color: var(--muted); font-size: 1rem; line-height: 1.8; font-weight: 500; }
+
+  /* Below ~340px (iPhone 5/SE-1) even the trimmed bar cannot hold four things.
+     The logo and the CTA are the two that must survive; the switcher is
+     reachable from the footer and from the other pages. */
+  @media (max-width: 340px) {
+    .swapMini { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -805,6 +837,13 @@
   <div class="brand">
     <img src="./powercall-logo.png" alt="powercall" />
   </div>
+  <div class="swap">
+    <a href="./" class="on">powercall</a>
+    <a href="./chatflow.html">ChatFlow</a>
+    <a href="./podium.html">Podium</a>
+  </div>
+  <a href="./chatflow.html" class="swapMini">ChatFlow ↗</a>
+  <a href="./podium.html" class="swapMini">Podium ↗</a>
   <a href="#lead" class="btn btn-dark">לדבר איתנו</a>
 </nav>
 

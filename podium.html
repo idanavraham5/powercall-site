@@ -1,0 +1,1583 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Podium — מסך אחד על הקיר, וכולם יודעים איפה הם עומדים</title>
+<meta name="description" content="פודיום, דירוג נציגים ועמלות שמתעדכנים כל 15 שניות על מסך אחד בקיר: הנציג רואה איפה הוא עומד, והמנהל כבר לא צריך לשאול.">
+<link rel="canonical" href="https://www.powercall.co.il/podium.html">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="PowerCall">
+<meta property="og:url" content="https://www.powercall.co.il/podium.html">
+<meta property="og:title" content="Podium — מסך מכירות חי על קיר המוקד">
+<meta property="og:description" content="פודיום, דירוג נציגים ועמלות שמתעדכנים כל 15 שניות על מסך אחד בקיר: הנציג רואה איפה הוא עומד, והמנהל כבר לא צריך לשאול.">
+<meta property="og:image" content="https://www.powercall.co.il/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.powercall.co.il/og-default.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Suez+One&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<script src="./gsap.min.js"></script>
+<script src="./scrolltrigger.min.js"></script>
+<style>
+/* =========================================================================
+   Podium — landing page
+   Third sibling of site.html (powercall) and chatflow.html. Same skeleton,
+   same scaler, same motion law; Podium's own palette, faces and screens,
+   all copied from sales-dashboard/index.html rather than invented.
+
+   One idea carries it, and it is the only claim in the family that speaks to
+   two people at once: one screen on the wall, the agent knows where they
+   stand and the manager does not have to ask.
+   ========================================================================= */
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink:     #16213e;
+    --ink-2:   #2b3a5c;
+    --muted:   #5b6478;
+    --line:    #e8ebf2;
+    --cream:   #f6f9ff;
+    --orange:  #ff6a2c;
+    --orange-d:#e8531a;
+    --blue:    #2f6df0;
+    --green:   #1fa971;
+    --purple:  #7b5fc9;
+    --gold:    #d4a437;
+    --radius:  20px;
+    --shadow:  0 30px 70px rgba(22, 33, 62, 0.12), 0 6px 18px rgba(22, 33, 62, 0.06);
+  }
+  /* `clip` contains the oversized panel canvases without creating a scroll
+     container — `hidden` would break `position: sticky` on the feature stage. */
+  html { scroll-behavior: smooth; overflow-x: clip; }
+  body {
+    font-family: "Heebo", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  /* ---------------- the living backdrop ----------------
+     Fixed behind everything; sections are transparent and ride on top, so the
+     page reads as one continuous surface rather than stacked bands.
+     Two blooms, not three: Podium's palette is more restrained than
+     powercall's and a third hue would be noise. The hues are the app's own —
+     emerald and warm coral, lifted from the real chat canvas in index.css. */
+  .bg { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+  .sky { position: absolute; inset: 0;
+         background: linear-gradient(180deg, #FDFCF9 0%, #FBFAF6 55%, #F7F5EF 100%); }
+  .sky .bloom { position: absolute; border-radius: 50%; filter: blur(90px) saturate(1.2); will-change: transform; }
+  /* alphas follow powercall's weighting, not the app's .05 — in the app these
+     are full-viewport washes, here they are discrete blobs and would vanish */
+  .l1 { width: 58vw; height: 58vw; top: -16vw; right: -10vw; background: rgba(47, 109, 240, 0.13); }
+  .l2 { width: 52vw; height: 52vw; bottom: -18vw; left: -10vw; background: rgba(255, 138, 107, 0.11); }
+
+  .grain {
+    position: absolute; inset: -50%; opacity: 0.09; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    will-change: transform;
+  }
+
+  section { position: relative; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-inline: clamp(1.25rem, 4vw, 3rem); }
+
+  /* ---------------- nav ---------------- */
+  .nav {
+    position: fixed; inset-block-start: 0; inset-inline: 0; z-index: 60;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 1.5rem clamp(1.25rem, 4vw, 3.5rem);
+    opacity: 0; transition: background .3s ease, box-shadow .3s ease, padding .3s ease;
+  }
+  .nav.stuck {
+    background: rgba(255, 255, 255, 0.80);
+    backdrop-filter: saturate(180%) blur(14px);
+    box-shadow: 0 1px 0 rgba(22, 33, 62, 0.06);
+    padding-block: 0.8rem;
+  }
+  /* Podium has no logo asset — the mark is always this wordmark. The accent
+     line above it is the 60x4 emerald rule the brand uses everywhere. */
+  .brand { display: flex; align-items: center; }
+  .wordmark { display: inline-flex; flex-direction: column; gap: 0.34rem; text-decoration: none; }
+  .wordmark i { display: block; width: 44px; height: 3px; border-radius: 2px; background: var(--orange); transition: width .3s ease; }
+  .wordmark span { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); line-height: 1; transition: font-size .3s ease; }
+  .nav.stuck .wordmark span { font-size: 1.28rem; }
+  .nav.stuck .wordmark i { width: 36px; }
+
+  /* the product switcher — two pills, the active one wearing its product's
+     colour. Shared shape with site.html; only the .on rule differs. */
+  .swap { display: flex; align-items: center; gap: 0.2rem; padding: 0.25rem;
+          background: rgba(22, 33, 62, 0.05); border-radius: 999px; }
+  .swap a {
+    font-family: inherit; font-size: 0.9rem; font-weight: 700; text-decoration: none;
+    padding: 0.45rem 1.15rem; border-radius: 999px; color: var(--muted);
+    transition: color .18s ease, background .18s ease;
+  }
+  .swap a:hover { color: var(--ink); }
+  .swap a.on { font-weight: 800; color: var(--orange); background: rgba(255, 106, 44, 0.10); }
+  .nav.stuck .swap { background: rgba(22, 33, 62, 0.07); }
+  /* the phone form of the switcher — see the 700px block */
+  .swapMini { display: none; }
+
+  .btn {
+    font-family: inherit; font-weight: 700; border: 0; border-radius: 999px; cursor: pointer;
+    text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+  }
+  .btn-dark { color: #fff; background: var(--ink); padding: 0.72rem 1.6rem; font-size: 0.95rem; }
+  .btn-dark:hover { background: #2c3746; transform: translateY(-1px); }
+
+  /* ---------------- hero ---------------- */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 7rem 1.5rem 4rem;
+  }
+  /* Suez One is a single-weight Hebrew display face — there is no weight axis
+     to reach for, so the headline earns its presence from size and tracking.
+     It is also what makes this page unmistakably not the other two: powercall
+     shouts in Heebo 900, ChatFlow states a fact in Assistant 800, and this one
+     is set in a face with actual serifs on a scoreboard. */
+  h1 {
+    font-family: "Suez One", "Heebo", serif;
+    font-size: clamp(2.3rem, 5.4vw, 5.5rem);
+    font-weight: 400; letter-spacing: -0.025em; line-height: 1.12; opacity: 0;
+  }
+  h1 .grad {
+    background: linear-gradient(100deg, #ff6a2c, #ff8a4c 45%, #ffb066);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { margin-top: clamp(2rem, 3.4vh, 3.2rem); font-size: clamp(1rem, 1.35vw, 1.45rem); font-weight: 500; color: var(--muted); line-height: 1.75; max-width: 54ch; opacity: 0; }
+  .acts { margin-top: clamp(2.8rem, 4.6vh, 4.2rem); display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; opacity: 0; }
+  /* the one saturated thing above the fold — shadow tinted to match, because a
+     neutral drop shadow under a saturated button reads as a sticker */
+  .b1 { font-size: 1.05rem; font-weight: 800; color: #fff; background: var(--orange); padding: 1rem 2.2rem; box-shadow: 0 14px 34px rgba(255, 106, 44, 0.32); }
+  .b1:hover { background: #e8531a; transform: translateY(-2px); }
+  .b2 { font-size: 1.05rem; color: var(--ink); background: rgba(255,255,255,0.75); border: 1px solid var(--line); padding: 1rem 2rem; backdrop-filter: blur(8px); }
+  .b2:hover { transform: translateY(-2px); }
+
+  .rv { opacity: 0; transform: translateY(26px); }
+
+  /* ---------------- the question ---------------- */
+  .question { min-height: 88vh; display: grid; place-items: center; text-align: center; padding: 8rem 1.5rem; }
+  .qsmall { font-size: clamp(1.25rem, 2.2vw, 2.2rem); font-weight: 700; color: #a8b0bb; line-height: 1.45; }
+  .qbig { margin-top: 1.2rem; font-size: clamp(1.9rem, 4.2vw, 4.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; }
+  .qbig em { font-style: normal; color: var(--orange); }
+  /* the real tab, at page scale — same shape as the one in ConversationList:
+     a tinted track holding a coloured active pill with its live count */
+  .unassigned {
+    margin-top: clamp(2.5rem, 5vh, 4rem); display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.34rem; border-radius: 12px; background: rgba(22, 33, 62, 0.05);
+  }
+  .uTab {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 1.2rem; border-radius: 9px; background: var(--orange); color: #fff;
+    font-size: 1rem; font-weight: 700; box-shadow: 0 4px 12px rgba(255, 106, 44, 0.24);
+  }
+  .uCount {
+    min-width: 2rem; padding: 0.1rem 0.5rem; border-radius: 999px;
+    background: rgba(255,255,255,0.22); font-size: 0.95rem; font-weight: 800;
+    direction: ltr; font-variant-numeric: tabular-nums; text-align: center;
+  }
+
+  /* ---------------- feature sequence ---------------- */
+  /* The rendered width of a proof panel is exactly the width of this column —
+     fitScalers divides the column by the panel's design width, so the product
+     of the two is always the column again. That makes the grid split the only
+     lever on how big the proof reads. The claims are short and the proof is
+     detailed, so the stage takes the larger share; minmax stops the text
+     column collapsing under its own headline on a narrow laptop. */
+  .seqGrid {
+    max-width: 1860px; margin: 0 auto; padding-inline: clamp(0.75rem, 1.6vw, 1.5rem);
+    display: grid; grid-template-columns: minmax(320px, 0.9fr) 2.6fr;
+    gap: clamp(1rem, 2vw, 2.4rem); align-items: start;
+  }
+  .step { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-block: 4rem; }
+  /* Panel 1's story runs 5.65s; a reader crosses one screen in about four, so
+     the pipeline — the beat the panel exists to reach — would never be seen.
+     Deliberately a class at the SAME specificity as .step rather than
+     `.seq .steps .step:first-child`: the mobile block sets `.step { min-height:
+     auto }`, and being later in the file it must win. A descendant selector
+     would out-specify it and leave this step 145vh tall on a phone. */
+  .step-long { min-height: 150vh; }
+  .stepKicker { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; color: var(--orange); text-transform: uppercase; margin-bottom: 1rem; }
+  .step:nth-child(2) .stepKicker { color: var(--gold); }
+  .step:nth-child(3) .stepKicker { color: var(--blue); }
+  /* stepped down from 2.8vw: the stage took width from this column, and at the
+     old size the two-line titles ran past its edge */
+  .stepTitle { font-size: clamp(1.55rem, 2.4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; }
+  .stepBody { margin-top: 1.1rem; font-size: clamp(0.98rem, 1.05vw, 1.18rem); color: var(--muted); line-height: 1.75; font-weight: 500; max-width: 42ch; }
+  .stepList { margin-top: 1.6rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  .stepList li { list-style: none; display: flex; align-items: center; gap: 0.7rem; font-size: 1rem; font-weight: 600; color: var(--ink-2); }
+  .tick { width: 1.15rem; height: 1.15rem; flex: none; border-radius: 50%; background: #e7f7f0; display: grid; place-items: center; }
+  .tick svg { width: 0.7rem; height: 0.7rem; fill: var(--orange); }
+
+  .stageCol { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; }
+  .stageInner { position: relative; width: 100%; }
+  /* No base transform here: GSAP animates y on this element and would overwrite
+     any translate used for centring. Centring is the grid's job. */
+  .seqPanel { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; will-change: opacity, transform; }
+  /* min-width:0 is load-bearing: as a grid item this would otherwise take
+     min-width:auto, resolve to the 1920px canvas's min-content size, report a
+     1920px width, and silently poison every scale factor below. */
+  .scaler { position: relative; width: 100%; min-width: 0; display: flex; justify-content: center; }
+  .canvas { flex: none; width: 1920px; transform-origin: top center; container-type: inline-size; }
+
+  /* =======================================================================
+     product panels — rebuilt from the real screens in
+     idanavraham5/sales-dashboard. Proof, never the opening act.
+
+     The names are NOT the ones in the dashboard. That board runs on a live
+     Google Sheet and shows real staff; this page sells the product to other
+     call centres, so the UI is identical and only the words are widened. Same
+     decision the ChatFlow page had to make with the tax-refund statuses.
+     ======================================================================= */
+  .panel { position: relative; margin: 0 auto; background: #fff; border-radius: var(--radius);
+           border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; }
+
+  /* the panel chrome shared by all three: a titled head with a LIVE pip */
+  .pHead { display: flex; align-items: center; gap: 0.9cqw; padding: 1.5cqw 1.9cqw 1.2cqw;
+           border-bottom: 1px solid var(--line); }
+  .pTitle { font-size: 1.55cqw; font-weight: 800; letter-spacing: -0.01em; }
+  .pLive { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 0.45cqw;
+           padding: 0.35cqw 0.85cqw; border-radius: 999px; background: rgba(255,106,44,0.10);
+           color: var(--orange-d); font-size: 0.85cqw; font-weight: 800; letter-spacing: 0.06em; }
+  .pLive i { width: 0.55cqw; height: 0.55cqw; border-radius: 50%; background: var(--orange); }
+
+  /* an avatar is initials on a gradient, never a photo. photos.js in the
+     dashboard is 176KB of real staff faces and none of it belongs here. */
+  .pAv { border-radius: 50%; display: grid; place-items: center; color: #fff;
+         font-weight: 800; flex: none; }
+
+  /* ---- panel 1: the podium ----
+     The most photogenic thing the product has, and the one an agent looks for
+     first. Three steps in the dashboard's own order and colours: 2nd green on
+     the right, 1st blue and tallest in the middle, 3rd purple on the left.
+
+     Measured against the 1920 canvas before a line of animation was written:
+     head ~86px, podium area ~560px, floor label ~40px = ~686px inside 768px. */
+  .p-podium { width: 62cqw; height: 40cqw; display: flex; flex-direction: column; background: #fff; }
+  .pdStage { flex: 1; display: flex; align-items: flex-end; justify-content: center;
+             gap: 1.6cqw; padding: 2.2cqw 2.4cqw 0; }
+  .pod { width: 11.5cqw; display: flex; flex-direction: column; align-items: center; }
+  .podCrown { font-size: 2.6cqw; line-height: 1; height: 3.1cqw; opacity: 0;
+              filter: drop-shadow(0 0.15cqw 0.25cqw rgba(212,164,55,0.55)); }
+  .podAv { width: 3.6cqw; height: 3.6cqw; font-size: 1.5cqw; margin-bottom: 0.55cqw; }
+  .podName { font-size: 1.05cqw; font-weight: 800; white-space: nowrap; }
+  .podNum { font-size: 1.9cqw; font-weight: 900; line-height: 1.1; margin-top: 0.15cqw;
+            direction: ltr; font-variant-numeric: tabular-nums; }
+  .podBar { width: 100%; margin-top: 0.7cqw; border-radius: 1cqw 1cqw 0 0;
+            display: grid; place-items: start center; padding-top: 0.7cqw;
+            color: rgba(255,255,255,0.92); font-size: 1.5cqw; font-weight: 900;
+            transform-origin: bottom center; transform: scaleY(0); }
+  .pod1 .podBar { height: 12.5cqw; background: linear-gradient(180deg,#5b93ff,#1e3a5f); }
+  .pod2 .podBar { height: 9.2cqw;  background: linear-gradient(180deg,#3fc78f,#1d6b48); }
+  .pod3 .podBar { height: 7.0cqw;  background: linear-gradient(180deg,#a48fe6,#5b4791); }
+  .pod1 .podNum { color: #2f6df0; } .pod2 .podNum { color: #1fa971; } .pod3 .podNum { color: #7b5fc9; }
+  .pdFloor { height: 0.35cqw; background: linear-gradient(90deg,transparent,var(--line),transparent); }
+  .pdNote { padding: 0.9cqw 0 1.3cqw; text-align: center; font-size: 0.92cqw;
+            font-weight: 600; color: var(--muted); }
+
+  /* ---- panel 2: the celebration ----
+     The dashboard throws a full-screen takeover the moment an agent's count
+     goes up: blurred aura, vignette, a gold-bordered card, the name, the
+     month's tally counting up. It is the only dark surface in the product and
+     the only one on this page, which is exactly why it earns its own panel.
+     Head ~0 (no chrome — it IS a takeover), content ~640px inside 720px. */
+  .p-celeb { width: 54cqw; height: 37.5cqw; background: #0f1f36; position: relative;
+             display: grid; place-items: center; }
+  .clAura { position: absolute; inset: 0; overflow: hidden; }
+  .clBlob { position: absolute; border-radius: 50%; filter: blur(5cqw); opacity: 0.55; }
+  .clB1 { width: 22cqw; height: 22cqw; top: -6cqw;  right: -4cqw; background: #ff6a2c; }
+  .clB2 { width: 20cqw; height: 20cqw; bottom: -7cqw; left: -3cqw; background: #2f6df0; }
+  .clVig { position: absolute; inset: 0;
+           background: radial-gradient(ellipse at 50% 45%, transparent 38%, rgba(8,13,24,0.62) 100%); }
+  .clWrap { position: relative; z-index: 2; display: flex; flex-direction: column;
+            align-items: center; gap: 1.5cqw; }
+  /* Frank Ruhl Libre at 500 — the dashboard's own choice, and the one serif in
+     the whole family. On a scoreboard it reads as a headline, not a UI label. */
+  .clTitle { font-family: "Frank Ruhl Libre", "Heebo", serif; font-weight: 500;
+             font-size: 3.4cqw; line-height: 1; color: #f3efe2; opacity: 0; }
+  .clCard { position: relative; width: 22cqw; padding: 1.8cqw 1.8cqw 1.6cqw;
+            border-radius: 1.5cqw; border: 0.09cqw solid #8a6414; opacity: 0;
+            background: linear-gradient(135deg,#2a1e08,#171005);
+            box-shadow: 0 1.5cqw 3cqw rgba(0,0,0,0.45);
+            display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }
+  .clAv { width: 4.4cqw; height: 4.4cqw; font-size: 1.9cqw;
+          box-shadow: 0 0 0 0.22cqw rgba(212,164,55,0.35); }
+  .clName { font-size: 1.7cqw; font-weight: 800; color: #f3efe2; }
+  .clRole { font-size: 0.85cqw; font-weight: 600; color: #b9a271; }
+  .clAmount { margin-top: 0.7cqw; display: flex; flex-direction: column; align-items: center; gap: 0.2cqw; }
+  .clAmount .lbl { font-size: 0.8cqw; font-weight: 700; color: #b9a271; }
+  .clAmount b { font-size: 3cqw; font-weight: 900; line-height: 1; color: #f5d98b;
+                direction: ltr; font-variant-numeric: tabular-nums; }
+  .clTag { margin-top: 0.9cqw; padding: 0.5cqw 1.1cqw; border-radius: 999px; opacity: 0;
+           background: rgba(255,106,44,0.16); border: 1px solid rgba(255,106,44,0.35);
+           color: #ffb98f; font-size: 0.92cqw; font-weight: 800; }
+
+  /* ---- panel 3: the live ranking ----
+     Eight columns, exactly the dashboard's: name, actual, target, percent,
+     daily average, commission, daily bonus, lateness. The bar turns orange at
+     50% and stays blue below it — that threshold is the product's, not mine.
+
+     Measured: head ~86px + thead ~52px + 5 rows x ~104px = ~658px inside 845px. */
+  .p-rank { width: 72cqw; height: 44cqw; display: flex; flex-direction: column; background: #fff; }
+  .rkGrid { display: grid; grid-template-columns: 13cqw repeat(7, 1fr); align-items: center;
+            gap: 0.7cqw; padding-inline: 1.9cqw; }
+  .rkHead { padding-block: 0.85cqw; border-bottom: 1px solid var(--line); }
+  .rkHead span { font-size: 0.82cqw; font-weight: 700; color: var(--muted); text-align: center; }
+  .rkHead span:first-child { text-align: start; }
+  .rkRow { padding-block: 1.05cqw; border-bottom: 1px solid #f3f5f9; opacity: 0; }
+  .rkRow:last-child { border-bottom: 0; }
+  .rkWho { display: flex; align-items: center; gap: 0.75cqw; min-width: 0; }
+  .rkAv { width: 2.5cqw; height: 2.5cqw; font-size: 1.05cqw; }
+  .rkName { font-size: 1.02cqw; font-weight: 700; white-space: nowrap; }
+  .rkCell { display: flex; flex-direction: column; align-items: center; gap: 0.35cqw; }
+  .rkVal { font-size: 1.25cqw; font-weight: 800; direction: ltr; font-variant-numeric: tabular-nums; }
+  .rkBar { width: 78%; height: 0.5cqw; border-radius: 0.35cqw; background: #eef0f5; overflow: hidden; }
+  .rkBar i { display: block; height: 100%; border-radius: 0.35cqw; width: 0; }
+  .barHot  { background: linear-gradient(90deg,#ff8a4c,var(--orange)); }
+  .barCool { background: linear-gradient(90deg,#5b8df5,var(--blue)); }
+  .rkPct { font-size: 1.45cqw; font-weight: 900; text-align: center;
+           direction: ltr; font-variant-numeric: tabular-nums; }
+  .rkPct.hot { color: var(--orange); } .rkPct.cool { color: var(--blue); }
+  .rkAvg { text-align: center; font-size: 1.15cqw; font-weight: 800; color: var(--purple);
+           direction: ltr; font-variant-numeric: tabular-nums; }
+  .rkMoney { text-align: center; font-size: 1.12cqw; font-weight: 800; color: var(--green);
+             white-space: nowrap; direction: ltr; font-variant-numeric: tabular-nums; }
+  .rkMoney .cur { font-size: 0.78cqw; opacity: 0.7; margin-inline-start: 0.12cqw; }
+  .rkMoney.bonus { color: var(--gold); }
+  .rkLate { text-align: center; font-size: 1.12cqw; font-weight: 800; color: #9aa2b5;
+            direction: ltr; font-variant-numeric: tabular-nums; }
+  .rkLate.has { color: #d92d2d; }
+
+
+  /* ---- the narrator ----
+     Outside .canvas on purpose: inside it the text would be multiplied by the
+     scaler's k and change size with the viewport. Here it is page-scale and
+     always legible. `top: 100%` puts it in the gap the sticky column leaves
+     below the panel — see HEIGHT_ROOM, which was lowered to reserve it. */
+  .ibCap {
+    position: absolute; top: 100%; inset-inline: 0; margin-top: 1rem;
+    text-align: center; font-size: clamp(0.95rem, 1.15vw, 1.22rem);
+    font-weight: 700; color: var(--ink-2); line-height: 1.4; opacity: 0;
+  }
+  .ibCap b { font-weight: 800; color: var(--orange); }
+
+
+  /* ---------------- it does not celebrate noise ----------------
+     Page scale, not a scaled panel — this is the objection every call-centre
+     owner raises before they raise any other, so it has to be read rather than
+     squinted at: what stops the board throwing a party over a typo?
+
+     The three guards are real, from CONFIG in sales-dashboard/index.html:
+     CELEB_CONFIRM_POLLS 2, CELEB_MAX_JUMP 3, CELEB_DOWN_POLLS 12. */
+  .ai { padding: clamp(5rem, 11vh, 9rem) 0 clamp(4rem, 9vh, 7rem); }
+  .secHead { text-align: center; max-width: 60ch; margin: 0 auto clamp(2.6rem, 5vh, 4rem); }
+  .secHead h2 { font-family: "Suez One", "Heebo", serif; font-weight: 400;
+                font-size: clamp(1.8rem, 3.6vw, 3.3rem); letter-spacing: -0.02em; line-height: 1.2; }
+  .secHead h2 .hl { color: var(--orange); }
+  .secHead p { margin-top: 1.1rem; font-size: clamp(1rem, 1.2vw, 1.25rem);
+               color: var(--muted); font-weight: 500; line-height: 1.75; }
+
+  .guards { display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: clamp(1rem, 1.8vw, 1.6rem); max-width: 1080px; margin: 0 auto; }
+  .guard { background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+           padding: clamp(1.5rem, 2.4vw, 2.2rem); box-shadow: var(--shadow); }
+  .guardN { display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem;
+            border-radius: 12px; background: rgba(255,106,44,0.10); color: var(--orange);
+            font-size: 1.15rem; font-weight: 900; direction: ltr; font-variant-numeric: tabular-nums; }
+  .guardT { margin-top: 1rem; font-size: 1.12rem; font-weight: 800; }
+  .guardD { margin-top: 0.55rem; font-size: 0.95rem; font-weight: 500;
+            color: var(--muted); line-height: 1.7; }
+  .guardK { margin-top: 0.9rem; display: inline-block; padding: 0.3rem 0.7rem; border-radius: 8px;
+            background: #f4f6fb; border: 1px solid var(--line); color: var(--ink-2);
+            font-size: 0.78rem; font-weight: 700; direction: ltr; }
+  .guardFoot { max-width: 60ch; margin: clamp(2.2rem, 4vh, 3.2rem) auto 0; text-align: center;
+               font-size: clamp(0.98rem, 1.15vw, 1.15rem); font-weight: 600; color: var(--ink-2); line-height: 1.75; }
+
+  /* ---------------- modules: six squares that become one system ----------------
+     Ported from site.html. Plays on arrival, on its own clock — the reader
+     shouldn't have to grind a scrollbar to watch it. Hovering a settled card
+     lifts it and lights its own wire. */
+  .one { position: relative; min-height: 100vh; display: flex; flex-direction: column;
+         align-items: center; justify-content: center; padding: clamp(5rem, 10vh, 8rem) clamp(1.25rem, 4vw, 3rem); }
+  .oneStage { position: relative; width: 100%; max-width: 1080px; height: clamp(450px, 62vh, 600px); margin-top: clamp(1.5rem, 3.5vh, 2.5rem); }
+  .modGrid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr);
+             grid-template-rows: repeat(2, min-content); gap: 1.2rem; align-content: center; z-index: 2; }
+  /* wires run beneath the cards and the core, so they read as emerging from
+     behind each surface instead of stopping awkwardly at its edge */
+  .wires { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0; overflow: visible; }
+  /* dasharray sums to 16; the flow tween walks dashoffset exactly one period so
+     the loop is seamless. Drawn core->card, so a rising offset reads as travel
+     from the card toward the core. */
+  .wires line { stroke: rgba(255, 106, 44, 0.5); stroke-width: 1.75; stroke-dasharray: 9 7; }
+  .mod {
+    background: rgba(255,255,255,0.80); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 18px; padding: 1.7rem;
+    box-shadow: 0 10px 30px rgba(22, 33, 62, 0.05);
+    opacity: 0; will-change: transform, opacity;
+    /* no :hover transform here — GSAP owns this element's transform */
+  }
+  .modIc { width: 2.9rem; height: 2.9rem; border-radius: 13px; display: grid; place-items: center; margin-bottom: 1.1rem; }
+  .modIc svg { width: 1.4rem; height: 1.4rem; fill: #fff; }
+  .modT { font-size: 1.2rem; font-weight: 800; }
+  .modD { margin-top: 0.4rem; font-size: 0.95rem; color: var(--muted); font-weight: 500; line-height: 1.6; }
+
+  .oneCore { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; pointer-events: none; z-index: 3; }
+  /* Registering the angle lets the browser interpolate it as an angle; a plain
+     custom property would jump from 0 to 360 instead of sweeping. */
+  @property --ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  @keyframes coreSpin { to { --ang: 360deg; } }
+  .coreCard {
+    /* Two backgrounds: white clipped to the padding box, the conic clipped to
+       the border box. The border is transparent, so the gradient shows only in
+       that ring — no pseudo-element, no z-index games.
+       The six hues ARE the six module accents. */
+    border: 3.5px solid transparent; border-radius: 26px;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      conic-gradient(from var(--ang),
+        #2f6df0, #7c3aed, #d4a437, #2563eb, #db2777, #0e8b99, #2f6df0) border-box;
+    padding: clamp(2rem, 4vw, 3rem) clamp(2.4rem, 5vw, 4.2rem); text-align: center;
+    box-shadow: 0 50px 110px -20px rgba(22, 33, 62, 0.32), 0 0 110px rgba(47, 109, 240, 0.14);
+    pointer-events: auto; cursor: default;
+  }
+  /* only spun once the core is actually on screen — a conic gradient repaints
+     every frame and there is no sense burning that while it is invisible */
+  .coreCard.lit { animation: coreSpin 4.5s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .coreCard.lit { animation: none; } }
+  .coreT { margin-top: 1.3rem; font-size: clamp(1.4rem, 2.5vw, 2.3rem); font-weight: 800; letter-spacing: -0.03em; }
+  .coreS { margin-top: 0.7rem; color: var(--muted); font-weight: 600; font-size: clamp(0.95rem, 1.1vw, 1.1rem); }
+
+  /* Podium has no logo asset. The wordmark plus its accent rule IS the mark. */
+  .coreMark { display: inline-flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .coreMark i { display: block; width: 60px; height: 4px; border-radius: 2px; background: var(--orange); }
+  .coreMark span { font-size: clamp(1.4rem, 2.2vw, 2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); line-height: 1; }
+  .ctaMeta .coreMark span, .foot .coreMark span { font-size: 1.15rem; }
+  .ctaMeta .coreMark i, .foot .coreMark i { width: 36px; height: 3px; }
+  .foot .coreMark { opacity: 0.75; }
+
+  /* ---------------- cta ---------------- */
+  .cta { padding: clamp(5rem, 11vh, 9rem) 0 clamp(4rem, 8vh, 6rem); }
+  .ctaGrid { display: grid; grid-template-columns: 1fr 0.95fr; gap: clamp(2.5rem, 5vw, 5rem); align-items: center; }
+  .ctaTitle { font-size: clamp(2rem, 3.8vw, 3.6rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; }
+  .ctaBody { margin-top: 1.2rem; color: var(--muted); font-size: 1.1rem; line-height: 1.75; font-weight: 500; max-width: 42ch; }
+  .ctaMeta { margin-top: 2rem; display: flex; align-items: center; gap: 1rem; }
+  .ctaMeta span.note { font-size: 0.9rem; color: var(--muted); font-weight: 600; padding-inline-start: 1rem; border-inline-start: 1px solid var(--line); }
+  /* ---- the form lives in a phone ----
+     A WhatsApp product asking for your number in a plastic card is a missed
+     beat. Built in CSS rather than shipped as an image so the form inside stays
+     real, focusable and responsive. */
+  .phoneWrap { display: flex; justify-content: center; perspective: 1600px; }
+  .phone { width: min(352px, 88vw); }
+  .phoneBody {
+    position: relative; padding: 11px;
+    border-radius: 54px;
+    background: linear-gradient(155deg, #46525f 0%, #1d262f 42%, #131a22 100%);
+    box-shadow:
+      0 50px 100px -20px rgba(22, 33, 62, 0.45),
+      0 18px 40px -12px rgba(22, 33, 62, 0.28),
+      inset 0 0 0 1.5px rgba(255,255,255,0.14);
+  }
+  .screen {
+    position: relative; border-radius: 44px; overflow: hidden;
+    background: #fff; aspect-ratio: 9 / 19.3;
+    display: flex; flex-direction: column;
+  }
+  /* Positioned against .phoneBody, not .screen — it is a sibling of the screen,
+     so this offset includes the 11px bezel. */
+  .island {
+    position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
+    width: 104px; height: 30px; border-radius: 999px; background: #05070d; z-index: 5;
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+  }
+  .islandInner { display: flex; align-items: center; gap: 9px; opacity: 0; white-space: nowrap; }
+  .isSpin {
+    width: 17px; height: 17px; border-radius: 50%; flex: none;
+    border: 2.5px solid rgba(52, 211, 153, 0.22); border-top-color: #34d399;
+  }
+  .isCheck { width: 21px; height: 21px; flex: none; display: none; }
+  .isRing { fill: #34d399; }
+  .isTick { fill: none; stroke: #05070d; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  .isText { color: #fff; font-size: 0.8rem; font-weight: 800; }
+  /* side buttons */
+  .phoneBody::before, .phoneBody::after {
+    content: ""; position: absolute; width: 3px; border-radius: 2px;
+    background: linear-gradient(180deg, #37424e, #1d262f);
+  }
+  .phoneBody::before { inset-inline-start: -3px; top: 132px; height: 58px; }
+  .phoneBody::after  { inset-inline-start: -3px; top: 206px; height: 58px; }
+  .phoneBtn { position: absolute; inset-inline-end: -3px; top: 160px; width: 3px; height: 86px; border-radius: 2px; background: linear-gradient(180deg, #37424e, #1d262f); }
+
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 1.55rem 0.3rem; font-size: 0.82rem; font-weight: 800; color: var(--ink);
+    flex: none;
+  }
+  .statusbar .sbTime { font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+  .statusbar .sbIcons { display: flex; align-items: center; gap: 0.32rem; }
+  .statusbar svg { height: 0.72rem; fill: var(--ink); display: block; }
+  /* the thank-you state — sits below the status bar so the phone illusion holds */
+  .thanks {
+    position: absolute; inset-block-start: 48px; inset-inline: 0; inset-block-end: 0;
+    background: #fff; z-index: 3; opacity: 0; visibility: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 1.6rem 1.5rem 2rem;
+  }
+  .thanksIc { width: 74px; height: 74px; }
+  .thanksIc svg { width: 100%; height: 100%; }
+  .thanksIc .tRing { fill: #d1fae5; }
+  .thanksIc .tDisc { fill: var(--orange); }
+  .thanksIc .tTick { fill: none; stroke: #fff; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+  .thanksT { margin-top: 1.4rem; font-size: 1.42rem; font-weight: 800; letter-spacing: -0.02em; }
+  .thanksS { margin-top: 0.65rem; font-size: 0.95rem; color: var(--muted); font-weight: 500; line-height: 1.6; max-width: 22ch; }
+  .thanksAgain {
+    margin-top: 1.6rem; font-family: inherit; font-size: 0.85rem; font-weight: 700;
+    color: var(--orange); background: none; border: 0; cursor: pointer; padding: 0.4rem;
+  }
+  .thanksNote { margin-top: auto; font-size: 0.7rem; font-weight: 700; color: #b45309; line-height: 1.4; }
+
+  .homebar { flex: none; display: grid; place-items: center; padding-bottom: 0.6rem; padding-top: 0.3rem; }
+  .homebar span { width: 118px; height: 5px; border-radius: 999px; background: var(--ink); opacity: 0.28; }
+
+  /* the status bar grew to make room for the island; take it back here so the
+     form still clears its screen without an inner scrollbar */
+  .form { flex: 1; padding: 0.1rem 1.55rem 0.4rem; overflow-y: auto; }
+  .form h3 { font-size: 1.22rem; font-weight: 800; }
+  .form p.fh { margin-top: 0.3rem; font-size: 0.86rem; color: var(--muted); font-weight: 500; }
+  .field { margin-top: 0.85rem; }
+  .field label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--ink-2); margin-bottom: 0.32rem; }
+  .field input, .field select {
+    width: 100%; font-family: inherit; font-size: 0.95rem; font-weight: 500;
+    padding: 0.72rem 0.9rem; border: 1px solid #e2e0d7; border-radius: 13px;
+    background: #FCFBF7; color: var(--ink); transition: border .16s ease, box-shadow .16s ease;
+  }
+  .field input:focus, .field select:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255, 106, 44, 0.12); background: #fff; }
+  .form .btn { width: 100%; margin-top: 1.15rem; background: var(--orange); color: #fff; padding: 0.9rem; font-size: 1rem; }
+  .form .btn:hover { background: #e8531a; transform: translateY(-1px); }
+  .formNote { margin-top: 0.7rem; text-align: center; font-size: 0.72rem; color: #a8b0bb; font-weight: 500; line-height: 1.4; }
+
+  /* ---------------- footer + floats ---------------- */
+  .foot { border-top: 1px solid var(--line); padding: 2rem 0; }
+  .foot .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .foot span.note { font-size: 0.85rem; color: #a8b0bb; font-weight: 500; }
+  .wa {
+    position: fixed; inset-block-end: 1.5rem; inset-inline-start: 1.5rem; z-index: 70;
+    width: 3.6rem; height: 3.6rem; border-radius: 50%; background: #25d366;
+    display: grid; place-items: center; box-shadow: 0 12px 30px rgba(37, 211, 102, 0.4);
+    text-decoration: none; opacity: 0; transition: transform .2s ease;
+  }
+  .wa:hover { transform: scale(1.06); }
+  .wa svg { width: 1.9rem; height: 1.9rem; fill: #fff; }
+
+  /* ---- phone ---- */
+  /* ---- tablet and down: the sticky stage cannot survive one column ----
+     Each proof panel is moved in the DOM into the step it proves (see the
+     narrow branch in sequence()), so the claim and its evidence can never
+     drift apart. The stage column is then empty and hidden. */
+  @media (max-width: 1024px) {
+    .seqGrid { grid-template-columns: 1fr; }
+    .stageCol { display: none; }
+    .step, .step-long { min-height: auto; padding-block: 2.5rem; }
+    .seqPanel { position: relative; inset: auto; opacity: 1; margin-top: 1.7rem; }
+    .ctaGrid { grid-template-columns: 1fr; }
+    .guards { grid-template-columns: 1fr; }
+
+    /* fitScalers divides the column by the design width, so a NARROWER design
+       renders BIGGER. Each panel's internals are already sized in cqw against
+       the fixed 1920 canvas, so the type has to come up to match. */
+    .p-podium { width: 46cqw; height: auto; }
+    .pHead { padding: 2.2cqw 2.4cqw 1.8cqw; }
+    .pTitle { font-size: 2.4cqw; }
+    .pLive { font-size: 1.4cqw; padding: 0.6cqw 1.3cqw; }
+    .pLive i { width: 0.85cqw; height: 0.85cqw; }
+    .pdStage { gap: 2.4cqw; padding: 3.2cqw 3cqw 0; }
+    .pod { width: 17cqw; }
+    .podCrown { font-size: 4cqw; height: 4.6cqw; }
+    .podAv { width: 5.4cqw; height: 5.4cqw; font-size: 2.3cqw; }
+    .podName { font-size: 1.6cqw; }
+    .podNum { font-size: 2.9cqw; }
+    .podBar { font-size: 2.2cqw; padding-top: 1.1cqw; }
+    .pod1 .podBar { height: 17cqw; } .pod2 .podBar { height: 12.5cqw; } .pod3 .podBar { height: 9.5cqw; }
+    .pdNote { font-size: 1.4cqw; padding: 1.4cqw 0 2cqw; }
+    .ibCap { font-size: 0.95rem; margin-top: 0.8rem; }
+
+    .p-celeb { width: 46cqw; height: 32cqw; }
+    .clTitle { font-size: 4.2cqw; }
+    .clCard { width: 27cqw; padding: 2.4cqw; border-radius: 2cqw; }
+    .clAv { width: 5.6cqw; height: 5.6cqw; font-size: 2.4cqw; }
+    .clName { font-size: 2.2cqw; }
+    .clRole { font-size: 1.2cqw; }
+    .clAmount .lbl { font-size: 1.15cqw; }
+    .clAmount b { font-size: 3.8cqw; }
+    .clTag { font-size: 1.3cqw; padding: 0.8cqw 1.6cqw; }
+
+    /* Eight columns cannot survive a phone. Target, commission, bonus and
+       lateness go; what is left is the sentence the panel actually makes —
+       who, how many, and how far along. */
+    .p-rank { width: 46cqw; height: auto; }
+    .rkGrid { grid-template-columns: 16cqw 1fr 8cqw; gap: 1.2cqw; padding-inline: 2.4cqw; }
+    .rkGrid > :nth-child(3), .rkGrid > :nth-child(6),
+    .rkGrid > :nth-child(7), .rkGrid > :nth-child(8) { display: none; }
+    .rkHead span { font-size: 1.3cqw; }
+    .rkRow { padding-block: 1.7cqw; }
+    .rkAv { width: 4cqw; height: 4cqw; font-size: 1.7cqw; }
+    .rkName { font-size: 1.7cqw; }
+    .rkVal { font-size: 2cqw; }
+    .rkBar { height: 0.8cqw; }
+    .rkPct { font-size: 2.3cqw; }
+  }
+
+  @media (max-width: 700px) {
+    /* Three pills plus a wordmark plus a CTA is far too many things for a phone
+       nav. The wordmark already says which product you are on, so only the ways
+       OUT stay — the same reasoning that hides the WhatsApp float inside the
+       CTA rather than letting it overlap the submit button. */
+    .swap { display: none; }
+    .swapMini {
+      display: inline-flex; align-items: center; font-family: inherit;
+      font-size: 0.78rem; font-weight: 700; color: var(--muted); text-decoration: none;
+      padding: 0.35rem 0.1rem; white-space: nowrap;
+    }
+    h1 { font-size: clamp(1.75rem, 7.6vw, 2.4rem); }
+    .sub { max-width: 34ch; }
+    .acts { width: 100%; flex-direction: column; align-items: stretch; gap: 0.7rem; }
+    .acts .btn { width: 100%; }
+    .nav { padding-inline: 1rem; gap: 0.4rem; }
+    .wordmark span { font-size: 1.2rem; }
+    .nav.stuck .wordmark span { font-size: 1.06rem; }
+    .btn-dark { padding: 0.55rem 1rem; font-size: 0.85rem; }
+    .question { min-height: auto; padding: 5.5rem 1.5rem; }
+    .uTab { font-size: 0.9rem; padding: 0.5rem 1rem; }
+    .secHead h2 { font-size: 1.7rem; }
+    .secHead p { font-size: 0.95rem; }
+    .guard { padding: 1.3rem 1.2rem; }
+    .foot .wrap { justify-content: center; text-align: center; }
+    .wa { width: 3.1rem; height: 3.1rem; inset-block-end: 1.1rem; inset-inline-start: 1.1rem; }
+    .wa svg { width: 1.6rem; height: 1.6rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bloom, .grain { animation: none !important; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* Below ~340px (iPhone 5/SE-1) even the trimmed bar cannot hold four things.
+     The logo and the CTA are the two that must survive; the switcher is
+     reachable from the footer and from the other pages. */
+  @media (max-width: 340px) {
+    .swapMini { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="sky"><div class="bloom l1"></div><div class="bloom l2"></div></div>
+  <div class="grain" id="grain"></div>
+</div>
+
+<nav class="nav" id="nav">
+  <div class="brand">
+    <a class="wordmark" href="./podium.html"><i></i><span>Podium</span></a>
+  </div>
+  <div class="swap">
+    <a href="./">powercall</a>
+    <a href="./chatflow.html">ChatFlow</a>
+    <a href="./podium.html" class="on">Podium</a>
+  </div>
+  <a href="./" class="swapMini">powercall ↗</a>
+  <a href="./chatflow.html" class="swapMini">ChatFlow ↗</a>
+  <a href="#lead" class="btn btn-dark">לדבר איתנו</a>
+</nav>
+
+<!-- ============================ hero ============================ -->
+<header class="hero">
+  <h1 id="h1">מסך אחד על הקיר.<br><span class="grad">וכולם יודעים איפה הם עומדים.</span></h1>
+  <p class="sub" id="sub">הפודיום, הדירוג והעמלות מתעדכנים כל 15 שניות. הנציג רואה את עצמו — והמנהל כבר לא צריך לשאול.</p>
+  <div class="acts" id="acts">
+    <a href="#lead" class="btn b1">קבעו הדגמה</a>
+    <a href="#seq" class="btn b2">ראו את זה עובד ↓</a>
+  </div>
+</header>
+
+<!-- ============================ the question ============================ -->
+<section class="question">
+  <div>
+    <p class="qsmall rv">בסוף החודש גילית<br>שנציג לא עמד ביעד.</p>
+    <h2 class="qbig rv">וכמה ימים — <em>לא ידעת?</em></h2>
+    <div class="unassigned rv">
+      <span class="uTab">ימים בלי מספרים<span class="uCount" id="uCount">0</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ feature sequence ============================ -->
+<section class="seq" id="seq">
+  <div class="seqGrid">
+    <div class="steps">
+      <div class="step step-long">
+        <div class="stepKicker">הנציג</div>
+        <h2 class="stepTitle">הוא רואה<br>את עצמו על הקיר.</h2>
+        <p class="stepBody">נציג לא צריך לשאול את המנהל איפה הוא עומד. הפודיום מציג את שלושת המובילים של היום, מתעדכן כל 15 שניות, וכל אחד במוקד יודע בדיוק כמה חסר לו כדי לעלות מדרגה.</p>
+        <ul class="stepList">
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שלושה מובילים, מתעדכן חי</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>מצטייני החודש עם מדליות</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>100 משפטי מוטיבציה מתחלפים</li>
+        </ul>
+      </div>
+      <div class="step">
+        <div class="stepKicker">הרגע המשותף</div>
+        <h2 class="stepTitle">עסקה נסגרה —<br>וכל המוקד ראה.</h2>
+        <p class="stepBody">ברגע שנציג סוגר, המסך משתלט: השם שלו, המונה שרץ, וכל מי שבחדר מרים את הראש. זה מה שהופך לוח מספרים לתרבות של מוקד.</p>
+        <ul class="stepList">
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>עולה מעצמה, בלי שאף אחד לוחץ</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>לא חוגגת על תיקון בגיליון</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>חוזרת למסך תוך 7 שניות</li>
+        </ul>
+      </div>
+      <div class="step">
+        <div class="stepKicker">המנהל</div>
+        <h2 class="stepTitle">הוא כבר<br>לא צריך לשאול.</h2>
+        <p class="stepBody">יעד מול ביצוע, אחוז עמידה, ממוצע יומי, עמלות, בונוס ואיחורים — לכל נציג, בשורה אחת. בלי לאסוף דוחות ובלי לחכות לסוף החודש.</p>
+        <ul class="stepList">
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>יעד · ביצוע · אחוז · ממוצע יומי</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>עמלות ובונוס יומי לכל נציג</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>נוכחות ואיחורים באותה שורה</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stageCol">
+      <div class="stageInner" id="stageInner">
+
+        <!-- ---------------- panel 1: the podium ---------------- -->
+        <div class="seqPanel" data-i="0">
+          <div class="scaler"><div class="canvas">
+            <div class="panel p-podium">
+              <div class="pHead">
+                <div class="pTitle">🏆 גיוס לקוחות — מובילים יומי</div>
+                <span class="pLive"><i></i>LIVE</span>
+              </div>
+              <div class="pdStage">
+                <div class="pod pod2">
+                  <span class="podCrown"></span>
+                  <span class="pAv podAv" style="background:linear-gradient(145deg,#3fc78f,#1d6b48);">א</span>
+                  <span class="podName">איתי שלו</span>
+                  <span class="podNum" id="pd-n2">0</span>
+                  <span class="podBar" id="pd-b2">2</span>
+                </div>
+                <div class="pod pod1">
+                  <span class="podCrown" id="pd-crown">👑</span>
+                  <span class="pAv podAv" style="background:linear-gradient(145deg,#5b93ff,#1e3a5f);">נ</span>
+                  <span class="podName">נועה ברק</span>
+                  <span class="podNum" id="pd-n1">0</span>
+                  <span class="podBar" id="pd-b1">1</span>
+                </div>
+                <div class="pod pod3">
+                  <span class="podCrown"></span>
+                  <span class="pAv podAv" style="background:linear-gradient(145deg,#a48fe6,#5b4791);">מ</span>
+                  <span class="podName">מור לוין</span>
+                  <span class="podNum" id="pd-n3">0</span>
+                  <span class="podBar" id="pd-b3">3</span>
+                </div>
+              </div>
+              <div class="pdFloor"></div>
+              <div class="pdNote">מתעדכן מהגיליון כל 15 שניות</div>
+            </div>
+          </div></div>
+          <p class="ibCap" id="pd-cap"></p>
+        </div>
+
+        <!-- ---------------- panel 2: the celebration ---------------- -->
+        <div class="seqPanel" data-i="1">
+          <div class="scaler"><div class="canvas">
+            <div class="panel p-celeb">
+              <div class="clAura"><i class="clBlob clB1"></i><i class="clBlob clB2"></i></div>
+              <div class="clVig"></div>
+              <div class="clWrap">
+                <div class="clTitle" id="cl-title">עסקה נסגרה!</div>
+                <div class="clCard" id="cl-card">
+                  <span class="pAv clAv" style="background:linear-gradient(145deg,#ffb066,#e8531a);">י</span>
+                  <div class="clName">יובל אדרי</div>
+                  <div class="clRole">מוקד המכירות</div>
+                  <div class="clAmount">
+                    <span class="lbl">עסקאות החודש</span>
+                    <b id="cl-count">0</b>
+                  </div>
+                </div>
+                <div class="clTag" id="cl-tag">🔥 עסקה חדשה נסגרה ממש עכשיו</div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- ---------------- panel 3: the live ranking ---------------- -->
+        <div class="seqPanel" data-i="2">
+          <div class="scaler"><div class="canvas">
+            <div class="panel p-rank">
+              <div class="pHead">
+                <div class="pTitle">📊 דירוג נציגים — חי</div>
+                <span class="pLive"><i></i>LIVE</span>
+              </div>
+              <div class="rkGrid rkHead">
+                <span>שם הנציג</span><span>גויסו בפועל</span><span>יעד</span><span>אחוז</span>
+                <span>ממוצע יומי</span><span>עמלות</span><span>בונוס יומי</span><span>איחורים</span>
+              </div>
+              <div class="rkGrid rkRow">
+                <span class="rkWho"><i class="pAv rkAv" style="background:linear-gradient(145deg,#5b93ff,#1e3a5f);">נ</i><span class="rkName">נועה ברק</span></span>
+                <span class="rkCell"><b class="rkVal">41</b><span class="rkBar"><i class="barHot" style="width:82%"></i></span></span>
+                <span class="rkVal" style="text-align:center">50</span>
+                <span class="rkPct hot">82%</span>
+                <span class="rkAvg">2.4</span>
+                <span class="rkMoney">8,200<span class="cur">₪</span></span>
+                <span class="rkMoney bonus">340<span class="cur">₪</span></span>
+                <span class="rkLate">0</span>
+              </div>
+              <div class="rkGrid rkRow">
+                <span class="rkWho"><i class="pAv rkAv" style="background:linear-gradient(145deg,#3fc78f,#1d6b48);">א</i><span class="rkName">איתי שלו</span></span>
+                <span class="rkCell"><b class="rkVal">33</b><span class="rkBar"><i class="barHot" style="width:66%"></i></span></span>
+                <span class="rkVal" style="text-align:center">50</span>
+                <span class="rkPct hot">66%</span>
+                <span class="rkAvg">1.9</span>
+                <span class="rkMoney">6,600<span class="cur">₪</span></span>
+                <span class="rkMoney bonus">280<span class="cur">₪</span></span>
+                <span class="rkLate">0</span>
+              </div>
+              <div class="rkGrid rkRow" id="rk-row3">
+                <span class="rkWho"><i class="pAv rkAv" style="background:linear-gradient(145deg,#a48fe6,#5b4791);">מ</i><span class="rkName">מור לוין</span></span>
+                <span class="rkCell"><b class="rkVal" id="rk-val">24</b><span class="rkBar"><i class="barCool" id="rk-bar" style="width:48%"></i></span></span>
+                <span class="rkVal" style="text-align:center">50</span>
+                <span class="rkPct cool" id="rk-pct">48%</span>
+                <span class="rkAvg">1.4</span>
+                <span class="rkMoney">4,800<span class="cur">₪</span></span>
+                <span class="rkMoney bonus">160<span class="cur">₪</span></span>
+                <span class="rkLate has">2</span>
+              </div>
+              <div class="rkGrid rkRow">
+                <span class="rkWho"><i class="pAv rkAv" style="background:linear-gradient(145deg,#ffb066,#e8531a);">י</i><span class="rkName">יובל אדרי</span></span>
+                <span class="rkCell"><b class="rkVal">19</b><span class="rkBar"><i class="barCool" style="width:38%"></i></span></span>
+                <span class="rkVal" style="text-align:center">50</span>
+                <span class="rkPct cool">38%</span>
+                <span class="rkAvg">1.1</span>
+                <span class="rkMoney">3,800<span class="cur">₪</span></span>
+                <span class="rkMoney bonus">120<span class="cur">₪</span></span>
+                <span class="rkLate">1</span>
+              </div>
+              <div class="rkGrid rkRow">
+                <span class="rkWho"><i class="pAv rkAv" style="background:linear-gradient(145deg,#9fe8ef,#16b3c4);">ש</i><span class="rkName">שקד רוזן</span></span>
+                <span class="rkCell"><b class="rkVal">12</b><span class="rkBar"><i class="barCool" style="width:24%"></i></span></span>
+                <span class="rkVal" style="text-align:center">50</span>
+                <span class="rkPct cool">24%</span>
+                <span class="rkAvg">0.7</span>
+                <span class="rkMoney">2,400<span class="cur">₪</span></span>
+                <span class="rkMoney bonus">80<span class="cur">₪</span></span>
+                <span class="rkLate has">3</span>
+              </div>
+            </div>
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ it does not celebrate noise ============================ -->
+<section class="ai" id="ai">
+  <div class="wrap">
+    <div class="secHead">
+      <h2 class="rv">היא חוגגת על עסקאות. <span class="hl">לא על רעש.</span></h2>
+      <p class="rv">זו השאלה הראשונה שכל מנהל מוקד שואל: מה קורה כשמישהו מתקן מספר בגיליון — המסך יעשה מזה מסיבה? לא. שלוש הגנות עומדות בדרך, והן בקוד, לא בהבטחה.</p>
+    </div>
+
+    <div class="guards">
+      <div class="guard rv">
+        <span class="guardN">2</span>
+        <div class="guardT">עלייה חייבת לחזור פעמיים</div>
+        <p class="guardD">גוגל מחזיר לפעמים נתון ישן מהמטמון. עלייה נספרת רק אם היא הופיעה בשתי משיכות רצופות — 30 שניות של אישור לפני שמשהו קורה על המסך.</p>
+        <span class="guardK">CELEB_CONFIRM_POLLS: 2</span>
+      </div>
+      <div class="guard rv">
+        <span class="guardN">3</span>
+        <div class="guardT">קפיצה גדולה היא תיקון, לא סגירה</div>
+        <p class="guardD">נציג לא סוגר שבע עסקאות בבת אחת. עלייה של יותר משלוש בבת אחת מזוהה כתיקון ידני בגיליון, נרשמת בשקט, ולא מפעילה חגיגה.</p>
+        <span class="guardK">CELEB_MAX_JUMP: 3</span>
+      </div>
+      <div class="guard rv">
+        <span class="guardN">12</span>
+        <div class="guardT">ירידה מתקבלת רק אחרי שלוש דקות</div>
+        <p class="guardD">מספר שיורד הוא כמעט תמיד ריצוד רגעי. המערכת מחכה שתים-עשרה משיכות רצופות — שלוש דקות — לפני שהיא מאמינה לירידה ומעדכנת את הבסיס.</p>
+        <span class="guardK">CELEB_DOWN_POLLS: 12</span>
+      </div>
+    </div>
+
+    <p class="guardFoot rv">התוצאה פשוטה: כשהמסך מתפוצץ, כל מי שבחדר יודע שזה אמיתי. מסך שחוגג על טעויות מפסיקים להסתכל עליו אחרי יומיים.</p>
+  </div>
+</section>
+
+<!-- ============================ modules ============================ -->
+<section class="one" id="one">
+  <div class="secHead">
+    <h2>הכול <span class="hl">על מסך אחד</span></h2>
+    <p>בלי גיליון שמישהו צריך לפתוח, ובלי דוח שמגיע באיחור של חודש.</p>
+  </div>
+  <div class="oneStage" id="oneStage">
+    <svg class="wires" id="wires"></svg>
+    <div class="modGrid">
+      <div class="mod" data-glow="255,106,44"><div class="modIc" style="background:linear-gradient(135deg,#ffb066,#ff6a2c);"><svg viewBox="0 0 24 24"><path d="M5 16h4v5H5zm5-8h4v13h-4zm5 4h4v9h-4z"/></svg></div><div class="modBody"><div class="modT">פודיום יומי</div><div class="modD">שלושת המובילים · כתר · מתעדכן חי</div></div></div>
+      <div class="mod" data-glow="47,109,240"><div class="modIc" style="background:linear-gradient(135deg,#5b93ff,#2f6df0);"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v2H3V6a1 1 0 0 1 1-1zM3 10h18v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zm3 2v4h5v-4z"/></svg></div><div class="modBody"><div class="modT">דירוג חי</div><div class="modD">יעד · ביצוע · אחוז · ממוצע יומי</div></div></div>
+      <div class="mod" data-glow="212,164,55"><div class="modIc" style="background:linear-gradient(135deg,#f5d98b,#d4a437);"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 15.8 6.6 18.6l1.2-6L3.3 8.4l6.1-.8z"/></svg></div><div class="modBody"><div class="modT">חגיגת סגירה</div><div class="modD">המסך משתלט · 7 שניות · חוזר לבד</div></div></div>
+      <div class="mod" data-glow="31,169,113"><div class="modIc" style="background:linear-gradient(135deg,#3fc78f,#1fa971);"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10h-10z"/><path d="M13 2v9h9a9 9 0 0 0-9-9z" opacity=".55"/></svg></div><div class="modBody"><div class="modT">עמלות ובונוס</div><div class="modD">כמה כל נציג הרוויח — היום ובחודש</div></div></div>
+      <div class="mod" data-glow="123,95,201"><div class="modIc" style="background:linear-gradient(135deg,#a48fe6,#7b5fc9);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><div class="modBody"><div class="modT">נוכחות ואיחורים</div><div class="modD">באותה שורה, בלי דוח נפרד</div></div></div>
+      <div class="mod" data-glow="232,83,26"><div class="modIc" style="background:linear-gradient(135deg,#ff8a4c,#e8531a);"><svg viewBox="0 0 24 24"><path d="M4 4h16v3H4zm0 5h16v3H4zm0 5h10v3H4z"/></svg></div><div class="modBody"><div class="modT">100 משפטי מוטיבציה</div><div class="modD">מתחלפים כל 15 שניות</div></div></div>
+    </div>
+
+    <div class="oneCore" id="oneCore">
+      <div class="coreCard" id="coreCard">
+        <span class="coreMark"><i></i><span>Podium</span></span>
+        <div class="coreT">מסך אחד. כל המוקד.</div>
+        <div class="coreS">שישה דברים שכל מנהל רודף אחריהם — על קיר אחד, בזמן אמת.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ cta ============================ -->
+<section class="cta" id="lead">
+  <div class="wrap">
+    <div class="ctaGrid">
+      <div>
+        <h2 class="ctaTitle rv">בואו נראה את זה<br>על העסק שלכם.</h2>
+        <p class="ctaBody rv">שיחה קצרה, בלי התחייבות. נתלה לכם מסך הדגמה עם נתונים לדוגמה, ותראו איך המוקד נראה כשכולם רואים את אותו לוח.</p>
+        <div class="ctaMeta rv"><span class="coreMark"><i></i><span>Podium</span></span><span class="note">מבית יש לי זכות</span></div>
+      </div>
+      <div class="phoneWrap rv">
+        <div class="phone">
+          <div class="phoneBody">
+            <span class="phoneBtn"></span>
+            <div class="island" id="island">
+              <div class="islandInner" id="islandInner">
+                <span class="isSpin" id="isSpin"></span>
+                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32">
+                  <circle class="isRing" id="isRing" cx="16" cy="16" r="14"/>
+                  <path class="isTick" id="isTick" d="M9.5 16.5 L14 21 L22.5 11.5"/>
+                </svg>
+                <span class="isText" id="isText">שולח…</span>
+              </div>
+            </div>
+            <div class="screen">
+              <div class="statusbar">
+                <span class="sbTime" id="sbTime">9:41</span>
+                <span class="sbIcons">
+                  <svg viewBox="0 0 20 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
+                  <svg viewBox="0 0 16 12"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
+                  <svg viewBox="0 0 26 12"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
+                </span>
+              </div>
+              <form class="form" id="leadForm">
+                <h3>דברו איתנו</h3>
+                <p class="fh">נחזור אליכם היום.</p>
+                <div class="field"><label for="f-name">שם מלא</label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="ישראל ישראלי" required /></div>
+                <div class="field"><label for="f-phone">טלפון</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="050-0000000" required /></div>
+                <div class="field"><label for="f-size">גודל הצוות</label>
+                  <select id="f-size" name="size"><option>1–5 נציגים</option><option>6–15 נציגים</option><option>16–30 נציגים</option><option>30+ נציגים</option></select>
+                </div>
+                <button class="btn" type="submit">קבעו לי הדגמה</button>
+                <p class="formNote">הפרטים נשארים אצלנו. בלי ספאם.</p>
+              </form>
+              <div class="thanks" id="thanks">
+                <div class="thanksIc">
+                  <svg viewBox="0 0 80 80">
+                    <circle class="tRing" cx="40" cy="40" r="38"/>
+                    <circle class="tDisc" id="tDisc" cx="40" cy="40" r="27"/>
+                    <path class="tTick" id="tTick" d="M29 40.5 L36.5 48 L51.5 32"/>
+                  </svg>
+                </div>
+                <div class="thanksT">תודה על הפנייה</div>
+                <div class="thanksS">נציגינו יפנו אליכם בהקדם האפשרי.</div>
+                <button class="thanksAgain" id="thanksAgain" type="button">שליחת פנייה נוספת</button>
+                <div class="thanksNote">תצוגה בלבד — הטופס עדיין לא מחובר ליעד.</div>
+              </div>
+
+              <div class="homebar"><span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <span class="coreMark"><i></i><span>Podium</span></span>
+    <span class="note">© Podium · מבית יש לי זכות</span>
+  </div>
+</footer>
+
+<a class="wa" id="wa" href="#" aria-label="וואטסאפ">
+  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
+</a>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------------- entrance ----------------
+   No intro to wait through: the page is simply here, and the hero settles in.
+   Timings match site.html so the two pages feel like one product family. */
+gsap.to(".sky .bloom", { xPercent: -7, yPercent: 6, scale: 1.1, duration: 19, ease: "sine.inOut", repeat: -1, yoyo: true, stagger: 1.6 });
+gsap.to("#grain", { x: "8%", y: "5%", duration: 7, ease: "sine.inOut", repeat: -1, yoyo: true });
+
+gsap.timeline()
+  .to("#nav", { opacity: 1, duration: 0.6 }, 0.05)
+  .fromTo("#h1", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.1)
+  .fromTo("#sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.28)
+  .fromTo("#acts", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.42)
+  .to("#wa", { opacity: 1, duration: 0.5 }, 0.7);
+
+ScrollTrigger.create({
+  start: 60,
+  onEnter: function () { document.getElementById("nav").classList.add("stuck"); },
+  onLeaveBack: function () { document.getElementById("nav").classList.remove("stuck"); }
+});
+
+gsap.utils.toArray(".rv").forEach(function (el) {
+  gsap.to(el, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%" } });
+});
+
+/* the unassigned counter: it ticks up once, when the section arrives, and
+   stops. A number that keeps climbing forever reads as decoration; one that
+   climbs and then sits there reads as a fact. */
+(function unassignedCount() {
+  var el = document.getElementById("uCount");
+  if (!el) return;
+  var c = { v: 0 };
+  ScrollTrigger.create({
+    trigger: ".unassigned", start: "top 80%", once: true,
+    onEnter: function () {
+      gsap.to(c, {
+        v: 23, duration: 2.0, ease: "power2.out",
+        onUpdate: function () { el.textContent = Math.round(c.v); }
+      });
+    }
+  });
+})();
+
+/* ===================== the scaler =====================
+   Every panel is designed against a 1920px canvas in cqw. fitScalers shrinks
+   that canvas to fit its column: k = columnWidth / panelWidth. Same code at
+   every screen width. */
+var SHADOW_ROOM = 0.99;
+/* The stage column is a full viewport tall, so a wide panel on a short window
+   would scale to its column width and then run off the top and bottom. The
+   width fit alone cannot see that. Only applies to the sticky layout — below
+   1024px the panels sit in normal flow and are free to be as tall as they are. */
+/* Two values, because only one panel pays for a narrator line.
+   0.78 reserves the strip under panel 1 where its captions live. The others
+   have nothing below them, and holding all three to 0.78 was leaving a third
+   of the stage column empty under the dashboard for no reason at all. */
+var HEIGHT_ROOM = 0.90;          // panels with nothing beneath them
+var HEIGHT_ROOM_CAPTIONED = 0.78; // panel 1, which has to leave room to speak
+function fitScalers() {
+  var sticky = !window.matchMedia("(max-width: 1024px)").matches;
+  var tallest = 0;
+  document.querySelectorAll(".scaler").forEach(function (s) {
+    var canvas = s.querySelector(".canvas");
+    var panel = canvas.querySelector(".panel");
+    /* Derived from the DOM rather than from a panel index, so adding a caption
+       to another panel later cannot silently under-reserve its column. */
+    var seqPanel = s.closest(".seqPanel");
+    var room = (seqPanel && seqPanel.querySelector(".ibCap"))
+      ? HEIGHT_ROOM_CAPTIONED : HEIGHT_ROOM;
+    var maxH = window.innerHeight * room;
+    // offsetWidth/offsetHeight are pre-transform, so they report the design size
+    var k = (s.clientWidth * SHADOW_ROOM) / panel.offsetWidth;
+    if (sticky) k = Math.min(k, maxH / panel.offsetHeight);   // whichever fit is tighter
+    canvas.style.transform = "scale(" + k + ")";
+    var h = panel.offsetHeight * k;
+    s.style.height = h + "px";
+    tallest = Math.max(tallest, h);
+  });
+  var stage = document.getElementById("stageInner");
+  if (stage) stage.style.height = tallest + "px";
+  ScrollTrigger.refresh();
+}
+
+/* the feature sequence: sticky stage, panel swaps with the scroll, internals
+   stay time-based so they feel alive rather than scrubbed */
+(function sequence() {
+  var panels = gsap.utils.toArray(".seqPanel");
+  var current = -1, built = {};
+
+  function innerTimeline(i) {
+    if (built[i]) return built[i];
+    /* Every panel plays once. Panel 0 used to loop, and a loop whose first
+       tween is a fromTo of opacity 0->1 snaps to transparent for a single
+       frame on every repeat — a blink, not a transition. */
+    var tl = gsap.timeline({ paused: true });
+
+    if (i === 0) {
+      /* ---- panel 1: the podium ----
+         The narrated shape, carried over from the ChatFlow rebuild for the
+         reason it was invented there: a bar growing is just a bar growing
+         until something says what it means. say() swaps the line out, in, and
+         only then plays the beat, so reading and watching never compete.
+
+         One locus at a time. The three bars are ONE beat — they are a single
+         staggered gesture in a single region, not three events. */
+      var cap = document.getElementById("pd-cap");
+      var crown = document.getElementById("pd-crown");
+      var nums = [
+        { el: document.getElementById("pd-n1"), to: 41 },
+        { el: document.getElementById("pd-n2"), to: 33 },
+        { el: document.getElementById("pd-n3"), to: 24 }
+      ];
+
+      var SAY = 0.30, HOLD = 0.85;
+      function say(text, at) {
+        tl.to(cap, { opacity: 0, y: -7, duration: 0.12, ease: "power2.in" }, at);
+        tl.add(function () { cap.innerHTML = text; }, at + 0.12);
+        tl.fromTo(cap, { opacity: 0, y: 9 },
+          { opacity: 1, y: 0, duration: 0.18, ease: "power3.out" }, at + 0.13);
+        return at + SAY;
+      }
+
+      tl.add(function () {
+        cap.textContent = "";
+        gsap.set(cap, { opacity: 0, y: 0 });
+        gsap.set([crown], { opacity: 0, y: -14 });
+        gsap.set(["#pd-b1", "#pd-b2", "#pd-b3"], { scaleY: 0 });
+        nums.forEach(function (n) { n.el.textContent = "0"; });
+      }, 0);
+
+      tl.fromTo(".p-podium", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+
+      var t = say("שלושת המובילים של היום, מהגיליון החי", 0.5);
+      /* the three bars rise together as one staggered gesture */
+      tl.to(["#pd-b2", "#pd-b1", "#pd-b3"],
+        { scaleY: 1, duration: 0.65, ease: "power3.out", stagger: 0.13 }, t);
+      nums.forEach(function (n, k) {
+        var c = { v: 0 };
+        tl.to(c, {
+          v: n.to, duration: 0.7, ease: "power2.out",
+          onUpdate: function () { n.el.textContent = Math.round(c.v); }
+        }, t + 0.15 + k * 0.13);
+      });
+
+      /* the crown lands last and alone — it is the whole point of a podium */
+      t = say("והכתר יושב על מי שמוביל <b>עכשיו</b>", t + 1.25);
+      tl.fromTo(crown, { opacity: 0, y: -14, scale: 0.5 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(3)" }, t);
+
+      t = say("כל נציג רואה בדיוק כמה חסר לו <b>למדרגה הבאה</b>", t + HOLD);
+    }
+
+    if (i === 1) {
+      /* ---- panel 2: the celebration ----
+         The dashboard's own order, and the order matters: the title arrives
+         before the card, because in the room the words land before anyone has
+         turned to look. The count runs last — it is the number the whole
+         floor is actually reading. */
+      tl.add(function () {
+        gsap.set("#cl-title", { opacity: 0, y: 18 });
+        gsap.set("#cl-card", { opacity: 0, y: 26, scale: 0.94 });
+        gsap.set("#cl-tag", { opacity: 0, y: 10 });
+        document.getElementById("cl-count").textContent = "0";
+      }, 0);
+
+      tl.fromTo(".p-celeb", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, 0);
+      tl.to("#cl-title", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.45);
+      tl.to("#cl-card", { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 1.15);
+
+      var cc = { v: 0 };
+      tl.to(cc, {
+        v: 18, duration: 0.9, ease: "power2.out",
+        onUpdate: function () {
+          document.getElementById("cl-count").textContent = Math.round(cc.v);
+        }
+      }, 1.95);
+      tl.to("#cl-tag", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.05);
+    }
+
+    if (i === 2) {
+      /* ---- panel 3: the live ranking ----
+         Rows arrive as one staggered gesture, then a single row moves: the
+         third one crosses 50% and its bar flips from blue to orange. That
+         threshold is the product's own — the dashboard calls it `hot` — and
+         watching one row cross it says more than five rows arriving does. */
+      tl.add(function () {
+        gsap.set(".p-rank .rkRow", { opacity: 0, x: 18 });
+        var bar = document.getElementById("rk-bar");
+        bar.className = "barCool"; bar.style.width = "48%";
+        document.getElementById("rk-val").textContent = "24";
+        var pct = document.getElementById("rk-pct");
+        pct.className = "rkPct cool"; pct.textContent = "48%";
+      }, 0);
+
+      tl.fromTo(".p-rank", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, 0);
+      tl.to(".p-rank .rkRow",
+        { opacity: 1, x: 0, duration: 0.42, ease: "power3.out", stagger: 0.1 }, 0.45);
+
+      /* one row crosses the threshold */
+      var rv = { v: 24, p: 48 };
+      tl.to(rv, {
+        v: 29, p: 58, duration: 0.9, ease: "power2.out",
+        onUpdate: function () {
+          document.getElementById("rk-val").textContent = Math.round(rv.v);
+          document.getElementById("rk-pct").textContent = Math.round(rv.p) + "%";
+          document.getElementById("rk-bar").style.width = rv.p + "%";
+        }
+      }, 1.6);
+      tl.add(function () {
+        document.getElementById("rk-bar").className = "barHot";
+        document.getElementById("rk-pct").className = "rkPct hot";
+      }, 1.95);
+      tl.fromTo("#rk-row3", { backgroundColor: "rgba(255,106,44,0.12)" },
+        { backgroundColor: "rgba(255,106,44,0)", duration: 1.1, ease: "power2.out" }, 1.95);
+    }
+
+
+    built[i] = tl;
+    return tl;
+  }
+  window.__innerTimeline = innerTimeline;
+
+  function activate(i) {
+    if (i === current) return;
+    current = i;
+    panels.forEach(function (p, k) {
+      gsap.to(p, { opacity: k === i ? 1 : 0, y: k === i ? 0 : (k < i ? -30 : 30), duration: 0.55, ease: "power2.out", overwrite: "auto" });
+    });
+    innerTimeline(i).restart();
+  }
+
+  /* ---- one column: the stage has nothing to stick to ----
+     Each panel is moved into the step it belongs to, so the proof sits under
+     its own claim. Done in the DOM rather than with grid `order` because that
+     makes the panel a child of its step — the two can then never drift apart. */
+  var narrow = window.matchMedia("(max-width: 1024px)").matches;
+  if (narrow) {
+    var steps = gsap.utils.toArray(".seq .step");
+    panels.forEach(function (p, i) {
+      if (steps[i]) steps[i].appendChild(p);
+      ScrollTrigger.create({
+        trigger: p, start: "top 78%",
+        onEnter: function () { innerTimeline(i).restart(); },
+        onEnterBack: function () { innerTimeline(i).restart(); }
+      });
+    });
+    return;
+  }
+
+  gsap.utils.toArray(".step").forEach(function (step, i) {
+    ScrollTrigger.create({
+      trigger: step, start: "top center", end: "bottom center",
+      onEnter: function () { activate(i); }, onEnterBack: function () { activate(i); }
+    });
+  });
+  gsap.set(panels[0], { opacity: 1, y: 0 });
+})();
+
+/* The guards section is prose and cards, not a machine — the .rv reveal loop
+   above already brings them in on scroll. Nothing else to drive here. */
+
+/* ---------------- six squares -> one system ----------------
+   Ported from site.html. Plays once, on its own clock, when the section
+   arrives — the reader should not have to grind a scrollbar to watch a story.
+   Hovering a settled card lifts it and lights its own wire. */
+(function unify() {
+  var stage = document.getElementById("oneStage");
+  var core = document.getElementById("oneCore");
+  var coreCard = document.getElementById("coreCard");
+  var wires = document.getElementById("wires");
+  if (!stage || !core) return;
+  var mods = gsap.utils.toArray("#oneStage .mod");
+  var grid = stage.querySelector(".modGrid");
+  var narrow = window.matchMedia("(max-width: 1024px)").matches;
+
+  var REST_SCALE = narrow ? 1 : 0.86;   // on a phone the cards rest at true grid size
+  var CORE_SCALE = narrow ? 1 : 0.84;
+
+  function mid(el) {
+    return { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 };
+  }
+
+  /* Where the six converge to, and where every wire starts. On desktop .oneCore
+     is an absolute overlay spanning the whole stage, so this returns the stage
+     centre. On mobile it is the middle of the core's own band. */
+  function coreCentre() { return mid(core); }
+
+  // Where card i rests once the system is drawn. Derived from the stage, not
+  // hard-coded — fixed pixel slots overflowed the bottom of a shorter screen.
+  function slotFor(i, c) {
+    if (narrow) return mid(mods[i]);
+    var x = Math.min(430, stage.offsetWidth * 0.40);
+    var y = Math.min(205, stage.offsetHeight * 0.34);
+    return { x: c.x + (i < 3 ? -x : x), y: c.y + [-y, 0, y][i % 3] };
+  }
+
+  /* The far end of card i's wire. On desktop that is simply where the card
+     rests. On mobile the six fan out of the core into the underside of the
+     grid, every run fully in the open. */
+  function wireEnd(i, c) {
+    if (!narrow) return slotFor(i, c);
+    var g = grid || mods[0].parentNode;
+    return {
+      x: g.offsetLeft + g.offsetWidth * (i + 0.5) / mods.length,
+      y: g.offsetTop + g.offsetHeight - 5
+    };
+  }
+
+  // Deltas are measured from layout (offsetLeft/offsetTop), never from
+  // getBoundingClientRect — the latter bakes in whatever transform GSAP has
+  // already applied, so targets would drift on every re-measure.
+  function measure() {
+    var c = coreCentre();
+    mods.forEach(function (m, i) {
+      var p = mid(m);
+      m._dx = c.x - p.x;          // converge: card centre -> core centre
+      m._dy = c.y - p.y;
+      var s = slotFor(i, c);
+      m._ex = s.x - p.x;          // rest delta — zero on mobile, it is already home
+      m._ey = s.y - p.y;
+      var w = wireEnd(i, c);
+      m._sx = w.x; m._sy = w.y;   // the far end of this card's wire
+    });
+    wires.setAttribute("viewBox", "0 0 " + stage.offsetWidth + " " + stage.offsetHeight);
+    wires.innerHTML = "";
+    mods.forEach(function (m) {
+      var ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      ln.setAttribute("x1", c.x); ln.setAttribute("y1", c.y);
+      ln.setAttribute("x2", m._sx); ln.setAttribute("y2", m._sy);
+      wires.appendChild(ln);
+    });
+    lines = wires.querySelectorAll("line");
+    flow();
+  }
+
+  var lines = [];
+
+  // Live wires: the dashes travel down each line from its card into the core,
+  // so the six read as feeding one system rather than being tethered to it.
+  var flowTweens = [];
+  function flow() {
+    flowTweens.forEach(function (t) { t.kill(); });
+    flowTweens = [];
+    gsap.set(lines, { strokeDashoffset: 0 });
+    // One independent tween per line — NOT gsap.to(lines, {stagger, repeat:-1}).
+    // That form wraps them in a single timeline whose duration is the animation
+    // PLUS the stagger span, so every line finishes and then waits for the last
+    // one before the set restarts. That barrier is what made the flow stutter.
+    lines.forEach(function (ln) {
+      var t = gsap.to(ln, {
+        strokeDashoffset: 16,       // exactly one dash period -> seamless wrap
+        duration: 0.42, ease: "none", repeat: -1
+      });
+      t.time(Math.random() * 0.42); // desync the phases without a shared timeline
+      flowTweens.push(t);
+    });
+  }
+  measure();
+
+  var merged = false;
+
+  var tl = gsap.timeline({
+    paused: true,
+    onComplete: function () { merged = true; }
+  });
+
+  // 1 — one square at a time, each lit in its own accent while it holds the floor
+  var REST = "0 10px 30px rgba(22, 33, 62,0.05)";
+  var STEP = narrow ? 0.4 : 0.82;
+  mods.forEach(function (m, i) {
+    var at = i * STEP;
+    var g = m.dataset.glow || "16,184,134";
+    tl.fromTo(m, { opacity: 0, scale: 0.72, y: 46 },
+      { opacity: 1, scale: 1.07, y: 0, duration: 0.5, ease: "back.out(2)" }, at);
+
+    if (narrow) {
+      /* Tweening box-shadow means re-painting a 52px blurred glow on every
+         frame, six cards over. Instead the glow is painted ONCE onto a layer of
+         its own and merely faded — opacity is a compositor property, so the
+         paint never happens twice. */
+      var glow = document.createElement("i");
+      glow.className = "modGlow";
+      glow.style.boxShadow = "0 18px 46px rgba(22, 33, 62,0.10), 0 0 52px rgba(" + g + ",0.55)";
+      m.appendChild(glow);
+      tl.fromTo(glow, { opacity: 0 }, { opacity: 1, duration: 0.3 }, at + 0.05);
+      tl.to(glow, { opacity: 0, duration: 0.45 }, at + 0.52);
+    } else {
+      tl.fromTo(m, { boxShadow: REST },
+        { boxShadow: "0 18px 46px rgba(22, 33, 62,0.10), 0 0 52px rgba(" + g + ",0.55)", duration: 0.4 }, at + 0.05);
+      tl.to(m, { boxShadow: REST, duration: 0.55 }, at + 0.62);   // hand the floor to the next one
+    }
+    tl.to(m, { scale: 1, duration: 0.34, ease: "power2.out" }, at + 0.56);
+  });
+
+  // 2 — all six pull into the centre and become one thing
+  var CONV = mods.length * STEP + 0.55;
+  tl.to(mods, {
+    x: function (i, t) { return t._dx; },
+    y: function (i, t) { return t._dy; },
+    scale: 0.3, opacity: 0,
+    duration: 1.2, ease: "power2.inOut", stagger: 0.05
+  }, CONV);
+  tl.fromTo(core, { opacity: 0, scale: 0.72 },
+    { opacity: 1, scale: 1, duration: 0.9, ease: "back.out(1.5)" }, CONV + 0.5);
+  // the ring lights only as the six land — its colours are their six accents
+  tl.add(function () { coreCard.classList.add("lit"); }, CONV + 0.5);
+
+  // 3 — the six settle back out around the core and stay there. No hover to
+  //     discover: the finished state of this section IS the system diagram.
+  tl.to(core, { scale: CORE_SCALE, duration: 0.6, ease: "power2.out" }, CONV + 1.35);
+  tl.to(mods, {
+    x: function (i, t) { return t._ex; },
+    y: function (i, t) { return t._ey; },
+    scale: REST_SCALE, opacity: 1,
+    duration: 0.75, ease: "back.out(1.4)", stagger: 0.05
+  }, CONV + 1.3);
+  tl.to(wires, { opacity: 1, duration: 0.5 }, CONV + 1.5);
+
+  /* Fires once, when the section arrives. On a phone the stage is nearly a
+     screenful, so "#one top 65%" would start the six appearing while most of
+     them were still below the fold — there, wait for the whole stage instead. */
+  ScrollTrigger.create({
+    trigger: narrow ? "#oneStage" : "#one",
+    start: narrow ? "bottom bottom" : "top 65%",
+    once: true, onEnter: function () { tl.play(); }
+  });
+
+  /* ---- hovering a card: lift it, and light its own wire ----
+     Driven from JS rather than :hover, because GSAP owns these transforms and a
+     CSS hover transform would be overwritten the moment anything tweens.
+     Not bound on touch, where a tap fires mouseenter and nothing ever fires the
+     matching mouseleave — the card would simply stay lifted for good. */
+  var WIRE_REST = "rgba(255, 106, 44, 0.5)";
+  if (!narrow) mods.forEach(function (m, i) {
+    var g = m.dataset.glow || "16,184,134";
+    m.addEventListener("mouseenter", function () {
+      if (!merged) return;
+      gsap.to(m, { scale: REST_SCALE + 0.09, duration: 0.28, ease: "power3.out", overwrite: "auto" });
+      gsap.to(m, { boxShadow: "0 24px 56px rgba(22, 33, 62,0.14), 0 0 46px rgba(" + g + ",0.6)", duration: 0.28 });
+      if (lines[i]) gsap.to(lines[i], { stroke: "rgba(" + g + ",0.95)", strokeWidth: 3, duration: 0.22 });
+    });
+    m.addEventListener("mouseleave", function () {
+      if (!merged) return;
+      gsap.to(m, { scale: REST_SCALE, duration: 0.28, ease: "power3.out", overwrite: "auto" });
+      gsap.to(m, { boxShadow: REST, duration: 0.28 });
+      if (lines[i]) gsap.to(lines[i], { stroke: WIRE_REST, strokeWidth: 1.75, duration: 0.22 });
+    });
+  });
+
+  window.addEventListener("resize", function () { measure(); });
+  window.__unify = tl;
+})();
+
+/* the phone's status bar shows the real time — a frozen 9:41 would read as a
+   sticker on a page that is otherwise live */
+(function statusClock() {
+  var el = document.getElementById("sbTime");
+  if (!el) return;
+  function paint() {
+    var d = new Date();
+    el.textContent = d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+  paint();
+  setInterval(paint, 20000);
+})();
+
+/* ---------------- Dynamic Island confirmation ----------------
+   The Apple Pay beat: the island swells, shows activity, snaps a green check in
+   the same spot, then collapses back. */
+(function islandConfirm() {
+  var form = document.getElementById("leadForm");
+  var island = document.getElementById("island");
+  var inner = document.getElementById("islandInner");
+  var spin = document.getElementById("isSpin");
+  var check = document.getElementById("isCheck");
+  var ring = document.getElementById("isRing");
+  var tick = document.getElementById("isTick");
+  var text = document.getElementById("isText");
+  var thanks = document.getElementById("thanks");
+  var tDisc = document.getElementById("tDisc");
+  var tTick = document.getElementById("tTick");
+  var busy = false;
+
+  var tickLen = tick.getTotalLength();
+  gsap.set(tick, { strokeDasharray: tickLen, strokeDashoffset: tickLen });
+  var tTickLen = tTick.getTotalLength();
+  gsap.set(tTick, { strokeDasharray: tTickLen, strokeDashoffset: tTickLen });
+
+  var spinTween = gsap.to(spin, { rotation: 360, duration: 0.7, ease: "none", repeat: -1, paused: true });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (busy) return;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    busy = true;
+
+    gsap.set(text, { textContent: "שולח…" });
+    gsap.set(spin, { display: "block", opacity: 1, rotation: 0 });
+    gsap.set(check, { display: "none" });
+    gsap.set(tick, { strokeDashoffset: tickLen });
+    spinTween.play(0);
+
+    var tl = gsap.timeline();
+    // 1 — swell. Only width/height move; the centring transform is untouched.
+    //     border-radius is deliberately NOT animated: back.out overshoots every
+    //     property it touches, so tweening 999->27 dipped to ~10px mid-flight
+    //     and flashed a rounded rectangle. Left at 999 the browser clamps it to
+    //     half the height, so it stays a perfect pill at every size.
+    tl.to(island, { width: 218, height: 54, duration: 0.5, ease: "back.out(1.5)" }, 0);
+    tl.to(inner, { opacity: 1, duration: 0.25 }, 0.14);
+
+    // 2 — the check lands in the same spot the activity was
+    tl.add(function () {
+      spinTween.pause();
+      gsap.set(spin, { display: "none" });
+      gsap.set(check, { display: "block" });
+      text.textContent = "הפרטים נשלחו";
+    }, 1.5);
+    tl.fromTo(ring, { scale: 0, transformOrigin: "50% 50%" },
+      { scale: 1, duration: 0.4, ease: "back.out(2.4)" }, 1.5);
+    tl.to(tick, { strokeDashoffset: 0, duration: 0.32, ease: "power2.out" }, 1.72);
+
+    // 3 — the screen hands over to the thank-you while the island still holds
+    tl.set(thanks, { visibility: "visible" }, 2.0);
+    tl.fromTo(thanks, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, 2.0);
+    tl.fromTo(tDisc, { scale: 0, transformOrigin: "50% 50%" },
+      { scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 2.25);
+    tl.fromTo(tTick, { strokeDashoffset: tTickLen },
+      { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 2.55);
+    tl.fromTo([".thanksT", ".thanksS", "#thanksAgain"], { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power3.out" }, 2.5);
+
+    // 4 — the island lets go and shrinks back to a pill
+    tl.to(inner, { opacity: 0, duration: 0.22 }, 3.9);
+    tl.to(island, { width: 104, height: 30, duration: 0.45, ease: "power3.inOut" }, 4.0);
+    tl.add(function () { busy = false; }, 4.45);
+  });
+
+  // lets the preview be replayed without a page reload
+  document.getElementById("thanksAgain").addEventListener("click", function () {
+    gsap.to(thanks, {
+      opacity: 0, duration: 0.3,
+      onComplete: function () {
+        gsap.set(thanks, { visibility: "hidden" });
+        gsap.set(tTick, { strokeDashoffset: tTickLen });
+        form.reset();
+      }
+    });
+  });
+})();
+
+window.addEventListener("resize", fitScalers);
+window.addEventListener("load", function () { fitScalers(); window.__ready = true; });
+fitScalers();
+</script>
+</body>
+</html>
