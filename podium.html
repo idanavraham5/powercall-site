@@ -78,7 +78,6 @@
   .grain {
     position: absolute; inset: -50%; opacity: 0.09; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-    will-change: transform;
   }
 
   section { position: relative; }
@@ -418,7 +417,7 @@
     background: rgba(255,255,255,0.80); backdrop-filter: blur(10px);
     border: 1px solid var(--line); border-radius: 18px; padding: 1.7rem;
     box-shadow: 0 10px 30px rgba(22, 33, 62, 0.05);
-    opacity: 0; will-change: transform, opacity;
+    opacity: 0;
     /* no :hover transform here — GSAP owns this element's transform */
   }
   .modIc { width: 2.9rem; height: 2.9rem; border-radius: 13px; display: grid; place-items: center; margin-bottom: 1.1rem; }
@@ -582,7 +581,8 @@
     .seqGrid { grid-template-columns: 1fr; }
     .stageCol { display: none; }
     .step, .step-long { min-height: auto; padding-block: 2.5rem; }
-    .seqPanel { position: relative; inset: auto; opacity: 1; margin-top: 1.7rem; }
+    .seqPanel { position: relative; inset: auto; opacity: 1; margin-top: 1.7rem;
+                 will-change: auto; }   /* static down here — drop the standing layer */
     .ctaGrid { grid-template-columns: 1fr; }
     .guards { grid-template-columns: 1fr; }
 
@@ -674,6 +674,27 @@
     .rkVal { font-size: 2cqw; }
     .rkBar { height: 0.8cqw; }
     .rkPct { font-size: 2.3cqw; }
+
+    /* ---- the backdrop: same blur, none of the per-frame cost ----
+       A live CSS filter is re-rastered as the page scrolls over it. Measured on
+       the powercall page: with filter: blur(90px) on the blooms, 49% of scroll
+       frames missed their deadline (four interleaved runs at 4x CPU throttle);
+       with the filter off, ~0%. Not faked, BAKED — the same Gaussian, computed
+       once by the SVG decoder and thereafter a bitmap the compositor pushes
+       around for free. Three details make it match rather than resemble:
+         - color-interpolation-filters='sRGB': SVG filters default to linearRGB,
+           CSS filter functions work in sRGB. Same maths, different space.
+         - saturate(1.2) is a second primitive AFTER the blur, matching the
+           order in the CSS shorthand.
+         - stdDeviation = (90px / 390px viewport = 23.077vw) expressed in the
+           box's own viewBox units: 23.077 / boxWidthInVw * 100.
+       The box is twice the blob's diameter, re-anchored by half the original
+       size on each axis so the centre does not move — a CSS blur paints outside
+       its element and a background-image cannot. The hues are each page's own. */
+    .sky .bloom { filter: none; border-radius: 0; background-color: transparent;
+                  background-repeat: no-repeat; background-size: 100% 100%; }
+    .l1 { width: 116vw; height: 116vw; top: -45vw; right: -39vw; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Cdefs%3E%3Cfilter%20id%3D'f'%20x%3D'-100%25'%20y%3D'-100%25'%20width%3D'300%25'%20height%3D'300%25'%20color-interpolation-filters%3D'sRGB'%3E%3CfeGaussianBlur%20stdDeviation%3D'19.894'%2F%3E%3CfeColorMatrix%20type%3D'saturate'%20values%3D'1.2'%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'25'%20fill%3D'rgba(47%2C109%2C240%2C0.13)'%20filter%3D'url(%23f)'%2F%3E%3C%2Fsvg%3E"); }
+    .l2 { width: 104vw; height: 104vw; bottom: -44vw; left: -36vw; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Cdefs%3E%3Cfilter%20id%3D'f'%20x%3D'-100%25'%20y%3D'-100%25'%20width%3D'300%25'%20height%3D'300%25'%20color-interpolation-filters%3D'sRGB'%3E%3CfeGaussianBlur%20stdDeviation%3D'22.189'%2F%3E%3CfeColorMatrix%20type%3D'saturate'%20values%3D'1.2'%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'25'%20fill%3D'rgba(255%2C138%2C107%2C0.11)'%20filter%3D'url(%23f)'%2F%3E%3C%2Fsvg%3E"); }
   }
 
   @media (max-width: 700px) {
@@ -691,6 +712,12 @@
     .sub { max-width: 34ch; }
     .acts { width: 100%; flex-direction: column; align-items: stretch; gap: 0.7rem; }
     .acts .btn { width: 100%; }
+    /* A fixed bar with a live backdrop blur re-computes across its full width on
+       every scroll frame, and it is the one element that is always on screen —
+       the most expensive blur on the page. The ground under it here is a pale
+       wash, so an opaque white is the same bar without the per-frame cost. */
+    .nav.stuck { backdrop-filter: none; -webkit-backdrop-filter: none;
+                 background: rgba(255, 255, 255, 0.94); }
     .nav { padding-inline: 1rem; gap: 0.4rem; }
     .wordmark span { font-size: 1.2rem; }
     .nav.stuck .wordmark span { font-size: 1.06rem; }
