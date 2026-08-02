@@ -57,7 +57,12 @@
   body {
     font-family: "Heebo", system-ui, sans-serif;
     color: var(--ink);
-    background: #05070d;
+    /* #05070d was the dark version's canvas. The page is light now, and on iOS
+       any unpainted tile (fast scroll over a heavy section) and the overscroll
+       bounce show THIS raw color — a sudden near-black screen over light
+       content. Match the sky-light ground instead, so a missed tile is
+       invisible. Nothing renders this except those two failure paths. */
+    background: #f2f5fa;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
   }
