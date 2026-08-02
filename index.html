@@ -1926,7 +1926,12 @@ function __revealSafety() {
   var vh = window.innerHeight;
   gsap.utils.toArray(".rv").forEach(function (el) {
     if (parseFloat(getComputedStyle(el).opacity) > 0.01) return;       // already shown
-    if (el.getBoundingClientRect().top < vh * 0.95) gsap.set(el, { opacity: 1, y: 0 });  // should be shown but stuck → force it
+    if (gsap.isTweening(el)) return;                                   // mid-entrance, leave it alone
+    /* 0.85, not 0.95, to match the reveal's own "top 85%" exactly. A wider
+       band force-shows elements that are not stuck, merely not due yet — and
+       because gsap.set writes the tween's END value their entrance would then
+       run 1 -> 1 and be lost for good rather than just played early. */
+    if (el.getBoundingClientRect().top < vh * 0.85) gsap.set(el, { opacity: 1, y: 0 });  // should be shown but stuck → force it
   });
 }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(__revealSafety);
