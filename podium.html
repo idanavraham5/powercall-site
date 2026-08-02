@@ -1170,7 +1170,7 @@ var SHADOW_ROOM = 0.99;
    of the stage column empty under the dashboard for no reason at all. */
 var HEIGHT_ROOM = 0.90;          // panels with nothing beneath them
 var HEIGHT_ROOM_CAPTIONED = 0.78; // panel 1, which has to leave room to speak
-function fitScalers() {
+function fitScalers(skipRefresh) {
   var sticky = !window.matchMedia("(max-width: 1024px)").matches;
   var tallest = 0;
   document.querySelectorAll(".scaler").forEach(function (s) {
@@ -1192,7 +1192,7 @@ function fitScalers() {
   });
   var stage = document.getElementById("stageInner");
   if (stage) stage.style.height = tallest + "px";
-  ScrollTrigger.refresh();
+  if (!skipRefresh) ScrollTrigger.refresh();
 }
 
 /* the feature sequence: sticky stage, panel swaps with the scroll, internals
@@ -1355,7 +1355,17 @@ function fitScalers() {
       ScrollTrigger.create({
         trigger: p, start: "top 78%",
         onEnter: function () { innerTimeline(i).restart(); },
-        onEnterBack: function () { innerTimeline(i).restart(); }
+        onEnterBack: function () {
+          /* Scrolling back UP must not replay the story. restart() is
+             synchronous work landing exactly on the direction flip — the
+             owner's "the screen sticks for a moment, then releases" — and
+             re-watching a proof already seen is noise anyway. Resume it if it
+             was interrupted; a finished panel keeps its settled end state.
+             totalProgress, not progress: panel 0 loops (repeat:-1), and its
+             totalProgress stays below 1 so the loop resumes. */
+          var t = innerTimeline(i);
+          if (t.totalProgress() < 1) t.play();
+        }
       });
     });
     return;
@@ -1724,11 +1734,27 @@ function __revealSafety() {
    (fitScalers only writes the scaler's height and the canvas transform —
    neither is part of a panel's own layout box, so this cannot feed itself.) */
 if (window.ResizeObserver) {
-  var __fitQueued = false;
+  var __fitQueued = false, __refreshTimer = null;
   var __ro = new ResizeObserver(function () {
     if (__fitQueued) return;
     __fitQueued = true;
-    requestAnimationFrame(function () { __fitQueued = false; fitScalers(); });
+    requestAnimationFrame(function () {
+      __fitQueued = false;
+      /* The inner story animations fire this observer constantly, and the old
+         handler ran the FULL fitScalers — whose tail is ScrollTrigger.refresh(),
+         a whole-page layout pass — in the middle of a scroll. Act only on a
+         real mismatch between a panel and the box reserved for it, fix the
+         boxes without the refresh, and run ONE refresh after the dust settles. */
+      var need = false;
+      document.querySelectorAll(".scaler").forEach(function (s) {
+        var panel = s.querySelector(".panel");
+        if (panel && Math.abs(s.getBoundingClientRect().height - panel.getBoundingClientRect().height) > 6) need = true;
+      });
+      if (!need) return;
+      fitScalers(true);
+      clearTimeout(__refreshTimer);
+      __refreshTimer = setTimeout(function () { ScrollTrigger.refresh(); }, 350);
+    });
   });
   document.querySelectorAll(".scaler .panel").forEach(function (el) { __ro.observe(el); });
 }

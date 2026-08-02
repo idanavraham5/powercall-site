@@ -1430,7 +1430,18 @@ gsap.utils.toArray(".rv").forEach(function (el) {
       ScrollTrigger.create({
         trigger: p, start: "top 78%",
         onEnter: function () { window.__seqActive = innerTimeline(i); window.__seqActive.restart(); },
-        onEnterBack: function () { window.__seqActive = innerTimeline(i); window.__seqActive.restart(); }
+        onEnterBack: function () {
+          /* Scrolling back UP must not replay the story. restart() is
+             synchronous work landing exactly on the direction flip — the
+             owner's "the screen sticks for a moment, then releases" — and
+             re-watching a proof already seen is noise anyway. Resume it if it
+             was interrupted; a finished panel keeps its settled end state.
+             totalProgress, not progress: panel 0 loops (repeat:-1), and its
+             totalProgress stays below 1 so the loop resumes. */
+          var t = innerTimeline(i);
+          window.__seqActive = t;
+          if (t.totalProgress() < 1) t.play();
+        }
       });
     });
     // the live clocks tick only while the board they sit on is actually on screen
