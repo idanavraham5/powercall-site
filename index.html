@@ -1675,6 +1675,13 @@ gsap.utils.toArray(".rv").forEach(function (el) {
   // Live wires: the dashes travel down each line from its card into the core,
   // so the six read as feeding one system rather than just being tethered to it.
   var flowTweens = [];
+  /* flow() is also called by measure() on resize, which kills these tweens and
+     rebuilds them RUNNING; and with no pause at all they animated an SVG
+     stroke-dashoffset — a repaint, not a compositor move — six times per frame
+     for the whole page once the section had ever been reached. Caught red-
+     handed by the scroll-up jank witness: 6 wire tweens active through the
+     entire journey. Same fix the sibling pages already carry. */
+  var flowActive = true;
   function flow() {
     flowTweens.forEach(function (t) { t.kill(); });
     flowTweens = [];
@@ -1691,6 +1698,7 @@ gsap.utils.toArray(".rv").forEach(function (el) {
         duration: 0.42, ease: "none", repeat: -1
       });
       t.time(Math.random() * 0.42); // desync the phases without a shared timeline
+      if (!flowActive) t.pause();   // rebuilt while off screen: stay paused
       flowTweens.push(t);
     });
   }
@@ -1799,6 +1807,21 @@ gsap.utils.toArray(".rv").forEach(function (el) {
   });
 
   window.addEventListener("resize", function () { measure(); });
+
+  /* Pause the off-screen work: the conic ring repaints its gradient border
+     every frame once .lit lands, and the six wire tweens repaint the SVG on
+     every tick. Lives INSIDE unify because flowTweens is scoped here — the
+     old tail-script toggle could only reach the ring, which is exactly why
+     the wires were left running. */
+  ScrollTrigger.create({
+    trigger: "#one",
+    onToggle: function (s) {
+      flowActive = s.isActive;
+      if (coreCard) coreCard.style.animationPlayState = s.isActive ? "running" : "paused";
+      flowTweens.forEach(function (t) { if (s.isActive) t.play(); else t.pause(); });
+    }
+  });
+
   window.__unify = tl;
 })();
 
@@ -1920,15 +1943,6 @@ if (window.matchMedia("(max-width: 700px)").matches) {
 window.addEventListener("resize", fitScalers);
 window.addEventListener("load", function () { fitScalers(); window.__ready = true; });
 fitScalers();
-
-/* Pause the conic ring + core glow while the "one system" stage is off-screen. */
-ScrollTrigger.create({
-  trigger: "#one",
-  onToggle: function (s) {
-    var cc = document.getElementById("coreCard");
-    if (cc) cc.style.animationPlayState = s.isActive ? "running" : "paused";
-  }
-});
 
 /* Reveal reliability: recompute trigger points once fonts/layout settle, and never
    leave a .rv stuck invisible if its trigger missed (iOS font-swap or bfcache back). */
