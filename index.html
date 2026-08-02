@@ -1700,11 +1700,13 @@ gsap.utils.toArray(".rv").forEach(function (el) {
 
   // 1 — one square at a time, each lit in its own accent while it holds the floor
   var REST = "0 10px 30px rgba(15,27,46,0.05)";
-  /* On a phone the six squares had to hold the floor for 4.9s before they even
-     started to merge, which is a long time to watch a grid fill in on a screen
-     you are thumbing past. Halved. The desktop pace is untouched — there the
-     stage is a whole viewport and the beat has room to breathe. */
-  var STEP = narrow ? 0.4 : 0.82;
+  /* The owner's verdict on the original beat (0.82 desktop / 0.4 phone) was
+     that the grid fills in too slowly — six squares held the floor for ~5s on
+     desktop before anything merged. The glow choreography is offset-based, so
+     at these paces it becomes a running cascade of light instead of one card
+     at a time, which reads just as well. CONV derives from STEP, so the whole
+     story shortens with it. */
+  var STEP = narrow ? 0.3 : 0.55;
   mods.forEach(function (m, i) {
     var at = i * STEP;
     var g = m.dataset.glow || "37,99,235";
@@ -1756,12 +1758,16 @@ gsap.utils.toArray(".rv").forEach(function (el) {
   }, CONV + 1.3);
   tl.to(wires, { opacity: 1, duration: 0.5 }, CONV + 1.5);
 
-  /* Fires once, when the section arrives. On a phone the stage is nearly a
-     screenful, so "#one top 65%" would start the six appearing while most of
-     them were still below the fold — there, wait for the whole stage instead. */
+  /* Fires once, as soon as the grid starts entering. The previous phone rule
+     ("#oneStage bottom bottom") waited until the WHOLE stage fit on screen, so
+     the reader thumbed through a screen-tall stretch of invisible cards before
+     anything moved — the grid read as a blank hole, and the story felt like it
+     started late. Now the squares appear under the thumb as the grid arrives;
+     they pop top-down, so whatever is on screen is always already alive, and
+     the merge is waiting lit for whoever scrolls slower than the story. */
   ScrollTrigger.create({
     trigger: narrow ? "#oneStage" : "#one",
-    start: narrow ? "bottom bottom" : "top 65%",
+    start: narrow ? "top 78%" : "top 65%",
     once: true, onEnter: function () { tl.play(); }
   });
 
