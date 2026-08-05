@@ -1,0 +1,230 @@
+/* ============================================================================
+   נגישות — accessibility widget, shared by all three pages.
+   Built to ת"י 5568 חלק 1 (WCAG 2.0 + Israeli deviations) at level AA.
+
+   Design rule: this file may only ADD a fixed button, a panel and a dialog.
+   Everything it changes about the PAGE is behind a user-opted class on <html>,
+   so a visitor who never opens the panel sees the site exactly as designed.
+   ========================================================================== */
+
+/* No :root default here on purpose. This file is linked AFTER each page's
+   inline <style>, so declaring --a11y-accent at :root would beat the page's own
+   value and paint every widget powercall-blue. The fallback lives in each
+   var() call instead, where the page always wins. */
+
+/* ---------- skip link: first thing in the tab order (WCAG 2.4.1) ---------- */
+.a11y-skip {
+  position: fixed; inset-block-start: -100px; inset-inline-start: 1rem; z-index: 200;
+  background: #fff; color: #111; font: 700 1rem/1 inherit; font-family: inherit;
+  padding: 0.9rem 1.4rem; border-radius: 0 0 12px 12px; text-decoration: none;
+  border: 2px solid var(--a11y-accent, #2563eb); box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+  transition: inset-block-start .18s ease;
+}
+.a11y-skip:focus { inset-block-start: 0; }
+
+/* ---------- the button ----------
+   Bottom-inline-END so it never sits under the WhatsApp float (which is at
+   inline-start). 48px+ target (WCAG 2.5.5 AAA / 2.5.8 AA), always on screen. */
+.a11y-btn {
+  position: fixed; inset-block-end: 1.5rem; inset-inline-end: 1.5rem; z-index: 120;
+  width: 3.4rem; height: 3.4rem; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--a11y-accent, #2563eb); color: #fff; display: grid; place-items: center;
+  box-shadow: 0 10px 30px rgba(15,27,46,0.28); font-family: inherit;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.a11y-btn:hover { transform: scale(1.06); }
+.a11y-btn svg { width: 2rem; height: 2rem; fill: currentColor; }
+
+/* ---------- the panel ---------- */
+.a11y-panel {
+  position: fixed; inset-block-end: 5.6rem; inset-inline-end: 1.5rem; z-index: 130;
+  width: min(21rem, calc(100vw - 3rem)); max-height: min(34rem, calc(100dvh - 8rem));
+  overflow-y: auto; overscroll-behavior: contain;
+  background: #fff; color: #111827; border-radius: 16px; border: 1px solid #d7dee8;
+  box-shadow: 0 30px 70px rgba(15,27,46,0.28); font-family: inherit;
+  display: none;
+}
+.a11y-panel[data-open="true"] { display: block; }
+.a11y-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.95rem 1.1rem; background: var(--a11y-accent, #2563eb); color: #fff;
+  border-radius: 15px 15px 0 0; position: sticky; top: 0; z-index: 2;
+}
+.a11y-head h2 { font-size: 1.05rem; font-weight: 800; margin: 0; color: #fff; }
+.a11y-x {
+  background: rgba(255,255,255,0.18); border: 0; color: #fff; cursor: pointer;
+  width: 2.1rem; height: 2.1rem; border-radius: 8px; font-size: 1.3rem; line-height: 1;
+  font-family: inherit; display: grid; place-items: center;
+}
+.a11y-x:hover { background: rgba(255,255,255,0.3); }
+.a11y-body { padding: 0.9rem 1.1rem 1.2rem; }
+.a11y-grp { margin-bottom: 1rem; }
+.a11y-grp > h3 {
+  font-size: 0.8rem; font-weight: 800; color: #4b5563; margin: 0 0 0.5rem;
+  letter-spacing: 0.02em;
+}
+.a11y-row { display: flex; align-items: center; gap: 0.5rem; }
+.a11y-step {
+  flex: 1; display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid #d7dee8; border-radius: 10px; padding: 0.25rem;
+}
+.a11y-step button {
+  width: 2.6rem; height: 2.6rem; border: 0; border-radius: 8px; cursor: pointer;
+  background: #eef2f7; color: #111827; font: 800 1.2rem/1 inherit; font-family: inherit;
+}
+.a11y-step button:hover { background: #e2e8f0; }
+.a11y-step output { font-weight: 800; font-size: 0.95rem; min-width: 3.4rem; text-align: center; }
+
+.a11y-opt {
+  width: 100%; display: flex; align-items: center; gap: 0.6rem; text-align: start;
+  background: #fff; border: 1px solid #d7dee8; border-radius: 10px;
+  padding: 0.7rem 0.8rem; margin-bottom: 0.4rem; cursor: pointer;
+  font: 600 0.95rem/1.3 inherit; font-family: inherit; color: #111827;
+}
+.a11y-opt:hover { background: #f5f8fc; }
+.a11y-opt .tick {
+  width: 1.35rem; height: 1.35rem; flex: none; border-radius: 6px;
+  border: 2px solid #b6c1d0; display: grid; place-items: center; font-size: 0.85rem;
+  color: #fff; background: #fff;
+}
+.a11y-opt[aria-pressed="true"] { border-color: var(--a11y-accent, #2563eb); background: #f2f7ff; }
+.a11y-opt[aria-pressed="true"] .tick { background: var(--a11y-accent, #2563eb); border-color: var(--a11y-accent, #2563eb); }
+.a11y-opt[aria-pressed="true"] .tick::before { content: "✓"; }
+
+.a11y-foot { display: grid; gap: 0.45rem; }
+.a11y-reset {
+  width: 100%; border: 1px solid #d7dee8; background: #fff; color: #111827; cursor: pointer;
+  border-radius: 10px; padding: 0.75rem; font: 800 0.95rem inherit; font-family: inherit;
+}
+.a11y-reset:hover { background: #f5f8fc; }
+.a11y-link {
+  display: block; text-align: center; padding: 0.7rem; border-radius: 10px;
+  background: var(--a11y-accent, #2563eb); color: #fff; text-decoration: none;
+  font: 800 0.95rem inherit; font-family: inherit; border: 0; cursor: pointer; width: 100%;
+}
+.a11y-note { font-size: 0.72rem; color: #4b5563; line-height: 1.5; margin-top: 0.5rem; }
+
+/* ---------- the accessibility statement dialog ---------- */
+.a11y-modal {
+  position: fixed; inset: 0; z-index: 140; display: none;
+  align-items: center; justify-content: center; padding: 1.2rem;
+  background: rgba(8,13,22,0.55);
+}
+.a11y-modal[data-open="true"] { display: flex; }
+.a11y-doc {
+  background: #fff; color: #111827; border-radius: 16px; width: min(46rem, 100%);
+  max-height: 86dvh; overflow-y: auto; padding: 0; font-family: inherit;
+  box-shadow: 0 40px 90px rgba(0,0,0,0.4);
+}
+.a11y-doc .a11y-head { border-radius: 15px 15px 0 0; }
+.a11y-doc .inner { padding: 1.2rem 1.5rem 1.8rem; }
+.a11y-doc h3 { font-size: 1.02rem; font-weight: 800; margin: 1.3rem 0 0.45rem; color: #111827; }
+.a11y-doc h3:first-child { margin-top: 0; }
+.a11y-doc p, .a11y-doc li { font-size: 0.95rem; line-height: 1.75; color: #263243; }
+.a11y-doc ul { margin: 0.4rem 0; padding-inline-start: 1.3rem; }
+.a11y-doc a { color: #1447c4; }
+
+/* ---------- focus visibility (WCAG 2.4.7) — strong and always on ---------- */
+.a11y-btn:focus-visible, .a11y-panel :focus-visible, .a11y-modal :focus-visible,
+.a11y-skip:focus-visible, a:focus-visible, button:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #0b5fff !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+/* ============================================================================
+   USER-OPTED PAGE ADJUSTMENTS — every rule below is gated on a class that only
+   appears once the visitor asks for it in the panel.
+   ========================================================================== */
+
+/* text size: html font-size scales every rem/em on the page */
+html.a11y-fs { font-size: calc(100% * var(--a11y-fs, 1)); }
+
+/* readable font */
+html.a11y-readable, html.a11y-readable body,
+html.a11y-readable h1, html.a11y-readable h2, html.a11y-readable h3,
+html.a11y-readable p, html.a11y-readable span, html.a11y-readable a,
+html.a11y-readable button, html.a11y-readable input, html.a11y-readable label {
+  font-family: Arial, "Segoe UI", Tahoma, sans-serif !important;
+}
+
+/* line height / letter spacing (WCAG 1.4.12 text spacing) */
+html.a11y-lh body :is(p, li, span, a, h1, h2, h3, h4, dd, dt) { line-height: 2 !important; }
+html.a11y-ls body :is(p, li, span, a, h1, h2, h3, h4) { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
+
+/* high contrast: dark ground, near-white text, accent kept for affordance */
+html.a11y-contrast body, html.a11y-contrast section, html.a11y-contrast header,
+html.a11y-contrast footer, html.a11y-contrast .wrap, html.a11y-contrast .panel,
+html.a11y-contrast .feed, html.a11y-contrast .mod, html.a11y-contrast .coreCard,
+html.a11y-contrast .tCard, html.a11y-contrast .artCard, html.a11y-contrast .faqItem {
+  background: #000 !important; color: #fff !important;
+}
+html.a11y-contrast :is(h1, h2, h3, h4, p, span, li, b, strong, em, small, label, output, div) {
+  color: #fff !important; text-shadow: none !important;
+}
+html.a11y-contrast a, html.a11y-contrast .hl, html.a11y-contrast .grad { color: #ffd400 !important; -webkit-text-fill-color: #ffd400 !important; }
+html.a11y-contrast :is(button, .btn, input, select, textarea) {
+  background: #000 !important; color: #fff !important; border: 2px solid #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+html.a11y-contrast .bg, html.a11y-contrast .sky, html.a11y-contrast .bloom,
+html.a11y-contrast .grain { display: none !important; }
+/* the widget itself must stay legible in this mode */
+html.a11y-contrast .a11y-panel, html.a11y-contrast .a11y-doc { background: #000 !important; border-color: #fff !important; }
+html.a11y-contrast .a11y-opt { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+
+/* grayscale — deliberately NOT on <body>.
+   A filter on an ancestor makes that ancestor the containing block for every
+   position:fixed descendant. Filtering <body> therefore tore the floating
+   buttons off the viewport: measured at scrollY 1500, the WhatsApp float and
+   THIS WIDGET'S OWN BUTTON jumped from y=822 to y=9251 and scrolled away — a
+   visitor could switch greyscale on and then have no way to switch it off.
+   So the filter goes on the painted regions only, never on an ancestor of a
+   fixed element, plus the fixed elements themselves (a filter on the fixed
+   element is harmless — it only affects its descendants). The widget stays in
+   colour on purpose, so the way out is always obvious. */
+html.a11y-gray :is(.bg, .nav, main, footer, .wa) { filter: grayscale(100%) !important; }
+
+/* highlight links (WCAG 1.4.1 — do not rely on colour alone) */
+html.a11y-links a {
+  text-decoration: underline !important; text-underline-offset: 3px !important;
+  outline: 1px dashed currentColor; outline-offset: 2px;
+}
+
+/* big cursor */
+html.a11y-cursor, html.a11y-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 4 L8 38 L16 30 L22 44 L28 41 L22 28 L34 28 Z' fill='%23000' stroke='%23fff' stroke-width='2.5'/%3E%3C/svg%3E") 4 4, auto !important;
+}
+
+/* stop animations (WCAG 2.2.2 pause/stop/hide, 2.3.3 animation from interactions) */
+html.a11y-nomotion *, html.a11y-nomotion *::before, html.a11y-nomotion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+/* content revealed by scroll animations must stay VISIBLE when motion is off */
+html.a11y-nomotion .rv, html.a11y-nomotion .seqPanel, html.a11y-nomotion .mod,
+html.a11y-nomotion .oneCore, html.a11y-nomotion .wires {
+  opacity: 1 !important; transform: none !important; visibility: visible !important;
+}
+
+/* reading guide */
+.a11y-guide {
+  position: fixed; inset-inline: 0; height: 0; z-index: 115; pointer-events: none;
+  border-top: 3px solid rgba(11,95,255,0.85);
+  box-shadow: 0 0 0 100vmax rgba(0,0,0,0.06);
+  display: none;
+}
+html.a11y-guide-on .a11y-guide { display: block; }
+
+/* the widget must never be greyed out or hidden by the page's own effects */
+.a11y-btn, .a11y-panel, .a11y-modal, .a11y-skip { filter: none !important; }
+
+@media (max-width: 700px) {
+  .a11y-btn { width: 3.1rem; height: 3.1rem; inset-block-end: 1.1rem; inset-inline-end: 1.1rem; }
+  .a11y-btn svg { width: 1.75rem; height: 1.75rem; }
+  .a11y-panel { inset-block-end: 5rem; inset-inline: 1rem; width: auto; max-height: calc(100dvh - 7.5rem); }
+  .a11y-doc .inner { padding: 1rem 1.1rem 1.5rem; }
+}

@@ -36,12 +36,18 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
+    --a11y-accent: #bb4c1f;   /* the accessibility widget takes the page accent */
     --ink:     #16213e;
     --ink-2:   #2b3a5c;
     --muted:   #5b6478;
     --line:    #e8ebf2;
     --cream:   #f6f9ff;
     --orange:  #ff6a2c;
+    /* The brand orange is only legible as a FILL. As text on the cream ground
+       it is 2.71:1, so it gets two darker siblings — used for type only, never
+       for fills, so the brand colour itself is untouched. */
+    --orange-tx:   #BB4C1F;  /* small text  -> 4.78:1 */
+    --orange-tx-l: #DE5A23;  /* large text  -> 3.56:1 */
     --orange-d:#e8531a;
     --blue:    #2f6df0;
     --green:   #1fa971;
@@ -153,7 +159,10 @@
   .acts { margin-top: clamp(2.8rem, 4.6vh, 4.2rem); display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; opacity: 0; }
   /* the one saturated thing above the fold — shadow tinted to match, because a
      neutral drop shadow under a saturated button reads as a sticker */
-  .b1 { font-size: 1.05rem; font-weight: 800; color: #fff; background: var(--orange); padding: 1rem 2.2rem; box-shadow: 0 14px 34px rgba(255, 106, 44, 0.32); }
+  /* White on the brand orange is 2.86:1. Rather than dull the orange, the label
+     takes the page ink: #16213E on #ff6a2c is 5.56:1 and the fill stays exactly
+     the brand colour. */
+  .b1 { font-size: 1.05rem; font-weight: 800; color: var(--ink); background: var(--orange); padding: 1rem 2.2rem; box-shadow: 0 14px 34px rgba(255, 106, 44, 0.32); }
   .b1:hover { background: #e8531a; transform: translateY(-2px); }
   .b2 { font-size: 1.05rem; color: var(--ink); background: rgba(255,255,255,0.75); border: 1px solid var(--line); padding: 1rem 2rem; backdrop-filter: blur(8px); }
   .b2:hover { transform: translateY(-2px); }
@@ -162,9 +171,10 @@
 
   /* ---------------- the question ---------------- */
   .question { min-height: 88vh; display: grid; place-items: center; text-align: center; padding: 8rem 1.5rem; }
-  .qsmall { font-size: clamp(1.25rem, 2.2vw, 2.2rem); font-weight: 700; color: #a8b0bb; line-height: 1.45; }
+  /* 2.08:1 on the cream ground; large text needs 3:1 (WCAG 1.4.3) */
+  .qsmall { font-size: clamp(1.25rem, 2.2vw, 2.2rem); font-weight: 700; color: #848B95; line-height: 1.45; }
   .qbig { margin-top: 1.2rem; font-size: clamp(1.9rem, 4.2vw, 4.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; }
-  .qbig em { font-style: normal; color: var(--orange); }
+  .qbig em { font-style: normal; color: var(--orange-tx-l); }
   /* the real tab, at page scale — same shape as the one in ConversationList:
      a tinted track holding a coloured active pill with its live count */
   .unassigned {
@@ -173,7 +183,7 @@
   }
   .uTab {
     display: inline-flex; align-items: center; gap: 0.6rem;
-    padding: 0.6rem 1.2rem; border-radius: 9px; background: var(--orange); color: #fff;
+    padding: 0.6rem 1.2rem; border-radius: 9px; background: var(--orange); color: var(--ink);
     font-size: 1rem; font-weight: 700; box-shadow: 0 4px 12px rgba(255, 106, 44, 0.24);
   }
   .uCount {
@@ -202,9 +212,10 @@
      auto }`, and being later in the file it must win. A descendant selector
      would out-specify it and leave this step 145vh tall on a phone. */
   .step-long { min-height: 150vh; }
-  .stepKicker { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; color: var(--orange); text-transform: uppercase; margin-bottom: 1rem; }
-  .step:nth-child(2) .stepKicker { color: var(--gold); }
-  .step:nth-child(3) .stepKicker { color: var(--blue); }
+  .stepKicker { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; color: var(--orange-tx); text-transform: uppercase; margin-bottom: 1rem; }
+  /* darkened to clear WCAG 1.4.3 (4.5:1 for body text, 3:1 for large) */
+  .step:nth-child(2) .stepKicker { color: #8B6C24; }
+  .step:nth-child(3) .stepKicker { color: #2D68E6; }
   /* stepped down from 2.8vw: the stage took width from this column, and at the
      old size the two-line titles ran past its edge */
   .stepTitle { font-size: clamp(1.55rem, 2.4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; }
@@ -378,7 +389,7 @@
   .secHead { text-align: center; max-width: 60ch; margin: 0 auto clamp(2.6rem, 5vh, 4rem); }
   .secHead h2 { font-family: "Suez One", "Heebo", serif; font-weight: 400;
                 font-size: clamp(1.8rem, 3.6vw, 3.3rem); letter-spacing: -0.02em; line-height: 1.2; }
-  .secHead h2 .hl { color: var(--orange); }
+  .secHead h2 .hl { color: var(--orange-tx-l); }
   .secHead p { margin-top: 1.1rem; font-size: clamp(1rem, 1.2vw, 1.25rem);
                color: var(--muted); font-weight: 500; line-height: 1.75; }
 
@@ -387,7 +398,7 @@
   .guard { background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
            padding: clamp(1.5rem, 2.4vw, 2.2rem); box-shadow: var(--shadow); }
   .guardN { display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem;
-            border-radius: 12px; background: rgba(255,106,44,0.10); color: var(--orange);
+            border-radius: 12px; background: rgba(255,106,44,0.10); color: #B74C1F;
             font-size: 1.15rem; font-weight: 900; direction: ltr; font-variant-numeric: tabular-nums; }
   .guardT { margin-top: 1rem; font-size: 1.12rem; font-weight: 800; }
   .guardD { margin-top: 0.55rem; font-size: 0.95rem; font-weight: 500;
@@ -556,14 +567,15 @@
     background: #FCFBF7; color: var(--ink); transition: border .16s ease, box-shadow .16s ease;
   }
   .field input:focus, .field select:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255, 106, 44, 0.12); background: #fff; }
-  .form .btn { width: 100%; margin-top: 1.15rem; background: var(--orange); color: #fff; padding: 0.9rem; font-size: 1rem; }
+  .form .btn { width: 100%; margin-top: 1.15rem; background: var(--orange); color: var(--ink); padding: 0.9rem; font-size: 1rem; }
   .form .btn:hover { background: #e8531a; transform: translateY(-1px); }
   .formNote { margin-top: 0.7rem; text-align: center; font-size: 0.72rem; color: #a8b0bb; font-weight: 500; line-height: 1.4; }
 
   /* ---------------- footer + floats ---------------- */
   .foot { border-top: 1px solid var(--line); padding: 2rem 0; }
   .foot .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .foot span.note { font-size: 0.85rem; color: #a8b0bb; font-weight: 500; }
+  /* darkened to clear WCAG 1.4.3 (4.5:1 for body text, 3:1 for large) */
+  .foot span.note { font-size: 0.85rem; color: #6B7077; font-weight: 500; }
   .wa {
     position: fixed; inset-block-end: 1.5rem; inset-inline-start: 1.5rem; z-index: 70;
     width: 3.6rem; height: 3.6rem; border-radius: 50%; background: #25d366;
@@ -756,6 +768,11 @@
     .swapMini { display: none; }
   }
 </style>
+<link rel="stylesheet" href="./a11y.css">
+<script>/* Restore the visitor's accessibility choices BEFORE first paint, so a
+   saved high-contrast or large-text setting does not flash the default theme
+   on every navigation. Mirrors a11y.js; that file is still the source of truth. */
+(function(){try{var s=JSON.parse(localStorage.getItem("pc-a11y-v1")||"{}"),h=document.documentElement,m={readable:"a11y-readable",lh:"a11y-lh",ls:"a11y-ls",contrast:"a11y-contrast",gray:"a11y-gray",links:"a11y-links",cursor:"a11y-cursor",nomotion:"a11y-nomotion",guide:"a11y-guide-on"};for(var k in m){if(s[k])h.classList.add(m[k]);}if(s.fs&&s.fs!==1){h.style.setProperty("--a11y-fs",s.fs);h.classList.add("a11y-fs");}}catch(e){}})();</script>
 </head>
 <body>
 
@@ -779,6 +796,7 @@
 </nav>
 
 <!-- ============================ hero ============================ -->
+<main id="main">
 <header class="hero">
   <h1 id="h1">מסך אחד על הקיר.<br><span class="grad">וכולם יודעים איפה הם עומדים.</span></h1>
   <p class="sub" id="sub">הפודיום, הדירוג והעמלות מתעדכנים כל 15 שניות. הנציג רואה את עצמו — והמנהל כבר לא צריך לשאול.</p>
@@ -808,9 +826,9 @@
         <h2 class="stepTitle">הוא רואה<br>את עצמו על הקיר.</h2>
         <p class="stepBody">נציג לא צריך לשאול את המנהל איפה הוא עומד. הפודיום מציג את שלושת המובילים של היום, מתעדכן כל 15 שניות, וכל אחד במוקד יודע בדיוק כמה חסר לו כדי לעלות מדרגה.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שלושה מובילים, מתעדכן חי</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>מצטייני החודש עם מדליות</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>100 משפטי מוטיבציה מתחלפים</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שלושה מובילים, מתעדכן חי</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>מצטייני החודש עם מדליות</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>100 משפטי מוטיבציה מתחלפים</li>
         </ul>
       </div>
       <div class="step">
@@ -818,9 +836,9 @@
         <h2 class="stepTitle">עסקה נסגרה —<br>וכל המוקד ראה.</h2>
         <p class="stepBody">ברגע שנציג סוגר, המסך משתלט: השם שלו, המונה שרץ, וכל מי שבחדר מרים את הראש. זה מה שהופך לוח מספרים לתרבות של מוקד.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>עולה מעצמה, בלי שאף אחד לוחץ</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>לא חוגגת על תיקון בגיליון</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>חוזרת למסך תוך 7 שניות</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>עולה מעצמה, בלי שאף אחד לוחץ</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>לא חוגגת על תיקון בגיליון</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>חוזרת למסך תוך 7 שניות</li>
         </ul>
       </div>
       <div class="step">
@@ -828,9 +846,9 @@
         <h2 class="stepTitle">הוא כבר<br>לא צריך לשאול.</h2>
         <p class="stepBody">יעד מול ביצוע, אחוז עמידה, ממוצע יומי, עמלות, בונוס ואיחורים — לכל נציג, בשורה אחת. בלי לאסוף דוחות ובלי לחכות לסוף החודש.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>יעד · ביצוע · אחוז · ממוצע יומי</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>עמלות ובונוס יומי לכל נציג</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>נוכחות ואיחורים באותה שורה</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>יעד · ביצוע · אחוז · ממוצע יומי</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>עמלות ובונוס יומי לכל נציג</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>נוכחות ואיחורים באותה שורה</li>
         </ul>
       </div>
     </div>
@@ -841,7 +859,7 @@
         <!-- ---------------- panel 1: the podium ---------------- -->
         <div class="seqPanel" data-i="0">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-podium">
+            <div class="panel p-podium" role="img" aria-label="איור: מסך הפודיום של Podium — שלושת הנציגים המובילים של היום עם כתר למוביל">
               <div class="pHead">
                 <div class="pTitle">🏆 גיוס לקוחות — מובילים יומי</div>
                 <span class="pLive"><i></i>LIVE</span>
@@ -879,7 +897,7 @@
         <!-- ---------------- panel 2: the celebration ---------------- -->
         <div class="seqPanel" data-i="1">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-celeb">
+            <div class="panel p-celeb" role="img" aria-label="איור: מסך חגיגת סגירת עסקה שמשתלט על כל התצוגה">
               <div class="clAura"><i class="clBlob clB1"></i><i class="clBlob clB2"></i></div>
               <div class="clVig"></div>
               <div class="clWrap">
@@ -902,7 +920,7 @@
         <!-- ---------------- panel 3: the live ranking ---------------- -->
         <div class="seqPanel" data-i="2">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-rank">
+            <div class="panel p-rank" role="img" aria-label="איור: טבלת הדירוג החי — נציגים, יעד, ביצוע, אחוז ועמלות">
               <div class="pHead">
                 <div class="pTitle">📊 דירוג נציגים — חי</div>
                 <span class="pLive"><i></i>LIVE</span>
@@ -1010,14 +1028,14 @@
     <p>בלי גיליון שמישהו צריך לפתוח, ובלי דוח שמגיע באיחור של חודש.</p>
   </div>
   <div class="oneStage" id="oneStage">
-    <svg class="wires" id="wires"></svg>
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
     <div class="modGrid">
-      <div class="mod" data-glow="255,106,44"><div class="modIc" style="background:linear-gradient(135deg,#ffb066,#ff6a2c);"><svg viewBox="0 0 24 24"><path d="M5 16h4v5H5zm5-8h4v13h-4zm5 4h4v9h-4z"/></svg></div><div class="modBody"><div class="modT">פודיום יומי</div><div class="modD">שלושת המובילים · כתר · מתעדכן חי</div></div></div>
-      <div class="mod" data-glow="47,109,240"><div class="modIc" style="background:linear-gradient(135deg,#5b93ff,#2f6df0);"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v2H3V6a1 1 0 0 1 1-1zM3 10h18v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zm3 2v4h5v-4z"/></svg></div><div class="modBody"><div class="modT">דירוג חי</div><div class="modD">יעד · ביצוע · אחוז · ממוצע יומי</div></div></div>
-      <div class="mod" data-glow="212,164,55"><div class="modIc" style="background:linear-gradient(135deg,#f5d98b,#d4a437);"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 15.8 6.6 18.6l1.2-6L3.3 8.4l6.1-.8z"/></svg></div><div class="modBody"><div class="modT">חגיגת סגירה</div><div class="modD">המסך משתלט · 7 שניות · חוזר לבד</div></div></div>
-      <div class="mod" data-glow="31,169,113"><div class="modIc" style="background:linear-gradient(135deg,#3fc78f,#1fa971);"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10h-10z"/><path d="M13 2v9h9a9 9 0 0 0-9-9z" opacity=".55"/></svg></div><div class="modBody"><div class="modT">עמלות ובונוס</div><div class="modD">כמה כל נציג הרוויח — היום ובחודש</div></div></div>
-      <div class="mod" data-glow="123,95,201"><div class="modIc" style="background:linear-gradient(135deg,#a48fe6,#7b5fc9);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><div class="modBody"><div class="modT">נוכחות ואיחורים</div><div class="modD">באותה שורה, בלי דוח נפרד</div></div></div>
-      <div class="mod" data-glow="232,83,26"><div class="modIc" style="background:linear-gradient(135deg,#ff8a4c,#e8531a);"><svg viewBox="0 0 24 24"><path d="M4 4h16v3H4zm0 5h16v3H4zm0 5h10v3H4z"/></svg></div><div class="modBody"><div class="modT">100 משפטי מוטיבציה</div><div class="modD">מתחלפים כל 15 שניות</div></div></div>
+      <div class="mod" data-glow="255,106,44"><div class="modIc" style="background:linear-gradient(135deg,#ffb066,#ff6a2c);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h4v5H5zm5-8h4v13h-4zm5 4h4v9h-4z"/></svg></div><div class="modBody"><div class="modT">פודיום יומי</div><div class="modD">שלושת המובילים · כתר · מתעדכן חי</div></div></div>
+      <div class="mod" data-glow="47,109,240"><div class="modIc" style="background:linear-gradient(135deg,#5b93ff,#2f6df0);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v2H3V6a1 1 0 0 1 1-1zM3 10h18v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zm3 2v4h5v-4z"/></svg></div><div class="modBody"><div class="modT">דירוג חי</div><div class="modD">יעד · ביצוע · אחוז · ממוצע יומי</div></div></div>
+      <div class="mod" data-glow="212,164,55"><div class="modIc" style="background:linear-gradient(135deg,#f5d98b,#d4a437);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 15.8 6.6 18.6l1.2-6L3.3 8.4l6.1-.8z"/></svg></div><div class="modBody"><div class="modT">חגיגת סגירה</div><div class="modD">המסך משתלט · 7 שניות · חוזר לבד</div></div></div>
+      <div class="mod" data-glow="31,169,113"><div class="modIc" style="background:linear-gradient(135deg,#3fc78f,#1fa971);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10h-10z"/><path d="M13 2v9h9a9 9 0 0 0-9-9z" opacity=".55"/></svg></div><div class="modBody"><div class="modT">עמלות ובונוס</div><div class="modD">כמה כל נציג הרוויח — היום ובחודש</div></div></div>
+      <div class="mod" data-glow="123,95,201"><div class="modIc" style="background:linear-gradient(135deg,#a48fe6,#7b5fc9);"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><div class="modBody"><div class="modT">נוכחות ואיחורים</div><div class="modD">באותה שורה, בלי דוח נפרד</div></div></div>
+      <div class="mod" data-glow="232,83,26"><div class="modIc" style="background:linear-gradient(135deg,#ff8a4c,#e8531a);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v3H4zm0 5h16v3H4zm0 5h10v3H4z"/></svg></div><div class="modBody"><div class="modT">100 משפטי מוטיבציה</div><div class="modD">מתחלפים כל 15 שניות</div></div></div>
     </div>
 
     <div class="oneCore" id="oneCore">
@@ -1046,7 +1064,7 @@
             <div class="island" id="island">
               <div class="islandInner" id="islandInner">
                 <span class="isSpin" id="isSpin"></span>
-                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32">
+                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32" aria-hidden="true">
                   <circle class="isRing" id="isRing" cx="16" cy="16" r="14"/>
                   <path class="isTick" id="isTick" d="M9.5 16.5 L14 21 L22.5 11.5"/>
                 </svg>
@@ -1057,9 +1075,9 @@
               <div class="statusbar">
                 <span class="sbTime" id="sbTime">9:41</span>
                 <span class="sbIcons">
-                  <svg viewBox="0 0 20 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
-                  <svg viewBox="0 0 16 12"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
-                  <svg viewBox="0 0 26 12"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
+                  <svg viewBox="0 0 20 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
+                  <svg viewBox="0 0 16 12" aria-hidden="true"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
+                  <svg viewBox="0 0 26 12" aria-hidden="true"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
                 </span>
               </div>
               <form class="form" id="leadForm">
@@ -1075,7 +1093,7 @@
               </form>
               <div class="thanks" id="thanks">
                 <div class="thanksIc">
-                  <svg viewBox="0 0 80 80">
+                  <svg viewBox="0 0 80 80" aria-hidden="true">
                     <circle class="tRing" cx="40" cy="40" r="38"/>
                     <circle class="tDisc" id="tDisc" cx="40" cy="40" r="27"/>
                     <path class="tTick" id="tTick" d="M29 40.5 L36.5 48 L51.5 32"/>
@@ -1096,6 +1114,8 @@
   </div>
 </section>
 
+</main>
+
 <footer class="foot">
   <div class="wrap">
     <span class="coreMark"><i></i><span>Podium</span></span>
@@ -1103,9 +1123,11 @@
   </div>
 </footer>
 
+<aside aria-label="קיצורי דרך" class="floatBar">
 <a class="wa" id="wa" href="#" aria-label="וואטסאפ">
-  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
 </a>
+</aside>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -1762,5 +1784,6 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(__revealSa
 window.addEventListener("load", function () { setTimeout(__revealSafety, 60); });
 window.addEventListener("pageshow", function (e) { if (e.persisted) __revealSafety(); });
 </script>
+<script defer src="./a11y.js"></script>
 </body>
 </html>

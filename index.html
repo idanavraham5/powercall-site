@@ -40,6 +40,7 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
+    --a11y-accent: #2563eb;   /* the accessibility widget takes the page accent */
     --ink:     #080d16;
     --ink-2:   #33415c;
     --muted:   #55647a;
@@ -170,7 +171,9 @@
 
   /* ---------------- the question ---------------- */
   .question { min-height: 88vh; display: grid; place-items: center; text-align: center; padding: 8rem 1.5rem; }
-  .qsmall { font-size: clamp(1.3rem, 2.3vw, 2.3rem); font-weight: 700; color: #94a2b4; line-height: 1.45; }
+  /* #94a2b4 gave 2.38:1 on the pale ground — below the 3:1 that large text
+     needs (WCAG 1.4.3). #7d8899 is the same grey, dark enough to pass at 3.28. */
+  .qsmall { font-size: clamp(1.3rem, 2.3vw, 2.3rem); font-weight: 700; color: #7d8899; line-height: 1.45; }
   .qbig { margin-top: 1.2rem; font-size: clamp(2rem, 4.4vw, 4.6rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.12; }
   .qbig em { font-style: normal; color: var(--blue); }
 
@@ -358,7 +361,7 @@
   .ctaBody { margin-top: 1.2rem; color: var(--muted); font-size: 1.1rem; line-height: 1.75; font-weight: 500; max-width: 42ch; }
   .ctaMeta { margin-top: 2rem; display: flex; align-items: center; gap: 1rem; }
   .ctaMeta img { height: 26px; }
-  .ctaMeta span { font-size: 0.9rem; color: #8b98a9; font-weight: 600; padding-inline-start: 1rem; border-inline-start: 1px solid var(--line); }
+  .ctaMeta span { font-size: 0.9rem; color: #656E7B; font-weight: 600; padding-inline-start: 1rem; border-inline-start: 1px solid var(--line); }
   /* ---- the form lives in a phone ----
      A call-centre product asking for your number in a plastic card is a missed
      beat. Built in CSS rather than shipped as an image so the form inside stays
@@ -461,7 +464,8 @@
   .foot { border-top: 1px solid var(--line); padding: 2rem 0; }
   .foot .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .foot img { height: 22px; opacity: 0.75; }
-  .foot span { font-size: 0.85rem; color: #a4b0c0; font-weight: 500; }
+  /* darkened to clear WCAG 1.4.3 (4.5:1 for body text, 3:1 for large) */
+  .foot span { font-size: 0.85rem; color: #676E78; font-weight: 500; }
   .wa {
     position: fixed; inset-block-end: 1.5rem; inset-inline-start: 1.5rem; z-index: 70;
     width: 3.6rem; height: 3.6rem; border-radius: 50%; background: #25d366;
@@ -846,6 +850,11 @@
     .swapMini { display: none; }
   }
 </style>
+<link rel="stylesheet" href="./a11y.css">
+<script>/* Restore the visitor's accessibility choices BEFORE first paint, so a
+   saved high-contrast or large-text setting does not flash the default theme
+   on every navigation. Mirrors a11y.js; that file is still the source of truth. */
+(function(){try{var s=JSON.parse(localStorage.getItem("pc-a11y-v1")||"{}"),h=document.documentElement,m={readable:"a11y-readable",lh:"a11y-lh",ls:"a11y-ls",contrast:"a11y-contrast",gray:"a11y-gray",links:"a11y-links",cursor:"a11y-cursor",nomotion:"a11y-nomotion",guide:"a11y-guide-on"};for(var k in m){if(s[k])h.classList.add(m[k]);}if(s.fs&&s.fs!==1){h.style.setProperty("--a11y-fs",s.fs);h.classList.add("a11y-fs");}}catch(e){}})();</script>
 </head>
 <body>
 
@@ -869,6 +878,7 @@
 </nav>
 
 <!-- ============================ hero ============================ -->
+<main id="main">
 <header class="hero">
   <h1 id="h1">כל ליד הוא כסף.<br><span class="grad">תפסיקו לאבד אותם.</span></h1>
   <p class="sub" id="sub">powercall מחייגת, מקשיבה, מנתחת ומלמדת — כדי שאף שיחה במוקד שלכם לא תלך לפח.</p>
@@ -895,9 +905,9 @@
         <h2 class="stepTitle">הנציג לוחץ פעם אחת.<br>המערכת עושה את השאר.</h2>
         <p class="stepBody">שלושה לידים במקביל, ברצף, בלי הפסקה. הראשון שעונה מתחבר לנציג אוטומטית — השאר נסגרים. בלי חיוג ידני, בלי צלצולים באוויר, בלי זמן מת.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תור עדיפויות חכם לכל קמפיין</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תוכנית retry אוטומטית ללא מענה</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>ניהול קווים ומספרים יוצאים</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תור עדיפויות חכם לכל קמפיין</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תוכנית retry אוטומטית ללא מענה</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>ניהול קווים ומספרים יוצאים</li>
         </ul>
       </div>
       <div class="step">
@@ -905,9 +915,9 @@
         <h2 class="stepTitle">AI ששומע כל שיחה.<br>ומלמד איך לסגור.</h2>
         <p class="stepBody">כל שיחה מתומללת ומנותחת אוטומטית — שליטה בשיחה, יצירת ערך, טיפול בהתנגדויות, סנטימנט. כל נציג מקבל ציון וקואצ'ינג אישי על מה שקרה בפועל, לא על תחושות.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תמלול מלא בעברית — Deepgram</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>ניתוח וציון איכות — Gemini</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>"מה סוגר-על היה אומר" על כל התנגדות</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תמלול מלא בעברית — Deepgram</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>ניתוח וציון איכות — Gemini</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>"מה סוגר-על היה אומר" על כל התנגדות</li>
         </ul>
       </div>
       <div class="step">
@@ -915,9 +925,9 @@
         <h2 class="stepTitle">כל המוקד.<br>על מסך אחד. עכשיו.</h2>
         <p class="stepBody">מי בשיחה, מי מחייג, מי פנוי, כמה נסגר היום — בזמן אמת. רואים נציג נתקע? נכנסים להאזנה שקטה, לוחשים לו את המשפט הנכון, או מצטרפים לשיחה. הכול בלחיצה.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>האזנה שקטה · לחישה · הצטרפות</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>דוחות נוכחות ו-clock in/out</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>23 הרשאות · 8 קבוצות · פר-משתמש</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>האזנה שקטה · לחישה · הצטרפות</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>דוחות נוכחות ו-clock in/out</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>23 הרשאות · 8 קבוצות · פר-משתמש</li>
         </ul>
       </div>
     </div>
@@ -926,11 +936,11 @@
       <div class="stageInner" id="stageInner">
         <div class="seqPanel" data-i="0">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-dialer">
+            <div class="panel p-dialer" role="img" aria-label="איור: מסך החייגן של powercall — שלושה לידים מחויגים במקביל ואחד נענה">
               <div class="layer" id="sqIdle">
-                <div class="phonecirc"><div class="ping sq-ping"></div><svg viewBox="0 0 24 24" fill="#2563eb"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.6c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1z"/></svg></div>
+                <div class="phonecirc"><div class="ping sq-ping"></div><svg viewBox="0 0 24 24" fill="#2563eb" aria-hidden="true"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.6c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1z"/></svg></div>
                 <div class="idletitle"><span class="nm">אבי, </span>מוכן/ה להתחיל לחייג?</div>
-                <div class="dcta"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>להתחיל לעשות כסף?</div>
+                <div class="dcta"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>להתחיל לעשות כסף?</div>
                 <div class="avail"><b>9,260</b> לידים זמינים · חיוג 3 במקביל</div>
               </div>
               <div class="layer" id="sqConn" style="opacity:0;">
@@ -960,9 +970,9 @@
 
         <div class="seqPanel" data-i="1">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-ai">
+            <div class="panel p-ai" role="img" aria-label="איור: מסך ניתוח שיחות ב-AI — ציון לשיחה, פירוט מה השתבש והצעה מה היה עדיף לומר">
               <div class="aihead">
-                <div class="spark"><svg viewBox="0 0 24 24"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg></div>
+                <div class="spark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg></div>
                 <div><div class="htitle">תובנות AI</div><div class="hsub">תמלול · ניתוח שיחות · קואצ'ינג — מבוסס Deepgram + Gemini</div></div>
                 <div class="stat"><div class="v">493</div><div class="l">שיחות נותחו</div></div>
               </div>
@@ -989,13 +999,13 @@
 
         <div class="seqPanel" data-i="2">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-live">
+            <div class="panel p-live" role="img" aria-label="איור: מסך מוקד המכירות בזמן אמת — נציגים, שיחות פעילות ומדדי ביצוע">
               <div class="kpis">
-                <div class="kpi"><div class="kdot" style="background:#eef4ff;"><svg viewBox="0 0 24 24" fill="#2563eb"><path d="M22 12l-4-4v3H3v2h15v3z"/></svg></div><div><div class="kl">שיחות יוצאות</div><div class="kv" style="color:#2563eb;">6,775</div></div></div>
-                <div class="kpi"><div class="kdot" style="background:#d1fae5;"><svg viewBox="0 0 24 24" fill="#059669"><path d="M20 15.5c-1.2 0-2.4-.2-3.5-.6-.3-.1-.7 0-1 .3l-2.2 2.2a15 15 0 0 1-6.6-6.6l2.2-2.2c.3-.3.4-.7.3-1-.4-1.1-.6-2.3-.6-3.6 0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1a17 17 0 0 0 17 17c.6 0 1-.4 1-1v-3.4c0-.6-.4-1-1-1z"/></svg></div><div><div class="kl">שיחות שנענו</div><div class="kv" style="color:#047857;">1,331</div></div></div>
-                <div class="kpi"><div class="kdot" style="background:#ede9fe;"><svg viewBox="0 0 24 24" fill="#7c3aed"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></div><div><div class="kl">שיחות שנוהלו</div><div class="kv" style="color:#7c3aed;">1,216</div></div></div>
-                <div class="kpi"><div class="kdot" style="background:#fef3c7;"><svg viewBox="0 0 24 24" fill="#d97706"><path d="M12 2l3 6 6 .5-4.5 4 1.5 6L12 15l-6 3.5 1.5-6L3 8.5 9 8z"/></svg></div><div><div class="kl">עסקאות סגורות</div><div class="kv" style="color:#b45309;">16</div></div></div>
-                <div class="kpi"><div class="kdot" style="background:rgba(20,184,166,0.15);"><svg viewBox="0 0 24 24" fill="#14b8a6"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4l4 2.3-.8 1.4L11 13V6h2z"/></svg></div><div><div class="kl">זמן בשיחה</div><div class="kv"><span class="tk" style="color:#0f766e;" data-t0="1187">19:47</span></div></div></div>
+                <div class="kpi"><div class="kdot" style="background:#eef4ff;"><svg viewBox="0 0 24 24" fill="#2563eb" aria-hidden="true"><path d="M22 12l-4-4v3H3v2h15v3z"/></svg></div><div><div class="kl">שיחות יוצאות</div><div class="kv" style="color:#2563eb;">6,775</div></div></div>
+                <div class="kpi"><div class="kdot" style="background:#d1fae5;"><svg viewBox="0 0 24 24" fill="#059669" aria-hidden="true"><path d="M20 15.5c-1.2 0-2.4-.2-3.5-.6-.3-.1-.7 0-1 .3l-2.2 2.2a15 15 0 0 1-6.6-6.6l2.2-2.2c.3-.3.4-.7.3-1-.4-1.1-.6-2.3-.6-3.6 0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1a17 17 0 0 0 17 17c.6 0 1-.4 1-1v-3.4c0-.6-.4-1-1-1z"/></svg></div><div><div class="kl">שיחות שנענו</div><div class="kv" style="color:#047857;">1,331</div></div></div>
+                <div class="kpi"><div class="kdot" style="background:#ede9fe;"><svg viewBox="0 0 24 24" fill="#7c3aed" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></div><div><div class="kl">שיחות שנוהלו</div><div class="kv" style="color:#7c3aed;">1,216</div></div></div>
+                <div class="kpi"><div class="kdot" style="background:#fef3c7;"><svg viewBox="0 0 24 24" fill="#d97706" aria-hidden="true"><path d="M12 2l3 6 6 .5-4.5 4 1.5 6L12 15l-6 3.5 1.5-6L3 8.5 9 8z"/></svg></div><div><div class="kl">עסקאות סגורות</div><div class="kv" style="color:#b45309;">16</div></div></div>
+                <div class="kpi"><div class="kdot" style="background:rgba(20,184,166,0.15);"><svg viewBox="0 0 24 24" fill="#14b8a6" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4l4 2.3-.8 1.4L11 13V6h2z"/></svg></div><div><div class="kl">זמן בשיחה</div><div class="kv"><span class="tk" style="color:#0f766e;" data-t0="1187">19:47</span></div></div></div>
               </div>
               <div class="board">
                 <div class="bhead">
@@ -1035,7 +1045,7 @@
     <div class="feed rv">
       <div class="feedHead">
         <div class="feedTitle">
-          <span class="feedIc"><svg viewBox="0 0 24 24"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg></span>
+          <span class="feedIc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg></span>
           <span class="livedotSm"></span>
           <span>פיד AI · שיחות שדורשות תשומת לב</span>
         </div>
@@ -1045,7 +1055,7 @@
       <article class="fItem unread">
         <div class="fTop">
           <div class="fWho">
-            <span class="fFlag bad"><svg viewBox="0 0 24 24"><path d="M12 2 1 21h22zm0 5.5 7.5 12.9h-15zM11 10h2v5h-2zm0 6.5h2v2h-2z"/></svg></span>
+            <span class="fFlag bad"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22zm0 5.5 7.5 12.9h-15zM11 10h2v5h-2zm0 6.5h2v2h-2z"/></svg></span>
             <span class="fAv" style="background:linear-gradient(135deg,#6E9BFF,#2563EB);">רא</span>
             <span class="fName">רועי אלמוג</span>
             <span class="fSep">·</span>
@@ -1053,7 +1063,7 @@
             <span class="fScore bad">13/50</span>
           </div>
           <div class="fTime">
-            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4 4 2.3-.8 1.4L11 13V6h2z"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4 4 2.3-.8 1.4L11 13V6h2z"/></svg>
             לפני 2 ש׳
           </div>
         </div>
@@ -1066,7 +1076,7 @@
       <article class="fItem">
         <div class="fTop">
           <div class="fWho">
-            <span class="fFlag miss"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg></span>
+            <span class="fFlag miss"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg></span>
             <span class="fAv" style="background:linear-gradient(135deg,#34d399,#059669);">מש</span>
             <span class="fName">מאיה שקד</span>
             <span class="fSep">·</span>
@@ -1074,7 +1084,7 @@
             <span class="fScore mid">15/50</span>
           </div>
           <div class="fTime">
-            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4 4 2.3-.8 1.4L11 13V6h2z"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 10.4 4 2.3-.8 1.4L11 13V6h2z"/></svg>
             לפני 3 ש׳
           </div>
         </div>
@@ -1094,14 +1104,14 @@
       <p>בלי שבעה כלים שמדברים בקושי אחד עם השני.</p>
     </div>
     <div class="oneStage" id="oneStage">
-    <svg class="wires" id="wires"></svg>
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
     <div class="modGrid">
-      <div class="mod" data-glow="37,99,235"><div class="modIc" style="background:linear-gradient(135deg,#3b82f6,#2563eb);"><svg viewBox="0 0 24 24"><path d="M3 11l18-8v18l-18-8v6H1v-6h2zm4 .5v1l8 3.5V8z"/></svg></div><div class="modBody"><div class="modT">קמפיינים</div><div class="modD">תור עדיפויות · תוכנית retry · תסריטי שיחה</div></div></div>
-      <div class="mod" data-glow="37,211,102"><div class="modIc" style="background:linear-gradient(135deg,#4ade80,#25d366);"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg></div><div class="modBody"><div class="modT">WhatsApp API</div><div class="modD">הודעות אוטומטיות · מעקב · אישורי הגעה</div></div></div>
-      <div class="mod" data-glow="5,150,105"><div class="modIc" style="background:linear-gradient(135deg,#34d399,#059669);"><svg viewBox="0 0 24 24"><path d="M5 3h14v18l-7-3-7 3zM8 8h8v2H8zm0 4h8v2H8z"/></svg></div><div class="modBody"><div class="modT">דוחות נוכחות</div><div class="modD">clock in/out · שעות · ייצוא ל-Excel</div></div></div>
-      <div class="mod" data-glow="124,58,237"><div class="modIc" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6zM9 12l2 2 4-4-1.4-1.4L11 11.2l-.6-.6z"/></svg></div><div class="modBody"><div class="modT">הרשאות</div><div class="modD">23 הרשאות · 8 קבוצות · שליטה פר-משתמש</div></div></div>
-      <div class="mod" data-glow="217,119,6"><div class="modIc" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><svg viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2v3.6l7 3.8 7-3.8v-3.6l-7 3.8z"/></svg></div><div class="modBody"><div class="modT">מאמן AI אישי</div><div class="modD">ציון לכל נציג · תוכנית שיפור · תסריט להתנגדויות</div></div></div>
-      <div class="mod" data-glow="219,39,119"><div class="modIc" style="background:linear-gradient(135deg,#f472b6,#db2777);"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7zm0 4a5 5 0 1 0 5 5h-2a3 3 0 1 1-3-3z"/></svg></div><div class="modBody"><div class="modT">האזנה + לחישה</div><div class="modD">האזנה שקטה · לחישה לנציג · הצטרפות לשיחה</div></div></div>
+      <div class="mod" data-glow="37,99,235"><div class="modIc" style="background:linear-gradient(135deg,#3b82f6,#2563eb);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l18-8v18l-18-8v6H1v-6h2zm4 .5v1l8 3.5V8z"/></svg></div><div class="modBody"><div class="modT">קמפיינים</div><div class="modD">תור עדיפויות · תוכנית retry · תסריטי שיחה</div></div></div>
+      <div class="mod" data-glow="37,211,102"><div class="modIc" style="background:linear-gradient(135deg,#4ade80,#25d366);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg></div><div class="modBody"><div class="modT">WhatsApp API</div><div class="modD">הודעות אוטומטיות · מעקב · אישורי הגעה</div></div></div>
+      <div class="mod" data-glow="5,150,105"><div class="modIc" style="background:linear-gradient(135deg,#34d399,#059669);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-7-3-7 3zM8 8h8v2H8zm0 4h8v2H8z"/></svg></div><div class="modBody"><div class="modT">דוחות נוכחות</div><div class="modD">clock in/out · שעות · ייצוא ל-Excel</div></div></div>
+      <div class="mod" data-glow="124,58,237"><div class="modIc" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6zM9 12l2 2 4-4-1.4-1.4L11 11.2l-.6-.6z"/></svg></div><div class="modBody"><div class="modT">הרשאות</div><div class="modD">23 הרשאות · 8 קבוצות · שליטה פר-משתמש</div></div></div>
+      <div class="mod" data-glow="217,119,6"><div class="modIc" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2v3.6l7 3.8 7-3.8v-3.6l-7 3.8z"/></svg></div><div class="modBody"><div class="modT">מאמן AI אישי</div><div class="modD">ציון לכל נציג · תוכנית שיפור · תסריט להתנגדויות</div></div></div>
+      <div class="mod" data-glow="219,39,119"><div class="modIc" style="background:linear-gradient(135deg,#f472b6,#db2777);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7zm0 4a5 5 0 1 0 5 5h-2a3 3 0 1 1-3-3z"/></svg></div><div class="modBody"><div class="modT">האזנה + לחישה</div><div class="modD">האזנה שקטה · לחישה לנציג · הצטרפות לשיחה</div></div></div>
       </div>
 
       <div class="oneCore" id="oneCore">
@@ -1123,17 +1133,17 @@
     </div>
     <div class="tstGrid">
       <div class="tCard rv">
-        <div class="tStars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
+        <div class="tStars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
         <p class="tQuote">"גילינו בשבוע הראשון עסקאות שנזרקו לפח. לוח 'שיחות שיכלו להיסגר' לבד החזיר את ההשקעה."</p>
         <div class="tWho"><span class="tAv" style="background:#2563eb">א</span><div><div class="tName">אבי מלכה</div><div class="tRole">בעלים, מוקד החזרי מס · באר שבע</div></div></div>
       </div>
       <div class="tCard rv">
-        <div class="tStars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
+        <div class="tStars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
         <p class="tQuote">"אחוז הסגירה עלה מ-12% ל-17% תוך שלושה חודשים. דווקא הנציגים החלשים השתפרו הכי הרבה — המאמן עובד עליהם כל שבוע."</p>
         <div class="tWho"><span class="tAv" style="background:#7c3aed">מ</span><div><div class="tName">מיכל אזולאי</div><div class="tRole">מנהלת מכירות, סוכנות ביטוח · חיפה</div></div></div>
       </div>
       <div class="tCard rv">
-        <div class="tStars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
+        <div class="tStars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
         <p class="tQuote">"החייגן המקבילי הקפיץ אותנו מ-14 ל-38 שיחות אמת לנציג ביום. אותו צוות, אותם לידים — פשוט בלי זמן מת."</p>
         <div class="tWho"><span class="tAv" style="background:#059669">ד</span><div><div class="tName">דוד כהן</div><div class="tRole">מנהל מוקד, חברת תקשורת · פתח תקווה</div></div></div>
       </div>
@@ -1149,12 +1159,12 @@
       <p>ידע שסוגר עסקאות — מהצוות של PowerCall.</p>
     </div>
     <div class="artGrid">
-      <a class="artCard rv" href="/articles/1.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#2563eb">מכירות טלפוניות</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">טיפול בהתנגדויות מכירה בטלפון: 5 ההתנגדויות שהורגות עסקאות</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
-      <a class="artCard rv" href="/articles/2.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#a16207">ניהול לידים</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">למה הלידים לא עונים? 6 דרכים להקפיץ את אחוז המענה במוקד</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
-      <a class="artCard rv" href="/articles/3.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#15803d">ניהול מוקד</span><span class="artRt">· 5 דק'</span></div><div class="artTitle">מאמן מכירות AI: איך מאמנים 20 נציגים בלי להעסיק מאמן</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
-      <a class="artCard rv" href="/articles/4.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#7c3aed">חייגן וטכנולוגיה</span><span class="artRt">· 5 דק'</span></div><div class="artTitle">חייגן מקבילי מול חיוג ידני: כמה שיחות ביום נציג באמת מבצע</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
-      <a class="artCard rv" href="/articles/5.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#0e7490">דאטה ומדידה</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">7 מדדי KPI שמנהל מוקד מכירות חייב לראות כל בוקר</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
-      <a class="artCard rv" href="/articles/6.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#2563eb">מכירות טלפוניות</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">שיחות קרות: איך פותחים שיחת מכירה טלפונית שלא מנתקים לה</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
+      <a class="artCard rv" href="/articles/1.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#2563eb">מכירות טלפוניות</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">טיפול בהתנגדויות מכירה בטלפון: 5 ההתנגדויות שהורגות עסקאות</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
+      <a class="artCard rv" href="/articles/2.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#a16207">ניהול לידים</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">למה הלידים לא עונים? 6 דרכים להקפיץ את אחוז המענה במוקד</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
+      <a class="artCard rv" href="/articles/3.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#15803d">ניהול מוקד</span><span class="artRt">· 5 דק'</span></div><div class="artTitle">מאמן מכירות AI: איך מאמנים 20 נציגים בלי להעסיק מאמן</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
+      <a class="artCard rv" href="/articles/4.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#7c3aed">חייגן וטכנולוגיה</span><span class="artRt">· 5 דק'</span></div><div class="artTitle">חייגן מקבילי מול חיוג ידני: כמה שיחות ביום נציג באמת מבצע</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
+      <a class="artCard rv" href="/articles/5.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#0e7490">דאטה ומדידה</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">7 מדדי KPI שמנהל מוקד מכירות חייב לראות כל בוקר</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
+      <a class="artCard rv" href="/articles/6.html"><div style="flex:1;min-width:0"><div class="artMeta"><span class="artCat" style="color:#2563eb">מכירות טלפוניות</span><span class="artRt">· 6 דק'</span></div><div class="artTitle">שיחות קרות: איך פותחים שיחת מכירה טלפונית שלא מנתקים לה</div></div><span class="artArrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span></a>
     </div>
   </div>
 </section>
@@ -1193,7 +1203,7 @@
             <div class="island" id="island">
               <div class="islandInner" id="islandInner">
                 <span class="isSpin" id="isSpin"></span>
-                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32">
+                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32" aria-hidden="true">
                   <circle class="isRing" id="isRing" cx="16" cy="16" r="14"/>
                   <path class="isTick" id="isTick" d="M9.5 16.5 L14 21 L22.5 11.5"/>
                 </svg>
@@ -1204,9 +1214,9 @@
               <div class="statusbar">
                 <span class="sbTime" id="sbTime">9:41</span>
                 <span class="sbIcons">
-                  <svg viewBox="0 0 20 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
-                  <svg viewBox="0 0 16 12"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
-                  <svg viewBox="0 0 26 12"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
+                  <svg viewBox="0 0 20 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
+                  <svg viewBox="0 0 16 12" aria-hidden="true"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
+                  <svg viewBox="0 0 26 12" aria-hidden="true"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
                 </span>
               </div>
               <form class="form" id="leadForm">
@@ -1222,7 +1232,7 @@
               </form>
               <div class="thanks" id="thanks">
                 <div class="thanksIc">
-                  <svg viewBox="0 0 80 80">
+                  <svg viewBox="0 0 80 80" aria-hidden="true">
                     <circle class="tRing" cx="40" cy="40" r="38"/>
                     <circle class="tDisc" id="tDisc" cx="40" cy="40" r="27"/>
                     <path class="tTick" id="tTick" d="M29 40.5 L36.5 48 L51.5 32"/>
@@ -1243,6 +1253,8 @@
   </div>
 </section>
 
+</main>
+
 <footer class="foot">
   <div class="wrap">
     <img src="./powercall-logo.png" alt="powercall" />
@@ -1250,9 +1262,11 @@
   </div>
 </footer>
 
+<aside aria-label="קיצורי דרך" class="floatBar">
 <a class="wa" id="wa" href="#" aria-label="וואטסאפ">
-  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
 </a>
+</aside>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -1515,7 +1529,7 @@ gsap.utils.toArray(".rv").forEach(function (el) {
     wave.appendChild(beam);
     var label = document.createElement("div");
     label.className = "scanLabel";
-    label.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg><span class="scanTxt scanDots"></span>';
+    label.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg><span class="scanTxt scanDots"></span>';
     scan.appendChild(wave); scan.appendChild(label);
     box.appendChild(scan);
     return { scan: scan, wave: wave, bars: bars, beam: beam, txt: label.querySelector(".scanTxt") };
@@ -1992,5 +2006,6 @@ document.querySelectorAll('.faqItem').forEach(function (it) {
   });
 });
 </script>
+<script defer src="./a11y.js"></script>
 </body>
 </html>

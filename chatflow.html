@@ -33,9 +33,10 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
+    --a11y-accent: #087d5b;   /* the accessibility widget takes the page accent */
     --ink:     #1D2530;
     --ink-2:   #3d4757;
-    --muted:   #7B8492;
+    --muted:   #69707C;  /* was #7B8492 = 3.62:1 on the cream ground, under the 4.5:1 body-text minimum (WCAG 1.4.3); this is 4.78 */
     --line:    #ECEBE4;
     --cream:   #FBFAF6;
     --emerald: #0A8F68;
@@ -144,7 +145,9 @@
   .acts { margin-top: clamp(2.8rem, 4.6vh, 4.2rem); display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; opacity: 0; }
   /* the one saturated thing above the fold — shadow tinted to match, because a
      neutral drop shadow under a saturated button reads as a sticker */
-  .b1 { font-size: 1.05rem; font-weight: 800; color: #fff; background: var(--emerald); padding: 1rem 2.2rem; box-shadow: 0 14px 34px rgba(10, 143, 104, 0.32); }
+  /* white on --emerald was 4.08:1, just under the 4.5:1 a button label needs.
+     #087D5B is the same green one shade down: 5.13:1. */
+  .b1 { font-size: 1.05rem; font-weight: 800; color: #fff; background: #087D5B; padding: 1rem 2.2rem; box-shadow: 0 14px 34px rgba(10, 143, 104, 0.32); }
   .b1:hover { background: #087a5a; transform: translateY(-2px); }
   .b2 { font-size: 1.05rem; color: var(--ink); background: rgba(255,255,255,0.75); border: 1px solid var(--line); padding: 1rem 2rem; backdrop-filter: blur(8px); }
   .b2:hover { transform: translateY(-2px); }
@@ -153,7 +156,8 @@
 
   /* ---------------- the question ---------------- */
   .question { min-height: 88vh; display: grid; place-items: center; text-align: center; padding: 8rem 1.5rem; }
-  .qsmall { font-size: clamp(1.25rem, 2.2vw, 2.2rem); font-weight: 700; color: #a8b0bb; line-height: 1.45; }
+  /* darkened to clear WCAG 1.4.3 (4.5:1 for body text, 3:1 for large) */
+  .qsmall { font-size: clamp(1.25rem, 2.2vw, 2.2rem); font-weight: 700; color: #888E97; line-height: 1.45; }
   .qbig { margin-top: 1.2rem; font-size: clamp(1.9rem, 4.2vw, 4.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; }
   .qbig em { font-style: normal; color: var(--emerald); }
   /* the real tab, at page scale — same shape as the one in ConversationList:
@@ -164,7 +168,7 @@
   }
   .uTab {
     display: inline-flex; align-items: center; gap: 0.6rem;
-    padding: 0.6rem 1.2rem; border-radius: 9px; background: var(--emerald); color: #fff;
+    padding: 0.6rem 1.2rem; border-radius: 9px; background: #098460; color: #fff;  /* white needs 4.5:1 */
     font-size: 1rem; font-weight: 700; box-shadow: 0 4px 12px rgba(10, 143, 104, 0.24);
   }
   .uCount {
@@ -193,9 +197,10 @@
      auto }`, and being later in the file it must win. A descendant selector
      would out-specify it and leave this step 145vh tall on a phone. */
   .step-long { min-height: 150vh; }
-  .stepKicker { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; color: var(--emerald); text-transform: uppercase; margin-bottom: 1rem; }
-  .step:nth-child(2) .stepKicker { color: var(--amber); }
-  .step:nth-child(3) .stepKicker { color: #0e8b99; }
+  /* darkened to clear WCAG 1.4.3 (4.5:1 for body text, 3:1 for large) */
+  .stepKicker { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; color: #09805D; text-transform: uppercase; margin-bottom: 1rem; }
+  .step:nth-child(2) .stepKicker { color: #996725; }
+  .step:nth-child(3) .stepKicker { color: #0C7D89; }
   /* stepped down from 2.8vw: the stage took width from this column, and at the
      old size the two-line titles ran past its edge */
   .stepTitle { font-size: clamp(1.55rem, 2.4vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; }
@@ -419,7 +424,7 @@
   .ibStep.done .ibDot { background: var(--fresh); border-color: var(--fresh); }
   .ibStep.done .ibDot svg { width: 0.75cqw; height: 0.75cqw; fill: none; stroke: #fff; stroke-width: 3.4; }
   /* The tick now lives in all four dots. It is revealed, not inserted — an
-     <svg> in a pending dot would otherwise render at its default size. */
+     <svg aria-hidden="true"> in a pending dot would otherwise render at its default size. */
   .ibStep .ibDot svg      { display: none; }
   .ibStep.done .ibDot svg { display: block; }
   .ibStep.cur .ibDot { background: #fdf1de; border-color: var(--amber); }
@@ -759,7 +764,8 @@
   /* ---------------- footer + floats ---------------- */
   .foot { border-top: 1px solid var(--line); padding: 2rem 0; }
   .foot .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .foot span.note { font-size: 0.85rem; color: #a8b0bb; font-weight: 500; }
+  /* darkened to clear WCAG 1.4.3 (4.5:1 for body text) */
+  .foot span.note { font-size: 0.85rem; color: #6B7077; font-weight: 500; }
   .wa {
     position: fixed; inset-block-end: 1.5rem; inset-inline-start: 1.5rem; z-index: 70;
     width: 3.6rem; height: 3.6rem; border-radius: 50%; background: #25d366;
@@ -934,6 +940,11 @@
     .swapMini { display: none; }
   }
 </style>
+<link rel="stylesheet" href="./a11y.css">
+<script>/* Restore the visitor's accessibility choices BEFORE first paint, so a
+   saved high-contrast or large-text setting does not flash the default theme
+   on every navigation. Mirrors a11y.js; that file is still the source of truth. */
+(function(){try{var s=JSON.parse(localStorage.getItem("pc-a11y-v1")||"{}"),h=document.documentElement,m={readable:"a11y-readable",lh:"a11y-lh",ls:"a11y-ls",contrast:"a11y-contrast",gray:"a11y-gray",links:"a11y-links",cursor:"a11y-cursor",nomotion:"a11y-nomotion",guide:"a11y-guide-on"};for(var k in m){if(s[k])h.classList.add(m[k]);}if(s.fs&&s.fs!==1){h.style.setProperty("--a11y-fs",s.fs);h.classList.add("a11y-fs");}}catch(e){}})();</script>
 </head>
 <body>
 
@@ -957,6 +968,7 @@
 </nav>
 
 <!-- ============================ hero ============================ -->
+<main id="main">
 <header class="hero">
   <h1 id="h1">וואטסאפ הוא אישי.<br><span class="grad">העסק שלכם — לא.</span></h1>
   <p class="sub" id="sub">כל שיחות הלקוחות של העסק במקום אחד, כל הצוות רואה, וה-AI מנסח כל תשובה — הנציג מאשר.</p>
@@ -986,9 +998,9 @@
         <h2 class="stepTitle">כל שיחות הלקוחות.<br>כל הצוות. מסך אחד.</h2>
         <p class="stepBody">וואטסאפ נבנה לאדם אחד, ולכן שיחה שמגיעה לטלפון של נציג נעלמת מכולם. כאן כל שיחה שייכת לעסק: רואים מי מטפל, מעבירים, משתפים, ומסמנים כל שלב בטיפול.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שלי · ללא הקצאה · הכל · חדשות</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>העברה, שיתוף ותיוג בלחיצה</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>צינור טיפול שמוגדר לפי העסק שלכם</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שלי · ללא הקצאה · הכל · חדשות</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>העברה, שיתוף ותיוג בלחיצה</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>צינור טיפול שמוגדר לפי העסק שלכם</li>
         </ul>
       </div>
       <div class="step">
@@ -996,9 +1008,9 @@
         <h2 class="stepTitle">הבוט יודע<br>מתי לא לענות.</h2>
         <p class="stepBody">הנחה, ביטול, מתחרה זול יותר — יש שאלות שבוט לא אמור להכריע בהן. במקום לנחש, הוא עוצר: הלקוח מקבל "אבדוק ואחזור", והמנהל מקבל את השאלה, את הנימוק ואת האפשרויות.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תרחישים רגישים שאתם מגדירים</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>התראה למנהל — בצ'אט הפנימי ובפוש</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>בן אדם מחליט. תמיד.</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>תרחישים רגישים שאתם מגדירים</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>התראה למנהל — בצ'אט הפנימי ובפוש</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>בן אדם מחליט. תמיד.</li>
         </ul>
       </div>
       <div class="step">
@@ -1006,9 +1018,9 @@
         <h2 class="stepTitle">מהעיוורון<br>לשקיפות מלאה.</h2>
         <p class="stepBody">כמה שיחות פתוחות, כמה ממתינות למענה, מה זמן התגובה הממוצע, ומי מהנציגים סוגר. לא תחושות בסוף החודש — מספרים, עכשיו.</p>
         <ul class="stepList">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שיחות פתוחות · ממתינות · נסגרו היום</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>הודעות לפי יום ולפי שעה</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>דירוג נציגים וזמני תגובה</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שיחות פתוחות · ממתינות · נסגרו היום</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>הודעות לפי יום ולפי שעה</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>דירוג נציגים וזמני תגובה</li>
         </ul>
       </div>
     </div>
@@ -1017,7 +1029,7 @@
       <div class="stageInner" id="stageInner">
         <div class="seqPanel" data-i="0">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-inbox">
+            <div class="panel p-inbox" role="img" aria-label="איור: תיבת הוואטסאפ המשותפת של ChatFlow — רשימת שיחות לקוחות ושיחה פתוחה">
               <div class="ibList">
                 <div class="ibHd">
                   <div class="ibTitle">שיחות</div>
@@ -1084,10 +1096,10 @@
                 <div class="ibThread" id="ib-thread">
                   <span class="ibDay">היום</span>
                   <span class="ibMsg ibIn"><span>היי, קיבלתי את ההצעה. יש שם סעיף של "דמי טיפול" שלא הבנתי — זה תשלום נוסף על המחיר?</span><em class="ibT">14:03</em></span>
-                  <span class="ibMsg ibOut"><span>היי דנה. לא, אין תוספת. דמי הטיפול כבר כלולים — הסכום שראית בהצעה הוא הסכום הסופי.</span><em class="ibT">14:05<svg class="ibCk" viewBox="0 0 20 12"><path d="M1 6.5 4.5 10 11 2.5"/><path d="M8.5 6.5 12 10 18.5 2.5"/></svg></em></span>
+                  <span class="ibMsg ibOut"><span>היי דנה. לא, אין תוספת. דמי הטיפול כבר כלולים — הסכום שראית בהצעה הוא הסכום הסופי.</span><em class="ibT">14:05<svg class="ibCk" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6.5 4.5 10 11 2.5"/><path d="M8.5 6.5 12 10 18.5 2.5"/></svg></em></span>
                   <span class="ibNote">הערה פנימית · מאיה — פנתה גם לפני חודשיים והתלבטה על המחיר. שווה לסגור היום.</span>
                   <span class="ibMsg ibIn"><span>מעולה, תודה שהבהרת. אני רוצה להתקדם — מה השלב הבא?</span><em class="ibT">14:19</em></span>
-                  <div id="ib-replyWrap"><span class="ibMsg ibOut"><span>מעולה. אני סוגרת את העסקה ושולחת לך אישור למייל — תודה דנה!</span><em class="ibT">14:21<svg class="ibCk" id="ib-replyCk" viewBox="0 0 20 12"><path d="M1 6.5 4.5 10 11 2.5"/><path d="M8.5 6.5 12 10 18.5 2.5"/></svg></em></span></div>
+                  <div id="ib-replyWrap"><span class="ibMsg ibOut"><span>מעולה. אני סוגרת את העסקה ושולחת לך אישור למייל — תודה דנה!</span><em class="ibT">14:21<svg class="ibCk" id="ib-replyCk" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6.5 4.5 10 11 2.5"/><path d="M8.5 6.5 12 10 18.5 2.5"/></svg></em></span></div>
                 </div>
               </div>
 
@@ -1100,10 +1112,10 @@
                 <div class="ibSep"></div>
                 <div class="ibCardT">סטטוס הטיפול</div>
                 <div id="ib-pipe">
-                  <div class="ibStep done"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">פנייה חדשה</span></div>
-                  <div class="ibStep cur"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">נשלחה הצעה</span></div>
-                  <div class="ibStep"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">ממתין ללקוח</span></div>
-                  <div class="ibStep"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">עסקה נסגרה</span></div>
+                  <div class="ibStep done"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">פנייה חדשה</span></div>
+                  <div class="ibStep cur"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">נשלחה הצעה</span></div>
+                  <div class="ibStep"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">ממתין ללקוח</span></div>
+                  <div class="ibStep"><span class="ibDot"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></span><span class="ibStepL">עסקה נסגרה</span></div>
                 </div>
                 <div class="ibSep"></div>
                 <div class="ibCardT">תוויות</div>
@@ -1128,7 +1140,7 @@
         </div>
         <div class="seqPanel" data-i="1">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-sensitive">
+            <div class="panel p-sensitive" role="img" aria-label="איור: מסך זיהוי פנייה רגישה — הבוט עוצר והשיחה מועברת לנציג אנושי">
               <div class="svSide">
                 <div class="svHd">
                   <span class="ibAv" style="background:linear-gradient(145deg,#ffc89b,#ff9466);width:1.9cqw;height:1.9cqw;font-size:0.8cqw;">ר</span>
@@ -1139,13 +1151,13 @@
                   <span class="ibMsg ibOut">מעולה! יש שאלות?</span>
                   <span class="ibMsg ibIn">אפשר קצת הנחה? קיבלתי הצעה זולה יותר</span>
                   <div class="svShield" id="sv-shield">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V7z"/></svg>
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V7z"/></svg>
                     תרחיש רגיש זוהה · לא נשלחת תשובה אוטומטית
                   </div>
                 </div>
                 <div class="svComposer" id="sv-empty">
                   הקלד הודעה…
-                  <b><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></b>
+                  <b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></b>
                 </div>
               </div>
 
@@ -1154,7 +1166,7 @@
                 <div class="svBody">
                   <div class="svEsc" id="sv-esc">
                     <div class="svEscHd">
-                      <svg viewBox="0 0 24 24"><path d="M12 2 1 21h22zm0 5.5 7.5 12.9h-15zM11 10h2v5h-2zm0 6.5h2v2h-2z"/></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22zm0 5.5 7.5 12.9h-15zM11 10h2v5h-2zm0 6.5h2v2h-2z"/></svg>
                       <span>בקשת הנחה</span>
                       <small>זוהה על ידי הבוט</small>
                     </div>
@@ -1165,7 +1177,7 @@
                     <div class="svEscRow"><b>הבוט מסביר:</b> הלקוח מזכיר הצעה מתחרה ומבקש שינוי מחיר — החלטה מסחרית שאינה בסמכותי.</div>
                     <div class="svEscRow"><b>אפשרויות:</b> הנחה של עד 8% · הוספת חודש שירות · השארת המחיר עם הסבר ערך</div>
                     <div class="svEscBtn">
-                      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                       פתח שיחה עם הלקוח
                     </div>
                   </div>
@@ -1176,37 +1188,37 @@
         </div>
         <div class="seqPanel" data-i="2">
           <div class="scaler"><div class="canvas">
-            <div class="panel p-live">
+            <div class="panel p-live" role="img" aria-label="איור: דשבורד ChatFlow — שיחות פתוחות, זמני תגובה וביצועי נציגים">
               <div class="dbHd">
-                <h4>דשבורד</h4><small>סקירת ביצועים כללית</small>
+                <div>דשבורד</div><small>סקירת ביצועים כללית</small>
                 <span class="range"><span>7 ימים</span><span class="on">חודש</span><span>3 חודשים</span></span>
               </div>
 
               <div class="kpis">
                 <div class="kpi">
                   <div class="top">
-                    <span class="ic" style="background:rgba(16,184,134,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#0A8F68" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                    <span class="ic" style="background:rgba(16,184,134,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#0A8F68" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
                     <span class="kv" style="color:#0A8F68;" data-to="128">0</span>
                   </div>
                   <div class="kl">שיחות פתוחות</div>
                 </div>
                 <div class="kpi">
                   <div class="top">
-                    <span class="ic" style="background:rgba(240,161,58,0.16);"><svg viewBox="0 0 24 24" fill="none" stroke="#b9741a" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                    <span class="ic" style="background:rgba(240,161,58,0.16);"><svg viewBox="0 0 24 24" fill="none" stroke="#b9741a" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
                     <span class="kv" style="color:#b9741a;" data-to="34">0</span>
                   </div>
                   <div class="kl">בטיפול</div>
                 </div>
                 <div class="kpi">
                   <div class="top">
-                    <span class="ic" style="background:rgba(239,68,68,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.5"/></svg></span>
+                    <span class="ic" style="background:rgba(239,68,68,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.5"/></svg></span>
                     <span class="kv" style="color:#dc2626;" data-to="6">0</span>
                   </div>
                   <div class="kl">ממתינות למענה</div>
                 </div>
                 <div class="kpi">
                   <div class="top">
-                    <span class="ic" style="background:rgba(37,99,235,0.10);"><svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span>
+                    <span class="ic" style="background:rgba(37,99,235,0.10);"><svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span>
                     <span class="kv" style="color:#2563eb;" data-to="4">0</span>
                   </div>
                   <div class="kl">זמן תגובה (דק׳)</div>
@@ -1215,7 +1227,7 @@
 
               <div class="dbGrid">
                 <div class="card">
-                  <h5>הודעות לפי שעות ביום</h5>
+                  <div>הודעות לפי שעות ביום</div>
                   <div class="bars">
                     <div class="barCol"><i class="barIn" style="height:1.6cqw;"></i><i class="barOut" style="height:1.1cqw;"></i></div>
                     <div class="barCol"><i class="barIn" style="height:2.4cqw;"></i><i class="barOut" style="height:1.8cqw;"></i></div>
@@ -1231,7 +1243,7 @@
                 </div>
 
                 <div class="card">
-                  <h5>ביצועי נציגים</h5>
+                  <div>ביצועי נציגים</div>
                   <div class="agTable">
                     <div class="agRow agHead"><span></span><span>נציג</span><span>נסגרו</span><span>תגובה</span></div>
                     <div class="agRow"><span class="medal m1">1</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#7ee2bf,#16a877);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">מ</span>מאיה שקד</span><span class="agNum g">18</span><span class="agNum">2 דק׳</span></div>
@@ -1289,14 +1301,14 @@
     <p>בלי שישה כלים שמדברים בקושי אחד עם השני.</p>
   </div>
   <div class="oneStage" id="oneStage">
-    <svg class="wires" id="wires"></svg>
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
     <div class="modGrid">
-      <div class="mod" data-glow="16,184,134"><div class="modIc" style="background:linear-gradient(135deg,#34d399,#0A8F68);"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="modBody"><div class="modT">תיבה משותפת</div><div class="modD">כל השיחות · העברה · שיתוף · תיוג</div></div></div>
-      <div class="mod" data-glow="124,58,237"><div class="modIc" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><svg viewBox="0 0 24 24"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg></div><div class="modBody"><div class="modT">AI שמנסח</div><div class="modD">תשובה מוכנה לכל הודעה — מהידע העסקי שלכם</div></div></div>
-      <div class="mod" data-glow="240,161,58"><div class="modIc" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6zM11 7h2v6h-2zm0 8h2v2h-2z"/></svg></div><div class="modBody"><div class="modT">תרחישים רגישים</div><div class="modD">הבוט עוצר, המנהל מחליט</div></div></div>
-      <div class="mod" data-glow="37,99,235"><div class="modIc" style="background:linear-gradient(135deg,#60a5fa,#2563eb);"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm8 7.2L5.2 7h13.6z"/></svg></div><div class="modBody"><div class="modT">מייל דו-כיווני</div><div class="modD">שולחים ומקבלים בלי לצאת מהשיחה</div></div></div>
-      <div class="mod" data-glow="219,39,119"><div class="modIc" style="background:linear-gradient(135deg,#f472b6,#db2777);"><svg viewBox="0 0 24 24"><path d="M3 11l18-8v18l-18-8v6H1v-6h2zm4 .5v1l8 3.5V8z"/></svg></div><div class="modBody"><div class="modT">קמפיינים</div><div class="modD">הודעה לכל הלקוחות · מעקב פר-נמען</div></div></div>
-      <div class="mod" data-glow="14,139,153"><div class="modIc" style="background:linear-gradient(135deg,#22d3ee,#0891b2);"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z"/></svg></div><div class="modBody"><div class="modT">דשבורד</div><div class="modD">שיחות · זמני תגובה · ביצועי נציגים</div></div></div>
+      <div class="mod" data-glow="16,184,134"><div class="modIc" style="background:linear-gradient(135deg,#34d399,#0A8F68);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="modBody"><div class="modT">תיבה משותפת</div><div class="modD">כל השיחות · העברה · שיתוף · תיוג</div></div></div>
+      <div class="mod" data-glow="124,58,237"><div class="modIc" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.6 5.2a3 3 0 0 0 1.9 1.9L20.7 11l-5.2 1.6a3 3 0 0 0-1.9 1.9L12 20l-1.6-5.5a3 3 0 0 0-1.9-1.9L3 11l5.5-1.9a3 3 0 0 0 1.9-1.9z"/></svg></div><div class="modBody"><div class="modT">AI שמנסח</div><div class="modD">תשובה מוכנה לכל הודעה — מהידע העסקי שלכם</div></div></div>
+      <div class="mod" data-glow="240,161,58"><div class="modIc" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6zM11 7h2v6h-2zm0 8h2v2h-2z"/></svg></div><div class="modBody"><div class="modT">תרחישים רגישים</div><div class="modD">הבוט עוצר, המנהל מחליט</div></div></div>
+      <div class="mod" data-glow="37,99,235"><div class="modIc" style="background:linear-gradient(135deg,#60a5fa,#2563eb);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm8 7.2L5.2 7h13.6z"/></svg></div><div class="modBody"><div class="modT">מייל דו-כיווני</div><div class="modD">שולחים ומקבלים בלי לצאת מהשיחה</div></div></div>
+      <div class="mod" data-glow="219,39,119"><div class="modIc" style="background:linear-gradient(135deg,#f472b6,#db2777);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l18-8v18l-18-8v6H1v-6h2zm4 .5v1l8 3.5V8z"/></svg></div><div class="modBody"><div class="modT">קמפיינים</div><div class="modD">הודעה לכל הלקוחות · מעקב פר-נמען</div></div></div>
+      <div class="mod" data-glow="14,139,153"><div class="modIc" style="background:linear-gradient(135deg,#22d3ee,#0891b2);"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z"/></svg></div><div class="modBody"><div class="modT">דשבורד</div><div class="modD">שיחות · זמני תגובה · ביצועי נציגים</div></div></div>
     </div>
 
     <div class="oneCore" id="oneCore">
@@ -1325,7 +1337,7 @@
             <div class="island" id="island">
               <div class="islandInner" id="islandInner">
                 <span class="isSpin" id="isSpin"></span>
-                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32">
+                <svg class="isCheck" id="isCheck" viewBox="0 0 32 32" aria-hidden="true">
                   <circle class="isRing" id="isRing" cx="16" cy="16" r="14"/>
                   <path class="isTick" id="isTick" d="M9.5 16.5 L14 21 L22.5 11.5"/>
                 </svg>
@@ -1336,9 +1348,9 @@
               <div class="statusbar">
                 <span class="sbTime" id="sbTime">9:41</span>
                 <span class="sbIcons">
-                  <svg viewBox="0 0 20 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
-                  <svg viewBox="0 0 16 12"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
-                  <svg viewBox="0 0 26 12"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
+                  <svg viewBox="0 0 20 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.6" y="6" width="3" height="6" rx="1"/><rect x="9.2" y="3.4" width="3" height="8.6" rx="1"/><rect x="13.8" y="0" width="3" height="12" rx="1"/></svg>
+                  <svg viewBox="0 0 16 12" aria-hidden="true"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0zM3.6 6.6 2 4.9a8.6 8.6 0 0 1 12 0l-1.6 1.7a6.3 6.3 0 0 0-8.8 0z"/></svg>
+                  <svg viewBox="0 0 26 12" aria-hidden="true"><rect x="0.6" y="0.6" width="21" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.6"/><path d="M23.4 4.2v3.6a2 2 0 0 0 0-3.6z" opacity="0.5"/></svg>
                 </span>
               </div>
               <form class="form" id="leadForm">
@@ -1354,7 +1366,7 @@
               </form>
               <div class="thanks" id="thanks">
                 <div class="thanksIc">
-                  <svg viewBox="0 0 80 80">
+                  <svg viewBox="0 0 80 80" aria-hidden="true">
                     <circle class="tRing" cx="40" cy="40" r="38"/>
                     <circle class="tDisc" id="tDisc" cx="40" cy="40" r="27"/>
                     <path class="tTick" id="tTick" d="M29 40.5 L36.5 48 L51.5 32"/>
@@ -1375,6 +1387,8 @@
   </div>
 </section>
 
+</main>
+
 <footer class="foot">
   <div class="wrap">
     <span class="coreMark"><i></i><span>ChatFlow</span></span>
@@ -1382,9 +1396,11 @@
   </div>
 </footer>
 
+<aside aria-label="קיצורי דרך" class="floatBar">
 <a class="wa" id="wa" href="#" aria-label="וואטסאפ">
-  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9z"/></svg>
 </a>
+</aside>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -2287,5 +2303,6 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(__revealSa
 window.addEventListener("load", function () { setTimeout(__revealSafety, 60); });
 window.addEventListener("pageshow", function (e) { if (e.persisted) __revealSafety(); });
 </script>
+<script defer src="./a11y.js"></script>
 </body>
 </html>
