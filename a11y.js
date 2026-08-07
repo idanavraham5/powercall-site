@@ -129,8 +129,10 @@
   var modal = el("div", { "class": "a11y-modal", id: "a11yModal", role: "dialog",
     "aria-modal": "true", "aria-labelledby": "a11yDocTitle", "data-open": "false" });
 
-  /* The statement is deliberately written so every claim in it is true today.
-     Items the owner must supply are marked; they are the only blanks. */
+  /* Every claim in this statement is true as written. The date below is the
+     date the accessibility work was actually done — an accessibility statement
+     is a compliance document, and a date earlier than the work would assert
+     that the site was already conforming during a period when it was not. */
   modal.innerHTML =
     '<div class="a11y-doc">' +
       '<div class="a11y-head">' +
@@ -163,19 +165,16 @@
         '<h3>יצירת קשר בנושא נגישות</h3>' +
         '<p>נתקלתם בבעיית נגישות באתר, או שאתם זקוקים להתאמת נגישות שאינה קיימת? נשמח שתפנו אלינו — נטפל בפנייה בהקדם האפשרי.</p>' +
         '<ul>' +
-          '<li>איש הקשר בנושא נגישות: <b data-fill>[יש להשלים שם]</b></li>' +
-          '<li>טלפון: <b data-fill>[יש להשלים טלפון]</b></li>' +
-          '<li>דוא"ל: <b data-fill>[יש להשלים כתובת דוא"ל]</b></li>' +
-          '<li>וואטסאפ: <b data-fill>[יש להשלים מספר]</b></li>' +
+          '<li>איש הקשר בנושא נגישות: <b>עידן</b></li>' +
+          '<li>דוא"ל: <b><a href="mailto:support.powercall@gmail.com">support.powercall@gmail.com</a></b></li>' +
         '</ul>' +
-        '<p>ניתן לפנות אלינו גם בדוא"ל או בוואטסאפ ולא רק בטלפון, כדי לאפשר פנייה גם למי שהשיחה הטלפונית אינה נגישה עבורו.</p>' +
+        '<p>הפנייה בדוא"ל פתוחה לכולם ואינה מחייבת שיחת טלפון, כדי לאפשר פנייה גם למי ששיחה טלפונית אינה נגישה עבורו.</p>' +
 
         '<h3>פרטי ההצהרה</h3>' +
         '<ul>' +
           '<li>שם העסק: <b>powercall — מבית יש לי זכות</b></li>' +
           '<li>כתובת האתר: <b>www.powercall.co.il</b></li>' +
-          '<li>תאריך עדכון ההצהרה: <b data-fill>[יש להשלים תאריך]</b></li>' +
-          '<li>ההנגשה והבדיקה בוצעו על ידי: <b data-fill>[יש להשלים]</b></li>' +
+          '<li>תאריך עדכון ההצהרה: <b>5 באוגוסט 2026</b></li>' +
         '</ul>' +
       '</div>' +
     '</div>';
