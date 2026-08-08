@@ -792,7 +792,7 @@
        stage column is left empty and hidden. */
     .seqGrid { grid-template-columns: 1fr; }
     .stageCol { display: none; }
-    .step { min-height: auto; padding-block: 2.5rem; }
+    .step { min-height: auto; padding-block: 1.25rem; }
     .seqPanel { position: relative; inset: auto; opacity: 1; margin-top: 1.7rem;
                  will-change: auto; }   /* static down here — drop the standing layer */
     /* No sticky column to reserve room down here — fitScalers skips its height
@@ -918,8 +918,25 @@
        (empty hero bottom + section padding), which reads as a broken blank,
        not as air. Hug the content instead; the question peeking in at the
        bottom of the first screen is an invitation to scroll. */
-    .hero { min-height: auto; padding: 8.5rem 1.5rem 3.5rem; }
-    .question { min-height: auto; padding: 5.5rem 1.5rem; }
+    /* ---- vertical rhythm on a phone ----
+       The desktop scale assumes a tall viewport where generous air reads as
+       confidence. On a 400px-wide screen the same values read as "the page is
+       broken": measured 144px of pure nothing between the hero CTAs and the
+       first line of the next section (56 from the hero's own bottom + 88 from
+       the section's top). Every value below is the desktop one roughly halved,
+       which is still real breathing room but keeps the next line in view. */
+    .hero { min-height: auto; padding: 8.5rem 1.5rem 1.5rem; }
+    .question { min-height: auto; padding: 2.75rem 1.5rem; }
+    /* the section rhythm itself — clamp()'s vh term keeps these tall on a
+       phone, which is exactly backwards, so they get flat values here */
+    /* !important because the testimonials/articles/FAQ rules were appended to
+       the stylesheet AFTER this query, so plain overrides lose the cascade */
+    .seq, .agent, .ai, .tst, .faq { padding: 3.25rem 0 !important; }
+    .arts { padding: 2.75rem 0 !important; }
+    .cta { padding: 3.25rem 0 2.5rem !important; }
+    .one { padding: 2.75rem clamp(1.25rem, 4vw, 3rem) 3rem !important; }
+    /* the gap under every section heading, same logic */
+    .secHead { margin-bottom: 1.9rem !important; }
     .one .secHead h2 { font-size: 1.75rem; }
     .one .secHead p { font-size: 0.95rem; }
     .modD { font-size: 0.75rem; }
@@ -1328,7 +1345,7 @@
       <div>
         <h2 class="ctaTitle rv">בואו נראה את זה<br>על העסק שלכם.</h2>
         <p class="ctaBody rv">שיחה קצרה, בלי התחייבות. נחבר את הוואטסאפ שלכם להדגמה ונראה לכם איך זה מרגיש על שיחות אמיתיות.</p>
-        <div class="ctaMeta rv"><span class="coreMark"><i></i><span>ChatFlow</span></span><span class="note">מבית יש לי זכות</span></div>
+        <div class="ctaMeta rv"><span class="coreMark"><i></i><span>ChatFlow</span></span></div>
       </div>
       <div class="phoneWrap rv">
         <div class="phone">
@@ -1392,7 +1409,7 @@
 <footer class="foot">
   <div class="wrap">
     <span class="coreMark"><i></i><span>ChatFlow</span></span>
-    <span class="note">© ChatFlow · מבית יש לי זכות</span>
+    <span class="note">© ChatFlow</span>
   </div>
 </footer>
 

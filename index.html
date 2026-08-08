@@ -22,7 +22,7 @@
 {"@context":"https://schema.org","@type":"Organization","name":"PowerCall","url":"https://www.powercall.co.il","logo":"https://www.powercall.co.il/og-default.png","description":"חייגן חכם, CRM ומאמן מכירות AI למוקדי מכירות בישראל.","areaServed":"IL","contactPoint":{"@type":"ContactPoint","telephone":"+972-53-3464288","contactType":"sales","availableLanguage":["Hebrew"]}}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"אני מקים מוקד מכירות — כמה זמן לוקח לעלות לאוויר?","acceptedAnswer":{"@type":"Answer","text":"יום עבודה אחד. המערכת פועלת בדפדפן — כל מה שצריך זה אוזניות וחיבור אינטרנט, בלי מרכזייה ובלי התקנות."}},{"@type":"Question","name":"מה ההבדל בין חייגן מקבילי לתותח שיחות?","acceptedAnswer":{"@type":"Answer","text":"זה אותו רעיון — תותח שיחות הוא השם העממי. החייגן המקבילי של PowerCall מחייג לכמה לידים בו-זמנית, מעביר לנציג רק שיחות שנענו, ומוסיף CRM וניתוח שיחות AI."}},{"@type":"Question","name":"האם המערכת מתמללת שיחות בעברית?","acceptedAnswer":{"@type":"Answer","text":"כן. התמלול והניתוח בנויים לעברית מדוברת של שיחות מכירה בישראל, כולל סלנג ודיבור מהיר."}},{"@type":"Question","name":"כמה עולה חייגן אוטומטי למוקד?","acceptedAnswer":{"@type":"Answer","text":"מחיר חודשי קבוע למוקד — בלי תשלום פר-נציג ובלי התחייבות. בהדגמה תקבלו הצעה מדויקת."}},{"@type":"Question","name":"האם מותר להקליט שיחות מכירה לפי החוק?","acceptedAnswer":{"@type":"Answer","text":"כן — בישראל צד לשיחה רשאי להקליט אותה. ההקלטות נשמרות מוצפנות וזמינות למורשים בלבד."}},{"@type":"Question","name":"האם צריך להחליף את ה-CRM הקיים?","acceptedAnswer":{"@type":"Answer","text":"לא חייבים. PowerCall כוללת CRM מלא, אבל אפשר גם לייבא ולייצא לידים מהמערכות הקיימות."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"אני מקים מוקד מכירות — כמה זמן לוקח לעלות לאוויר?","acceptedAnswer":{"@type":"Answer","text":"יום עבודה אחד. המערכת פועלת בדפדפן — כל מה שצריך זה אוזניות וחיבור אינטרנט, בלי מרכזייה ובלי התקנות."}},{"@type":"Question","name":"מה ההבדל בין חייגן מקבילי לתותח שיחות?","acceptedAnswer":{"@type":"Answer","text":"זה אותו רעיון — תותח שיחות הוא השם העממי. החייגן המקבילי של PowerCall מחייג לכמה לידים בו-זמנית, מעביר לנציג רק שיחות שנענו, ומוסיף CRM וניתוח שיחות AI."}},{"@type":"Question","name":"האם המערכת מתמללת שיחות בעברית?","acceptedAnswer":{"@type":"Answer","text":"כן. התמלול והניתוח בנויים לעברית מדוברת של שיחות מכירה בישראל, כולל סלנג ודיבור מהיר."}},{"@type":"Question","name":"כמה עולה חייגן אוטומטי למוקד?","acceptedAnswer":{"@type":"Answer","text":"מחיר חודשי קבוע למוקד, בלי התחייבות. בהדגמה תקבלו הצעה מדויקת."}},{"@type":"Question","name":"האם מותר להקליט שיחות מכירה לפי החוק?","acceptedAnswer":{"@type":"Answer","text":"כן — בישראל צד לשיחה רשאי להקליט אותה. ההקלטות נשמרות מוצפנות וזמינות למורשים בלבד."}},{"@type":"Question","name":"האם צריך להחליף את ה-CRM הקיים?","acceptedAnswer":{"@type":"Answer","text":"לא חייבים. PowerCall כוללת CRM מלא, אבל אפשר גם לייבא ולייצא לידים מהמערכות הקיימות."}}]}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -585,7 +585,7 @@
        its own text — you read three claims, then met three unlabelled panels. */
     .seqGrid { grid-template-columns: 1fr; }
     .stageCol { display: none; }
-    .step { min-height: auto; padding-block: 2.5rem; }
+    .step { min-height: auto; padding-block: 1.25rem; }
     .seqPanel { position: relative; inset: auto; opacity: 1; margin-top: 1.7rem;
                  will-change: auto; }   /* static down here — drop the standing layer */
     .ctaGrid { grid-template-columns: 1fr; }
@@ -783,8 +783,25 @@
        (empty hero bottom + section padding), which reads as a broken blank,
        not as air. Hug the content instead; the question peeking in at the
        bottom of the first screen is an invitation to scroll. */
-    .hero { min-height: auto; padding: 8.5rem 1.5rem 3.5rem; }
-    .question { min-height: auto; padding: 5.5rem 1.5rem; }
+    /* ---- vertical rhythm on a phone ----
+       The desktop scale assumes a tall viewport where generous air reads as
+       confidence. On a 400px-wide screen the same values read as "the page is
+       broken": measured 144px of pure nothing between the hero CTAs and the
+       first line of the next section (56 from the hero's own bottom + 88 from
+       the section's top). Every value below is the desktop one roughly halved,
+       which is still real breathing room but keeps the next line in view. */
+    .hero { min-height: auto; padding: 8.5rem 1.5rem 1.5rem; }
+    .question { min-height: auto; padding: 2.75rem 1.5rem; }
+    /* the section rhythm itself — clamp()'s vh term keeps these tall on a
+       phone, which is exactly backwards, so they get flat values here */
+    /* !important because the testimonials/articles/FAQ rules were appended to
+       the stylesheet AFTER this query, so plain overrides lose the cascade */
+    .seq, .agent, .ai, .tst, .faq { padding: 3.25rem 0 !important; }
+    .arts { padding: 2.75rem 0 !important; }
+    .cta { padding: 3.25rem 0 2.5rem !important; }
+    .one { padding: 2.75rem clamp(1.25rem, 4vw, 3rem) 3rem !important; }
+    /* the gap under every section heading, same logic */
+    .secHead { margin-bottom: 1.9rem !important; }
     .feedTitle { font-size: 0.9rem; }
     .feedHead { padding: 0.9rem 1.1rem; }
     .fItem { padding: 1.1rem 1.1rem; }
@@ -1180,7 +1197,7 @@
       <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>אני מקים מוקד מכירות — כמה זמן לוקח לעלות לאוויר?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">יום עבודה אחד. המערכת פועלת בדפדפן — כל מה שצריך זה אוזניות וחיבור אינטרנט, בלי מרכזייה ובלי התקנות. אנחנו מגדירים איתכם יחד קמפיינים, מספרים ותסריטים, והמוקד מתחיל לחייג.</div></div></div>
       <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>מה ההבדל בין חייגן מקבילי לתותח שיחות?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">זה אותו רעיון — "תותח שיחות" הוא השם העממי. החייגן המקבילי של PowerCall הוא הדור המתקדם שלו: מחייג לכמה לידים בו-זמנית, מעביר לנציג רק שיחות שנענו, ומוסיף גם CRM וניתוח שיחות AI באותה מערכת.</div></div></div>
       <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>האם המערכת מתמללת שיחות בעברית?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">כן. התמלול והניתוח בנויים לעברית מדוברת של שיחות מכירה בישראל — כולל סלנג, קטיעות ודיבור מהיר. הניקוד ניתן לפי שיטת מכירות מובנית, לא לפי מילות מפתח.</div></div></div>
-      <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>כמה עולה חייגן אוטומטי למוקד?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">מחיר חודשי קבוע למוקד — בלי תשלום פר-נציג ובלי התחייבות. בהדגמה תקבלו הצעה מדויקת לפי גודל המוקד והצרכים שלכם.</div></div></div>
+      <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>כמה עולה חייגן אוטומטי למוקד?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">מחיר חודשי קבוע למוקד, בלי התחייבות. בהדגמה תקבלו הצעה מדויקת לפי גודל המוקד והצרכים שלכם.</div></div></div>
       <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>האם מותר להקליט שיחות מכירה לפי החוק?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">כן — בישראל, צד לשיחה רשאי להקליט אותה. ההקלטות נשמרות מוצפנות, זמינות למורשים בלבד, ומשמשות לניתוח ולאימון בלבד.</div></div></div>
       <div class="faqItem rv"><button class="faqQ" aria-expanded="false"><span>האם צריך להחליף את ה-CRM הקיים?</span><span class="fqIc">+</span></button><div class="faqA"><div class="faqAInner">לא חייבים. PowerCall כוללת CRM מלא לניהול לידים, סטטוסים וקמפיינים — אבל אפשר גם לייבא ולייצא לידים מהמערכות הקיימות שלכם.</div></div></div>
     </div>
@@ -1194,7 +1211,7 @@
       <div>
         <h2 class="ctaTitle rv">בואו נראה מה המוקד<br>שלכם מפספס.</h2>
         <p class="ctaBody rv">שיחה קצרה, בלי התחייבות. נראה לכם את המערכת על נתונים אמיתיים ונגיד לכם בכנות אם זה מתאים לכם.</p>
-        <div class="ctaMeta rv"><img src="./powercall-logo.png" alt="powercall" /><span>מבית יש לי זכות</span></div>
+        <div class="ctaMeta rv"><img src="./powercall-logo.png" alt="powercall" /></div>
       </div>
       <div class="phoneWrap rv">
         <div class="phone">
@@ -1258,7 +1275,7 @@
 <footer class="foot">
   <div class="wrap">
     <img src="./powercall-logo.png" alt="powercall" />
-    <span>© powercall · מבית יש לי זכות</span>
+    <span>© powercall</span>
   </div>
 </footer>
 
