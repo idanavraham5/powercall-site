@@ -1106,7 +1106,8 @@
                   <select id="f-size" name="size"><option>1–5 נציגים</option><option>6–15 נציגים</option><option>16–30 נציגים</option><option>30+ נציגים</option></select>
                 </div>
                 <button class="btn" type="submit">קבעו לי הדגמה</button>
-                <p class="formNote">הפרטים נשארים אצלנו. בלי ספאם.</p>
+                <p id="leadErr" role="alert" style="display:none;margin:0.9rem 0 0;padding:0.75rem 0.9rem;border-radius:10px;background:#fdecec;border:1px solid #f2b8b8;color:#8a1c1c;font-size:0.9rem;line-height:1.5;font-weight:600"></p>
+              <p class="formNote">הפרטים נשארים אצלנו. בלי ספאם.</p>
               </form>
               <div class="thanks" id="thanks">
                 <div class="thanksIc">
@@ -1682,11 +1683,87 @@ function fitScalers(skipRefresh) {
 
   var spinTween = gsap.to(spin, { rotation: 360, duration: 0.7, ease: "none", repeat: -1, paused: true });
 
+  /* ---------------- actually send the lead ----------------
+     This form used to be pure theatre: preventDefault, play the animation, say
+     "הפרטים נשלחו", and drop the data on the floor. Every lead submitted
+     between the design going live and this fix was lost, and the visitor was
+     told it had been sent. The send now happens FIRST and the success screen
+     is only reached if it succeeded — a thank-you that can lie is worse than
+     no form at all. */
+  var EMAILJS = {
+    url: "https://api.emailjs.com/api/v1.0/email/send",
+    service_id: "service_o1p2j15",
+    template_id: "template_8yqqbnf",
+    user_id: "mkswgOxTp_R2yOxO7"
+  };
+
+  function sendLead(vals) {
+    /* The line breaks are built from a char code on purpose: this block is
+       generated, and a literal backslash-n survived one templating pass but
+       not the next, which turned the message string into a real newline and
+       took the whole script down with a SyntaxError. */
+    var NL = String.fromCharCode(10);
+    var stamp = new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" });
+    var lines = [
+      "ליד חדש מאתר Podium (powercall.co.il)",
+      "",
+      "שם: " + vals.name,
+      "טלפון: " + vals.phone,
+      "גודל המוקד: " + (vals.size || "לא צוין"),
+      "עמוד: " + location.pathname,
+      "מועד: " + stamp
+    ];
+    var body = {
+      service_id: EMAILJS.service_id,
+      template_id: EMAILJS.template_id,
+      user_id: EMAILJS.user_id,
+      template_params: {
+        title: "ליד חדש מאתר Podium",
+        name: vals.name,
+        email: "",
+        time: stamp,
+        message: lines.join(NL)
+      }
+    };
+    return fetch(EMAILJS.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(r.status + " " + t.slice(0, 120)); });
+      return true;
+    });
+  }
+
+  function sendFailed(err) {
+    busy = false;
+    spinTween.pause();
+    gsap.set(spin, { display: "none" });
+    text.textContent = "השליחה נכשלה";
+    var box = document.getElementById("leadErr");
+    if (box) {
+      box.textContent = "לא הצלחנו לשלוח את הפרטים. אפשר לנסות שוב, או להתקשר אלינו ישירות: 053-3464288";
+      box.style.display = "block";
+    }
+    gsap.to(island, { width: 104, height: 30, duration: 0.4, ease: "power3.inOut", delay: 1.4 });
+    gsap.to(inner, { opacity: 0, duration: 0.2, delay: 1.2 });
+    if (window.console) console.error("lead send failed:", err);
+  }
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (busy) return;
     if (!form.checkValidity()) { form.reportValidity(); return; }
     busy = true;
+
+    var errBox = document.getElementById("leadErr");
+    if (errBox) errBox.style.display = "none";
+
+    var vals = {
+      name: (form.querySelector('[name="name"]') || {}).value || "",
+      phone: (form.querySelector('[name="phone"]') || {}).value || "",
+      size: (form.querySelector('[name="size"]') || {}).value || ""
+    };
 
     gsap.set(text, { textContent: "שולח…" });
     gsap.set(spin, { display: "block", opacity: 1, rotation: 0 });
@@ -1694,7 +1771,10 @@ function fitScalers(skipRefresh) {
     gsap.set(tick, { strokeDashoffset: tickLen });
     spinTween.play(0);
 
-    var tl = gsap.timeline();
+    /* The success choreography only runs once the server has accepted the
+       lead. Until then the island just spins. */
+    var tl = gsap.timeline({ paused: true });
+    sendLead(vals).then(function () { tl.play(); }).catch(sendFailed);
     // 1 — swell. Only width/height move; the centring transform is untouched.
     //     border-radius is deliberately NOT animated: back.out overshoots every
     //     property it touches, so tweening 999->27 dipped to ~10px mid-flight
