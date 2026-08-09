@@ -2,6 +2,14 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<script>/* duplicate-host guard: powercall-site.onrender.com and an old Netlify
+   preview also serve this site. Sends those visitors to the real domain. A path
+   based platform redirect rule cannot express a host condition and would loop on
+   the real domain, so the check lives here. It can never be true on powercall.co.il. */
+(function(){try{var h=location.hostname;
+  if(h.indexOf('.onrender.com')>-1||h.indexOf('.netlify.app')>-1){
+    location.replace('https://www.powercall.co.il'+location.pathname+location.search+location.hash);}
+}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>מדיניות פרטיות | PowerCall</title>
 <meta name="description" content="מדיניות הפרטיות של powercall.co.il — איזה מידע נאסף באתר, למה הוא משמש, למי הוא נמסר, כמה זמן הוא נשמר וכיצד לממש את זכויותיך לפי חוק הגנת הפרטיות.">
@@ -16,9 +24,11 @@
 <meta property="og:site_name" content="PowerCall">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.powercall.co.il/og-default.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232563EB'/%3E%3Ctext x='50' y='72' font-size='64' font-weight='800' font-family='Arial' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/Rubik-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/article.css">
 <style>
 html{-webkit-text-size-adjust:100%}body{margin:0;background:#fff;color:#111B33;font-family:'Rubik','Heebo',sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#2563EB}
@@ -151,7 +161,7 @@ h1{font-size:clamp(28px,5vw,40px);font-weight:900;line-height:1.2;letter-spacing
   <div style="margin-bottom:8px">
     <a href="/">דף הבית</a><a href="/privacy.html">מדיניות פרטיות</a><a href="/terms.html">תנאי שימוש</a><button type="button" data-ck-open>הגדרות עוגיות</button>
   </div>
-  © 2026 PowerCall
+  © 2026 PowerCall (פאוור קול)
 </footer>
 
 <script defer src="/a11y.js"></script>

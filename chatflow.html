@@ -2,8 +2,16 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8" />
+<script>/* duplicate-host guard: powercall-site.onrender.com and an old Netlify
+   preview also serve this site. Sends those visitors to the real domain. A path
+   based platform redirect rule cannot express a host condition and would loop on
+   the real domain, so the check lives here. It can never be true on powercall.co.il. */
+(function(){try{var h=location.hostname;
+  if(h.indexOf('.onrender.com')>-1||h.indexOf('.netlify.app')>-1){
+    location.replace('https://www.powercall.co.il'+location.pathname+location.search+location.hash);}
+}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ChatFlow — וואטסאפ אחד לכל העסק</title>
+<title>מערכת נציגים לוואטסאפ — מספר אחד לכל הצוות | ChatFlow</title>
 <meta name="description" content="כל שיחות הוואטסאפ של הלקוחות במקום אחד: כל הצוות רואה, AI מנסח כל תשובה והנציג מאשר, ושום פנייה לא נופלת בין הכיסאות.">
 <link rel="canonical" href="https://www.powercall.co.il/chatflow.html">
 <meta name="robots" content="index, follow">
@@ -14,12 +22,13 @@
 <meta property="og:title" content="ChatFlow — וואטסאפ עסקי אחד לכל הצוות">
 <meta property="og:description" content="כל שיחות הוואטסאפ של הלקוחות במקום אחד: כל הצוות רואה, AI מנסח כל תשובה והנציג מאשר, ושום פנייה לא נופלת בין הכיסאות.">
 <meta property="og:image" content="https://www.powercall.co.il/og-default.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2310B886'/%3E%3Ctext x='50' y='72' font-size='64' font-weight='800' font-family='Arial' fill='white' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon-chatflow.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.powercall.co.il/og-default.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/Assistant-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/assistant.css">
 <script src="./gsap.min.js"></script>
 <script src="./scrolltrigger.min.js"></script>
 <style>
@@ -1016,6 +1025,46 @@
   .swap a            { color: #666d78; }   /* 4.38 -> 4.59 */
   .swap a.on         { color: #087253; }   /* 3.18 -> 4.59  active item        */
 </style>
+
+<style>
+/* ---------------------------------------------------------------------------
+   Hero entrance, in CSS so it does not wait for gsap.min.js + scrolltrigger.
+   Mirrors the GSAP timeline further down this file exactly:
+     #nav  opacity      duration .6  at .05
+     #h1   opacity + 26px  dur .9   at .10
+     #sub  opacity + 20px  dur .8   at .28
+     #acts opacity + 18px  dur .8   at .42
+     #wa   opacity      duration .5  at .70
+   Keep the two in sync if either is ever retimed.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  #nav  { animation: pcFade .60s cubic-bezier(.33,1,.68,1) .05s both; }
+  #h1   { animation: pcRise26 .90s cubic-bezier(.33,1,.68,1) .10s both; }
+  #sub  { animation: pcRise20 .80s cubic-bezier(.33,1,.68,1) .28s both; }
+  #acts { animation: pcRise18 .80s cubic-bezier(.33,1,.68,1) .42s both; }
+  #wa   { animation: pcFade .50s cubic-bezier(.33,1,.68,1) .70s both; }
+}
+/* Someone who asked for less motion still needs to SEE the hero — the site's
+   own __reduceMotion branch skips the tween, which with opacity:0 in CSS would
+   leave the headline invisible for them. Show it immediately instead. */
+@media (prefers-reduced-motion: reduce) {
+  #nav, #h1, #sub, #acts, #wa { opacity: 1 !important; transform: none !important; }
+}
+@keyframes pcFade   { from { opacity: 0 } to { opacity: 1 } }
+@keyframes pcRise26 { from { opacity: 0; transform: translateY(26px) } to { opacity: 1; transform: none } }
+@keyframes pcRise20 { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: none } }
+@keyframes pcRise18 { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
+</style>
+
+<style>
+/* A small keyword line above the headline. The emotional H1 stays exactly as it
+   was — this rides inside the same element so the reveal animation still owns
+   it, and reuses the existing kicker typography rather than inventing a style. */
+.hKick { display: block; font-size: clamp(.78rem, 1.5vw, .95rem); font-weight: 700;
+         letter-spacing: .06em; color: var(--muted); margin-bottom: .7rem;
+         text-transform: none; }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"ChatFlow","alternateName":["צ'אטפלואו","מערכת נציגים לוואטסאפ"],"applicationCategory":"BusinessApplication","applicationSubCategory":"מערכת ניהול וואטסאפ לעסקים","operatingSystem":"Web","url":"https://www.powercall.co.il/chatflow.html","inLanguage":"he-IL","description":"תיבת וואטסאפ משותפת לעסק: כל הצוות עונה ממספר עסקי אחד, בלי התנגשויות ובלי הודעות שנופלות.","publisher":{"@type":"Organization","name":"PowerCall","alternateName":["פאוור קול"],"url":"https://www.powercall.co.il"},"offers":{"@type":"Offer","priceCurrency":"ILS","availability":"https://schema.org/InStock","url":"https://www.powercall.co.il/#lead"},"featureList":["תיבה משותפת לכל הצוות","מספר וואטסאפ עסקי אחד","הקצאת שיחות לנציג","תיוג וסטטוסים","ניסוח תשובות בעזרת AI"],"areaServed":"IL"}</script>
 </head>
 <body>
 
@@ -1041,7 +1090,7 @@
 <!-- ============================ hero ============================ -->
 <main id="main">
 <header class="hero">
-  <h1 id="h1">וואטסאפ הוא אישי.<br><span class="grad">העסק שלכם — לא.</span></h1>
+  <h1 id="h1"><span class="hKick">מערכת נציגים לוואטסאפ לעסקים</span>וואטסאפ הוא אישי.<br><span class="grad">העסק שלכם — לא.</span></h1>
   <p class="sub" id="sub">כל שיחות הלקוחות של העסק במקום אחד, כל הצוות רואה, וה-AI מנסח כל תשובה — הנציג מאשר.</p>
   <div class="acts" id="acts">
     <a href="#lead" class="btn b1">קבעו הדגמה</a>

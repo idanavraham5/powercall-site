@@ -74,12 +74,19 @@
 
   var bar = el("div", { "class": "ck-bar", id: "ckBar", role: "region",
     "aria-label": "הודעה על שימוש בעוגיות", "data-open": "false" });
+  /* Deliberately short. This paragraph is injected on DOMContentLoaded, and at
+     four lines it was the largest text block on chatflow.html and podium.html —
+     which made a late-appearing cookie notice the Largest Contentful Paint on
+     the two pages that sell, measured at ~10s on a mid-tier phone. Nothing legal
+     was lost by trimming it: the binding duty is the סעיף 11 notice at the form,
+     the "applies to anything added later" point is stated in the preferences
+     dialog below, and the full account is in the privacy policy this links to.
+     If this copy ever grows again, re-measure LCP before shipping. */
   bar.innerHTML =
     '<div class="ck-in">' +
-      '<p class="ck-txt">אתר זה שומר בדפדפן שלך רק מידע הכרחי — הגדרות הנגישות שבחרת והבחירה שלך כאן. ' +
-      'איננו משתמשים כיום בעוגיות מעקב, ניתוח נתונים או פרסום. ' +
-      'הבחירה שתעשה כאן תחול גם על כלים שיתווספו בעתיד. ' +
-      'פרטים ב<a href="/privacy.html">מדיניות הפרטיות</a>.</p>' +
+      '<p class="ck-txt">אתר זה שומר בדפדפן רק מידע הכרחי — הגדרות הנגישות והבחירה שלך כאן. ' +
+      'אין באתר עוגיות מעקב, ניתוח או פרסום. ' +
+      '<a href="/privacy.html">מדיניות הפרטיות</a></p>' +
       '<div class="ck-acts">' +
         '<button type="button" class="ck-btn solid" data-ck="all">אישור הכל</button>' +
         '<button type="button" class="ck-btn" data-ck="none">דחיית הכל</button>' +

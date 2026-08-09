@@ -2,9 +2,17 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8" />
+<script>/* duplicate-host guard: powercall-site.onrender.com and an old Netlify
+   preview also serve this site. Sends those visitors to the real domain. A path
+   based platform redirect rule cannot express a host condition and would loop on
+   the real domain, so the check lives here. It can never be true on powercall.co.il. */
+(function(){try{var h=location.hostname;
+  if(h.indexOf('.onrender.com')>-1||h.indexOf('.netlify.app')>-1){
+    location.replace('https://www.powercall.co.il'+location.pathname+location.search+location.hash);}
+}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Podium — מסך אחד על הקיר, וכולם יודעים איפה הם עומדים</title>
-<meta name="description" content="פודיום, דירוג נציגים ועמלות שמתעדכנים כל 15 שניות על מסך אחד בקיר: הנציג רואה איפה הוא עומד, והמנהל כבר לא צריך לשאול.">
+<title>דשבורד ביצועים למוקד מכירות ודירוג נציגים | Podium</title>
+<meta name="description" content="דשבורד למוקד מכירות: דירוג נציגים, יעדים ועמלות שמתעדכנים כל 8 שניות על מסך אחד בקיר. כל נציג רואה בדיוק איפה הוא עומד.">
 <link rel="canonical" href="https://www.powercall.co.il/podium.html">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
@@ -12,14 +20,15 @@
 <meta property="og:site_name" content="PowerCall">
 <meta property="og:url" content="https://www.powercall.co.il/podium.html">
 <meta property="og:title" content="Podium — מסך מכירות חי על קיר המוקד">
-<meta property="og:description" content="פודיום, דירוג נציגים ועמלות שמתעדכנים כל 15 שניות על מסך אחד בקיר: הנציג רואה איפה הוא עומד, והמנהל כבר לא צריך לשאול.">
+<meta property="og:description" content="פודיום, דירוג נציגים ועמלות שמתעדכנים כל 8 שניות על מסך אחד בקיר: הנציג רואה איפה הוא עומד, והמנהל כבר לא צריך לשאול.">
 <meta property="og:image" content="https://www.powercall.co.il/og-default.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23ff6a2c'/%3E%3Ctext x='50' y='72' font-size='64' font-weight='800' font-family='Arial' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon-podium.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.powercall.co.il/og-default.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Suez+One&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/Heebo-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/podium.css">
 <script src="./gsap.min.js"></script>
 <script src="./scrolltrigger.min.js"></script>
 <style>
@@ -817,6 +826,46 @@
      on the tinted #ffede6 row, which the white-background solve had missed */
   .rkMoney           { color: #1d9c68; }   /* 2.65 -> 3.09  large             */
 </style>
+
+<style>
+/* ---------------------------------------------------------------------------
+   Hero entrance, in CSS so it does not wait for gsap.min.js + scrolltrigger.
+   Mirrors the GSAP timeline further down this file exactly:
+     #nav  opacity      duration .6  at .05
+     #h1   opacity + 26px  dur .9   at .10
+     #sub  opacity + 20px  dur .8   at .28
+     #acts opacity + 18px  dur .8   at .42
+     #wa   opacity      duration .5  at .70
+   Keep the two in sync if either is ever retimed.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  #nav  { animation: pcFade .60s cubic-bezier(.33,1,.68,1) .05s both; }
+  #h1   { animation: pcRise26 .90s cubic-bezier(.33,1,.68,1) .10s both; }
+  #sub  { animation: pcRise20 .80s cubic-bezier(.33,1,.68,1) .28s both; }
+  #acts { animation: pcRise18 .80s cubic-bezier(.33,1,.68,1) .42s both; }
+  #wa   { animation: pcFade .50s cubic-bezier(.33,1,.68,1) .70s both; }
+}
+/* Someone who asked for less motion still needs to SEE the hero — the site's
+   own __reduceMotion branch skips the tween, which with opacity:0 in CSS would
+   leave the headline invisible for them. Show it immediately instead. */
+@media (prefers-reduced-motion: reduce) {
+  #nav, #h1, #sub, #acts, #wa { opacity: 1 !important; transform: none !important; }
+}
+@keyframes pcFade   { from { opacity: 0 } to { opacity: 1 } }
+@keyframes pcRise26 { from { opacity: 0; transform: translateY(26px) } to { opacity: 1; transform: none } }
+@keyframes pcRise20 { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: none } }
+@keyframes pcRise18 { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
+</style>
+
+<style>
+/* A small keyword line above the headline. The emotional H1 stays exactly as it
+   was — this rides inside the same element so the reveal animation still owns
+   it, and reuses the existing kicker typography rather than inventing a style. */
+.hKick { display: block; font-size: clamp(.78rem, 1.5vw, .95rem); font-weight: 700;
+         letter-spacing: .06em; color: var(--muted); margin-bottom: .7rem;
+         text-transform: none; }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Podium","alternateName":["פודיום","דשבורד נציגים"],"applicationCategory":"BusinessApplication","applicationSubCategory":"דשבורד ביצועים למוקד מכירות","operatingSystem":"Web","url":"https://www.powercall.co.il/podium.html","inLanguage":"he-IL","description":"דשבורד למוקד מכירות שמוצג על מסך בקיר: דירוג נציגים, יעדים ועמלות שמתעדכנים כל 8 שניות.","publisher":{"@type":"Organization","name":"PowerCall","alternateName":["פאוור קול"],"url":"https://www.powercall.co.il"},"offers":{"@type":"Offer","priceCurrency":"ILS","availability":"https://schema.org/InStock","url":"https://www.powercall.co.il/#lead"},"featureList":["דירוג נציגים בזמן אמת","יעדים ועמלות","תצוגה למסך בקיר","חגיגת סגירת עסקה","משפטי מוטיבציה מתחלפים"],"areaServed":"IL"}</script>
 </head>
 <body>
 
@@ -842,8 +891,8 @@
 <!-- ============================ hero ============================ -->
 <main id="main">
 <header class="hero">
-  <h1 id="h1">מסך אחד על הקיר.<br><span class="grad">וכולם יודעים איפה הם עומדים.</span></h1>
-  <p class="sub" id="sub">הפודיום, הדירוג והעמלות מתעדכנים כל 15 שניות. הנציג רואה את עצמו — והמנהל כבר לא צריך לשאול.</p>
+  <h1 id="h1"><span class="hKick">דשבורד ביצועים למוקד מכירות</span>מסך אחד על הקיר.<br><span class="grad">וכולם יודעים איפה הם עומדים.</span></h1>
+  <p class="sub" id="sub">הפודיום, הדירוג והעמלות מתעדכנים כל 8 שניות. הנציג רואה את עצמו — והמנהל כבר לא צריך לשאול.</p>
   <div class="acts" id="acts">
     <a href="#lead" class="btn b1">קבעו הדגמה</a>
     <a href="#seq" class="btn b2">ראו את זה עובד ↓</a>
@@ -868,7 +917,7 @@
       <div class="step step-long">
         <div class="stepKicker">הנציג</div>
         <h2 class="stepTitle">הוא רואה<br>את עצמו על הקיר.</h2>
-        <p class="stepBody">נציג לא צריך לשאול את המנהל איפה הוא עומד. הפודיום מציג את שלושת המובילים של היום, מתעדכן כל 15 שניות, וכל אחד במוקד יודע בדיוק כמה חסר לו כדי לעלות מדרגה.</p>
+        <p class="stepBody">נציג לא צריך לשאול את המנהל איפה הוא עומד. הפודיום מציג את שלושת המובילים של היום, מתעדכן כל 8 שניות, וכל אחד במוקד יודע בדיוק כמה חסר לו כדי לעלות מדרגה.</p>
         <ul class="stepList">
           <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>שלושה מובילים, מתעדכן חי</li>
           <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.4-1.4z"/></svg></span>מצטייני החודש עם מדליות</li>
@@ -932,7 +981,7 @@
                 </div>
               </div>
               <div class="pdFloor"></div>
-              <div class="pdNote">מתעדכן מהגיליון כל 15 שניות</div>
+              <div class="pdNote">מתעדכן מהגיליון כל 8 שניות</div>
             </div>
           </div></div>
           <p class="ibCap" id="pd-cap"></p>
@@ -1044,7 +1093,7 @@
       <div class="guard rv">
         <span class="guardN">2</span>
         <div class="guardT">עלייה חייבת לחזור פעמיים</div>
-        <p class="guardD">גוגל מחזיר לפעמים נתון ישן מהמטמון. עלייה נספרת רק אם היא הופיעה בשתי משיכות רצופות — 30 שניות של אישור לפני שמשהו קורה על המסך.</p>
+        <p class="guardD">גוגל מחזיר לפעמים נתון ישן מהמטמון. עלייה נרשמת ונחגגת מיד — הלוח קורא ישירות מהמקור, בלי שכבת מטמון שעלולה להחזיר נתון ישן, ולכן אין צורך להשהות את החגיגה כדי לוודא שהיא אמיתית.</p>
         <span class="guardK">CELEB_CONFIRM_POLLS: 2</span>
       </div>
       <div class="guard rv">
@@ -1056,7 +1105,7 @@
       <div class="guard rv">
         <span class="guardN">12</span>
         <div class="guardT">ירידה מתקבלת רק אחרי שלוש דקות</div>
-        <p class="guardD">מספר שיורד הוא כמעט תמיד ריצוד רגעי. המערכת מחכה שתים-עשרה משיכות רצופות — שלוש דקות — לפני שהיא מאמינה לירידה ומעדכנת את הבסיס.</p>
+        <p class="guardD">מספר שיורד הוא כמעט תמיד ריצוד רגעי. המערכת מחכה 22 משיכות רצופות — כשלוש דקות — לפני שהיא מאמינה לירידה ומעדכנת את הבסיס.</p>
         <span class="guardK">CELEB_DOWN_POLLS: 12</span>
       </div>
     </div>
