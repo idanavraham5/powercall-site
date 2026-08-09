@@ -1,0 +1,140 @@
+/* ============================================================================
+   הסכמת עוגיות — cookie/consent layer, shared by every page.
+
+   Sizing note: this file is loaded on the marketing pages (whose accent lives
+   in --a11y-accent) and on the article/legal pages. It never declares that
+   variable at :root — see a11y.css for why — it only reads it with a fallback.
+   ========================================================================== */
+
+.ck-bar {
+  position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 150;
+  background: #fff; color: #111827; border-top: 1px solid #d7dee8;
+  box-shadow: 0 -12px 40px rgba(15, 27, 46, 0.16);
+  font-family: inherit; display: none;
+}
+.ck-bar[data-open="true"] { display: block; }
+.ck-in {
+  max-width: 1100px; margin: 0 auto; padding: 1.1rem 1.4rem;
+  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+}
+.ck-txt { flex: 1 1 22rem; font-size: 0.92rem; line-height: 1.65; color: #263243; margin: 0; }
+.ck-txt a { color: #1447c4; }
+.ck-acts { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Every choice button is the same size, weight and contrast on purpose:
+   a "reject" that is quieter than "accept" is not a free choice. */
+.ck-btn {
+  font-family: inherit; font-size: 0.92rem; font-weight: 800; cursor: pointer;
+  padding: 0.7rem 1.35rem; border-radius: 10px; border: 1.5px solid var(--a11y-accent, #2563eb);
+  background: #fff; color: var(--a11y-accent, #2563eb); white-space: nowrap;
+}
+.ck-btn:hover { background: #f2f7ff; }
+.ck-btn.solid { background: var(--a11y-accent, #2563eb); color: #fff; }
+.ck-btn.solid:hover { filter: brightness(1.08); }
+.ck-btn.plain { border-color: #d7dee8; color: #374151; }
+.ck-btn.plain:hover { background: #f5f8fc; }
+
+/* ---------- preferences dialog ---------- */
+.ck-modal {
+  position: fixed; inset: 0; z-index: 160; display: none;
+  align-items: center; justify-content: center; padding: 1.2rem;
+  background: rgba(8, 13, 22, 0.55);
+}
+.ck-modal[data-open="true"] { display: flex; }
+.ck-doc {
+  background: #fff; color: #111827; border-radius: 16px; width: min(40rem, 100%);
+  max-height: 86dvh; overflow-y: auto; font-family: inherit;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.4);
+}
+.ck-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.95rem 1.2rem; background: var(--a11y-accent, #2563eb); color: #fff;
+  border-radius: 15px 15px 0 0; position: sticky; top: 0; z-index: 2;
+}
+.ck-head h2 { font-size: 1.05rem; font-weight: 800; margin: 0; color: #fff; }
+.ck-x {
+  background: rgba(255,255,255,0.18); border: 0; color: #fff; cursor: pointer;
+  width: 2.1rem; height: 2.1rem; border-radius: 8px; font-size: 1.25rem; line-height: 1;
+  font-family: inherit; display: grid; place-items: center;
+}
+.ck-x:hover { background: rgba(255,255,255,0.3); }
+.ck-body { padding: 1.1rem 1.3rem 1.4rem; }
+.ck-body > p { font-size: 0.93rem; line-height: 1.75; color: #263243; margin: 0 0 1rem; }
+
+.ck-cat {
+  border: 1px solid #d7dee8; border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 0.7rem;
+}
+.ck-catTop { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; }
+.ck-catName { font-weight: 800; font-size: 0.98rem; }
+.ck-catDesc { font-size: 0.85rem; line-height: 1.6; color: #4b5563; margin: 0.45rem 0 0; }
+.ck-tag {
+  display: inline-block; font-size: 0.72rem; font-weight: 800; padding: 0.18rem 0.55rem;
+  border-radius: 999px; background: #eef2f7; color: #4b5563; margin-inline-start: 0.4rem;
+  vertical-align: 0.1em;
+}
+
+/* switch — a real checkbox underneath, so keyboard and screen readers work */
+.ck-sw { position: relative; flex: none; width: 3.1rem; height: 1.75rem; }
+.ck-sw input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.ck-sw i {
+  position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1;
+  transition: background .18s ease; pointer-events: none; display: block;
+}
+.ck-sw i::after {
+  content: ""; position: absolute; inset-block-start: 0.19rem; inset-inline-start: 0.19rem;
+  width: 1.37rem; height: 1.37rem; border-radius: 50%; background: #fff;
+  transition: transform .18s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.ck-sw input:checked + i { background: var(--a11y-accent, #2563eb); }
+.ck-sw input:checked + i::after { transform: translateX(-1.35rem); }
+.ck-sw input:disabled + i { background: #9aa6b6; }
+.ck-sw input:disabled { cursor: not-allowed; }
+.ck-sw input:focus-visible + i { outline: 3px solid #0b5fff; outline-offset: 2px; }
+
+.ck-foot { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+.ck-foot .ck-btn { flex: 1 1 8rem; text-align: center; }
+.ck-note { font-size: 0.78rem; color: #4b5563; line-height: 1.6; margin: 0.9rem 0 0; }
+
+/* the toast after saving */
+.ck-toast {
+  position: fixed; inset-block-end: 1.2rem; inset-inline-start: 50%;
+  transform: translateX(50%); z-index: 170;
+  background: #111827; color: #fff; font-family: inherit; font-size: 0.9rem; font-weight: 700;
+  padding: 0.75rem 1.3rem; border-radius: 999px; box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+  display: none;
+}
+.ck-toast[data-open="true"] { display: block; }
+
+@media (max-width: 700px) {
+  .ck-in { padding: 0.95rem 1rem; gap: 0.8rem; }
+  .ck-txt { font-size: 0.86rem; flex-basis: 100%; }
+  .ck-acts { width: 100%; }
+  .ck-acts .ck-btn { flex: 1 1 7rem; text-align: center; padding: 0.7rem 0.6rem; }
+  /* keep clear of the two floating buttons */
+  .ck-bar { padding-block-end: 0.2rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   Keep the bar from burying the two floating buttons.
+
+   The bar sits at z-index 150; the accessibility button is 120 and the
+   WhatsApp float is 70, so on first visit the bar was swallowing the clicks on
+   both — elementFromPoint at either button's centre returned the bar. The
+   accessibility one is the serious half: a visitor who needs that widget in
+   order to read the page could not reach it until they had dismissed a bar they
+   could not read. Circular, and exactly the population the widget exists for.
+
+   Shifted with margin-block-end rather than transform, because both buttons
+   already use transform for their hover scale, and rather than a hardcoded
+   offset because --ck-h is measured from the real bar (its height changes with
+   how the Hebrew wraps). consent.js keeps the variable current on resize.
+   ------------------------------------------------------------------------- */
+html[data-ck-bar="open"] .a11y-btn,
+html[data-ck-bar="open"] .a11y-panel,
+html[data-ck-bar="open"] .wa {
+  margin-block-end: var(--ck-h, 0px);
+}
+.a11y-btn, .a11y-panel, .wa { transition: margin-block-end .25s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .a11y-btn, .a11y-panel, .wa { transition: none; }
+}
