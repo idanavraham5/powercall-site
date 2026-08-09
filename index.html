@@ -2080,7 +2080,13 @@ gsap.utils.toArray(".rv").forEach(function (el) {
     /* The success choreography only runs once the server has accepted the
        lead. Until then the island just spins. */
     var tl = gsap.timeline({ paused: true });
-    sendLead(vals).then(function () { tl.play(); }).catch(sendFailed);
+    sendLead(vals).then(function () {
+      tl.play();
+      /* Report the conversion only on the SERVER-ACCEPTED path — never on
+         submit — so a failed send cannot inflate the campaign's lead count.
+         No-ops when the visitor declined marketing cookies (see pixel.js). */
+      if (typeof window.pcTrackLead === "function") window.pcTrackLead();
+    }).catch(sendFailed);
     // 1 — swell. Only width/height move; the centring transform is untouched.
     //     border-radius is deliberately NOT animated: back.out overshoots every
     //     property it touches, so tweening 999→27 dipped to ~10px mid-flight and
@@ -2183,5 +2189,6 @@ document.querySelectorAll('.faqItem').forEach(function (it) {
 </script>
 <script defer src="./a11y.js"></script>
 <script defer src="./consent.js"></script>
+<script defer src="./pixel.js"></script>
 </body>
 </html>
