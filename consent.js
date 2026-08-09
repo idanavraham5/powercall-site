@@ -7,10 +7,15 @@
      from חוק הגנת הפרטיות התשמ"א-1981 as amended by תיקון 13 (in force
      14.8.2025), and from the PPA's גילוי דעת on consent (25.2.2026), which
      prefers active opt-in over opt-out.
-   - This site loads no analytics, no ad pixels and no third-party trackers. It
-     stores only what it needs to work: the visitor's accessibility settings and
-     the consent choice made here. For that, consent is not legally required —
-     transparency is.
+   - This site stores what it needs to work without asking: the visitor's
+     accessibility settings and the consent choice made here. For that, consent
+     is not legally required — transparency is. It ALSO runs a Meta pixel, which
+     is an advertising tracker and therefore does require consent; it is gated on
+     the `marketing` category and loads only after an explicit yes.
+   - Every user-facing sentence in this file states the site's ACTUAL current
+     state. When a tracker is added or removed, the bar copy and the dialog
+     paragraph below change in the same commit as the code — a stale reassurance
+     here is a false statement, which is exactly the exposure תיקון 13 creates.
    - So the banner below tells the truth about the current state AND records a
      choice that will bind any tracker added later. Non-essential categories are
      OFF by default and are marked as not currently in use, because claiming to
@@ -74,18 +79,20 @@
 
   var bar = el("div", { "class": "ck-bar", id: "ckBar", role: "region",
     "aria-label": "הודעה על שימוש בעוגיות", "data-open": "false" });
-  /* Deliberately short. This paragraph is injected on DOMContentLoaded, and at
-     four lines it was the largest text block on chatflow.html and podium.html —
-     which made a late-appearing cookie notice the Largest Contentful Paint on
-     the two pages that sell, measured at ~10s on a mid-tier phone. Nothing legal
-     was lost by trimming it: the binding duty is the סעיף 11 notice at the form,
-     the "applies to anything added later" point is stated in the preferences
-     dialog below, and the full account is in the privacy policy this links to.
-     If this copy ever grows again, re-measure LCP before shipping. */
+  /* Deliberately short: injected on DOMContentLoaded, this paragraph was at one
+     point the largest text block on chatflow.html and podium.html, which made a
+     late-appearing cookie notice the Largest Contentful Paint on the two pages
+     that sell. If this copy grows, re-measure LCP before shipping.
+
+     It must also stay TRUE. An earlier version of this line said "אין באתר
+     עוגיות מעקב, ניתוח או פרסום" — which was accurate when it was written and
+     became false the moment the Meta pixel landed, leaving the bar contradicting
+     the marketing category listed directly beneath it. Whenever a tracker is
+     added or removed, this sentence is part of the change. */
   bar.innerHTML =
     '<div class="ck-in">' +
-      '<p class="ck-txt">אתר זה שומר בדפדפן רק מידע הכרחי — הגדרות הנגישות והבחירה שלך כאן. ' +
-      'אין באתר עוגיות מעקב, ניתוח או פרסום. ' +
+      '<p class="ck-txt">אתר זה שומר בדפדפן מידע הכרחי בלבד. רק באישורך ייטען גם פיקסל של Meta ' +
+      'למדידת פרסום. ' +
       '<a href="/privacy.html">מדיניות הפרטיות</a></p>' +
       '<div class="ck-acts">' +
         '<button type="button" class="ck-btn solid" data-ck="all">אישור הכל</button>' +
@@ -121,7 +128,8 @@
       '<div class="ck-body">' +
         '<p>כאן תוכל לבחור אילו סוגי עוגיות מותר לאתר להפעיל. עוגיות הכרחיות פועלות תמיד, ובלעדיהן האתר לא יפעל כראוי. ' +
           'כל שאר הקטגוריות כבויות כברירת מחדל ויופעלו רק אם תבחר בכך. ' +
-          'נכון להיום האתר אינו טוען כלי ניתוח, פרסום או מעקב כלשהו — הקטגוריות מוצגות כדי שבחירתך תחול מראש גם על כלים שיתווספו בעתיד.</p>' +
+          'כיום האתר משתמש בפיקסל של Meta בקטגוריית השיווק בלבד — הוא נטען רק אם תאשר אותה, ואם לא תאשר לא נשלח אליה דבר. ' +
+          'שאר הקטגוריות אינן בשימוש כרגע, ומוצגות כדי שבחירתך תחול מראש גם על כלים שיתווספו בעתיד.</p>' +
         catsHtml +
         '<div class="ck-foot">' +
           '<button type="button" class="ck-btn solid" data-ck="save">שמירת הבחירה</button>' +
