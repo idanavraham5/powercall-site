@@ -879,6 +879,19 @@
    saved high-contrast or large-text setting does not flash the default theme
    on every navigation. Mirrors a11y.js; that file is still the source of truth. */
 (function(){try{var s=JSON.parse(localStorage.getItem("pc-a11y-v1")||"{}"),h=document.documentElement,m={readable:"a11y-readable",lh:"a11y-lh",ls:"a11y-ls",contrast:"a11y-contrast",gray:"a11y-gray",links:"a11y-links",cursor:"a11y-cursor",nomotion:"a11y-nomotion",guide:"a11y-guide-on"};for(var k in m){if(s[k])h.classList.add(m[k]);}if(s.fs&&s.fs!==1){h.style.setProperty("--a11y-fs",s.fs);h.classList.add("a11y-fs");}}catch(e){}})();</script>
+
+<style>
+/* ============================================================================
+   Contrast corrections — ת"י 5568 (WCAG 2.0) AA
+   Only two elements fail once the feed animation settles — the rest of what an
+   audit reports here is the cards mid-fade at opacity 0.4, which is transient.
+   ============================================================================ */
+
+  /* --- product mockup: the AI feed. These are the only two that still fail
+         once the GSAP timeline finishes and the cards return to opacity 1. --- */
+  .feedMeta          { color: #607288; }   /* 2.52 -> 4.58 */
+  .fTime             { color: #607288; }   /* 2.40 -> 4.58 */
+</style>
 </head>
 <body>
 

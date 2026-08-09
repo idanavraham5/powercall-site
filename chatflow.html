@@ -969,6 +969,53 @@
    saved high-contrast or large-text setting does not flash the default theme
    on every navigation. Mirrors a11y.js; that file is still the source of truth. */
 (function(){try{var s=JSON.parse(localStorage.getItem("pc-a11y-v1")||"{}"),h=document.documentElement,m={readable:"a11y-readable",lh:"a11y-lh",ls:"a11y-ls",contrast:"a11y-contrast",gray:"a11y-gray",links:"a11y-links",cursor:"a11y-cursor",nomotion:"a11y-nomotion",guide:"a11y-guide-on"};for(var k in m){if(s[k])h.classList.add(m[k]);}if(s.fs&&s.fs!==1){h.style.setProperty("--a11y-fs",s.fs);h.classList.add("a11y-fs");}}catch(e){}})();</script>
+
+<style>
+/* ============================================================================
+   Contrast corrections — ת"י 5568 (WCAG 2.0) AA
+   The product mockups, the header product-switcher and the demo CTA button all sat
+   below AA. The switcher and the CTA are real interface, not simulation.
+   ============================================================================ */
+
+  /* --- product mockup: the inbox simulation --- */
+  .ibSearch          { color: #636d79; }   /* 2.36 -> 4.60  search placeholder */
+  .ibT               { color: #636d79; }   /* 2.24 -> 4.60  message timestamps  */
+  .ibTime            { color: #636d79; }   /* 2.36 -> 4.60  row timestamps      */
+  .ibStepL           { color: #6a768b; }   /* 2.54 -> 4.59  step labels         */
+  .svComposer        { color: #697788; }   /* 1.83 -> 4.59  "הקלד הודעה…"     */
+  .barsX span        { color: #6a7788; }   /* 2.19 -> 4.58  chart hour labels   */
+  .ibOwner           { color: #097d5b; }   /* 4.08 -> 4.61  assignee names      */
+  #ib-owner          { color: #097d5b; }
+  #ib-cap b          { color: #097d5b; }
+  #ib-cUn            { color: #606671; }   /* 3.96 -> 4.59  unread counter      */
+  .ibTab:not(.on) b  { color: #606671; }   /* inactive tabs only — a direct
+     rule here would otherwise beat the white the active tab passes down,
+     leaving grey on dark green at 1.14 */
+  .ibTab.on b        { color: #fff; }
+
+  /* most pills and tags carry INLINE colours and are corrected in the markup
+     itself further down; this one is a real stylesheet rule, so it belongs here */
+  .ibPill.pill-offer { color: #097d5b; }   /* 3.68 -> 4.61 */
+  /* the header chip is recoloured by script as the scenario advances, so it
+     only shows its failing state partway through the demo */
+  #ib-hdChip         { color: #097856; }   /* 3.63 -> 4.87 */
+
+  /* white-on-colour: the text is already #fff, so the ground has to come down */
+  .ibTab.on          { background: #098561; }  /* 4.08 -> 4.60 */
+  .ibPill.pill-closed{ background: #098561; }
+  button.btn,
+  .btn[type="submit"]{ background: #098561; }  /* the real CTA, not a mockup   */
+  .svEscBtn          { background: #ca4c0a; }  /* 3.56 -> 4.60 */
+  /* these two chips sat at rgba(255,255,255,.22) over green, which lands on a
+     tone too light to carry white text; a darker chip keeps the badge reading
+     while clearing the threshold */
+  #ib-cMine          { background: rgba(0,0,0,0.20); }  /* 2.84 -> passes */
+  #uCount            { background: rgba(0,0,0,0.20); }  /* 3.23 -> passes */
+
+  /* --- real navigation, NOT a mockup: the product switcher in the header --- */
+  .swap a            { color: #666d78; }   /* 4.38 -> 4.59 */
+  .swap a.on         { color: #087253; }   /* 3.18 -> 4.59  active item        */
+</style>
 </head>
 <body>
 
@@ -1082,7 +1129,7 @@
                     <span class="ibName">רון מזרחי</span>
                     <span class="ibOwner">מאיה שקד</span>
                     <span class="ibLast">שלחתי את המסמכים במייל</span>
-                    <span class="ibPill" style="background:#fdf1de;color:#b9741a;"><i></i>ממתין ללקוח</span>
+                    <span class="ibPill" style="background:#fdf1de;color:#9b6116;"><i></i>ממתין ללקוח</span>
                   </span>
                   <span class="ibEnd"><span class="ibTime">13:47</span></span>
                 </div>
@@ -1102,7 +1149,7 @@
                     <span class="ibName">אלי בן-חיים</span>
                     <span class="ibOwner">ללא הקצאה</span>
                     <span class="ibLast">היי, ראיתי את המודעה שלכם</span>
-                    <span class="ibPill" style="background:#e7f0ff;color:#2a6ad6;"><i></i>פנייה חדשה</span>
+                    <span class="ibPill" style="background:#e7f0ff;color:#2868d2;"><i></i>פנייה חדשה</span>
                   </span>
                   <span class="ibEnd"><span class="ibTime">11:31</span><span class="ibBadge">1</span></span>
                 </div>
@@ -1144,9 +1191,9 @@
                 <div class="ibSep"></div>
                 <div class="ibCardT">תוויות</div>
                 <div class="ibTags">
-                  <span style="background:#e7f7f0;color:#0a8f68;">לקוחה חוזרת</span>
+                  <span style="background:#e7f7f0;color:#097d5b;">לקוחה חוזרת</span>
                   <span style="background:#efeaff;color:#6a4fd0;">מכירות</span>
-                  <span style="background:#fdf1de;color:#b9741a;">מחיר</span>
+                  <span style="background:#fdf1de;color:#9b6116;">מחיר</span>
                 </div>
               </div>
 
@@ -1222,14 +1269,14 @@
                 <div class="kpi">
                   <div class="top">
                     <span class="ic" style="background:rgba(16,184,134,0.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#0A8F68" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-                    <span class="kv" style="color:#0A8F68;" data-to="128">0</span>
+                    <span class="kv" style="color:#098561;" data-to="128">0</span>
                   </div>
                   <div class="kl">שיחות פתוחות</div>
                 </div>
                 <div class="kpi">
                   <div class="top">
                     <span class="ic" style="background:rgba(240,161,58,0.16);"><svg viewBox="0 0 24 24" fill="none" stroke="#b9741a" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-                    <span class="kv" style="color:#b9741a;" data-to="34">0</span>
+                    <span class="kv" style="color:#9b6116;" data-to="34">0</span>
                   </div>
                   <div class="kl">בטיפול</div>
                 </div>
@@ -1273,8 +1320,8 @@
                     <div class="agRow"><span class="medal m1">1</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#7ee2bf,#16a877);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">מ</span>מאיה שקד</span><span class="agNum g">18</span><span class="agNum">2 דק׳</span></div>
                     <div class="agRow"><span class="medal m2">2</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#a9c6ff,#5b8def);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">י</span>יוסי לוי</span><span class="agNum g">14</span><span class="agNum">3 דק׳</span></div>
                     <div class="agRow"><span class="medal m3">3</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#ffc89b,#ff9466);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">ר</span>רונית ביטון</span><span class="agNum g">11</span><span class="agNum">4 דק׳</span></div>
-                    <div class="agRow"><span class="medal" style="color:#a8b0bb;">4</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#c9b6ff,#8b6cf0);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">א</span>אלי מזרחי</span><span class="agNum g">9</span><span class="agNum">6 דק׳</span></div>
-                    <div class="agRow"><span class="medal" style="color:#a8b0bb;">5</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#9fe8ef,#16b3c4);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">ש</span>שירן אזולאי</span><span class="agNum g">7</span><span class="agNum">7 דק׳</span></div>
+                    <div class="agRow"><span class="medal" style="color:#6a7788;">4</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#c9b6ff,#8b6cf0);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">א</span>אלי מזרחי</span><span class="agNum g">9</span><span class="agNum">6 דק׳</span></div>
+                    <div class="agRow"><span class="medal" style="color:#6a7788;">5</span><span class="agName"><span class="ibAv" style="background:linear-gradient(145deg,#9fe8ef,#16b3c4);width:2.025cqw;height:2.025cqw;font-size:0.945cqw;">ש</span>שירן אזולאי</span><span class="agNum g">7</span><span class="agNum">7 דק׳</span></div>
                   </div>
                 </div>
               </div>

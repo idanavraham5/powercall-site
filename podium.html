@@ -797,6 +797,26 @@
    saved high-contrast or large-text setting does not flash the default theme
    on every navigation. Mirrors a11y.js; that file is still the source of truth. */
 (function(){try{var s=JSON.parse(localStorage.getItem("pc-a11y-v1")||"{}"),h=document.documentElement,m={readable:"a11y-readable",lh:"a11y-lh",ls:"a11y-ls",contrast:"a11y-contrast",gray:"a11y-gray",links:"a11y-links",cursor:"a11y-cursor",nomotion:"a11y-nomotion",guide:"a11y-guide-on"};for(var k in m){if(s[k])h.classList.add(m[k]);}if(s.fs&&s.fs!==1){h.style.setProperty("--a11y-fs",s.fs);h.classList.add("a11y-fs");}}catch(e){}})();</script>
+
+<style>
+/* ============================================================================
+   Contrast corrections — ת"י 5568 (WCAG 2.0) AA
+   The leaderboard mockup and the header product-switcher sat below AA.
+   ============================================================================ */
+
+  /* --- real navigation, NOT a mockup: the product switcher in the header --- */
+  .swap a.on         { color: #ba3700; }   /* 2.26 -> 4.59  active item        */
+
+  /* --- product mockup: the leaderboard simulation --- */
+  .pLive             { color: #c24413; }   /* 3.33 -> 4.60  the LIVE badge     */
+  #pd-cap b          { color: #d03d00; }   /* 2.71 -> 4.59                     */
+  /* large text (>=18.66px bold) only needs 3:1, so these barely move and the
+     leaderboard keeps its punch */
+  .rkPct.hot         { color: #ff5c19; }   /* 2.86 -> 3.08  large             */
+  .rkMoney.bonus     { color: #a97f24; }   /* 2.29 -> 3.09  large, and 3.02
+     on the tinted #ffede6 row, which the white-background solve had missed */
+  .rkMoney           { color: #1d9c68; }   /* 2.65 -> 3.09  large             */
+</style>
 </head>
 <body>
 
